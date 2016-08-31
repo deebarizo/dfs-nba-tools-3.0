@@ -33,3 +33,6 @@ class CreatePlayersTable extends Migration
         Schema::drop('players');
     }
 }
+
+
+
