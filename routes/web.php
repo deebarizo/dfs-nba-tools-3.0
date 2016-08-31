@@ -36,6 +36,8 @@ Route::get('/admin/scrapers/games', function() {
 	return View::make('admin/scrapers/games', compact('titleTag', 'h2Tag'));
 });
 
+Route::post('/admin/scrapers/games', 'ScrapersController@scrapeGames');
+
 
 /****************************************************************************************
 ONE TIME PROCESS
