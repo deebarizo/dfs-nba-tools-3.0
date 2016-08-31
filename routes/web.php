@@ -1,3 +1,13 @@
 <?php
 
-Route::get('/', 'ResearchController@calculateCV');
+
+/****************************************************************************************
+ONE TIME PROCESS
+****************************************************************************************/
+
+// use App\Models\Team;
+
+Route::get('/one_time_process', function() {
+
+	ddAll('Success!');
+});
