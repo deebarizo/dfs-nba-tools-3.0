@@ -18,7 +18,7 @@
 			<div class="col-lg-3"> 
 				<div class="form-group">
 					{!! Form::label('year', 'Year:') !!}
-					{!! Form::text('year', '2015', ['class' => 'form-control']) !!}
+					{!! Form::text('year', '2016', ['class' => 'form-control']) !!}
 				</div>
 			</div>
 
