@@ -38,15 +38,48 @@ class GameScraper {
 							->get();
 
 			$numTableRows = $crawler->filter('tr.team')->count();
+
+			foreach ($games as $game) {
+
+				$gameLineIndex = 0;
+
+				for ($gameLineIndex = 0; $gameLineIndex < 2; $gameLineIndex++) { 
 		
-			for ($i = 0; $i < $numTableRows; $i++) { 
+					for ($i = 0; $i < $numTableRows; $i++) { 
 
-				$teamTableRow = $crawler->filter('tr.team')->eq($i)->filter('td')->eq(0)->text();
-				
-				$saoName = preg_replace("/(\d+\s)(.+)/", "$2", $teamTableRow);
+						$tableRow = $crawler->filter('tr.team')->eq($i);
 
-				prf($saoName);
+						$unformattedTeam = trim($tableRow->filter('td')->eq(0)->text());
+
+						$saoName = preg_replace("/(\d+\s)(.+)/", "$2", $unformattedTeam);
+
+						if ($saoName === $game->game_lines[$gameLineIndex]->team->sao_name) {
+
+							$unformattedVegasScore = trim($tableRow->filter('td')->eq(3)->text());
+
+							if (strpos($unformattedVegasScore, '-') === false && $unformattedVegasScore !== 'PK') {
+
+								$total = $unformattedVegasScore;
+							
+							} else if (strpos($unformattedVegasScore, '-') !== false) {
+
+								$spread = $unformattedVegasScore;
+							
+							} else if ($unformattedVegasScore === 'PK') {
+
+								$spread = 0;
+							}
+						}
+					}			
+				}
+
+				prf('Total: '.$total);
+				prf('Spread: '.$spread);
 			}
+
+			
+		
+	
 
 
 
