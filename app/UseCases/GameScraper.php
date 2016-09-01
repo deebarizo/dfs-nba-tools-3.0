@@ -16,6 +16,38 @@ class GameScraper {
 
 	public function scrapeGames($month, $year) {
 
+		$monthNumber = date('m', strtotime($month));
+
+		$dates = Game::where('date', '>=', $year.'-'.$monthNumber.'-01')
+						->where('date', '<=', $year.'-'.$monthNumber.'-31')
+						->groupBy('date')
+						->pluck('date');
+
+		foreach ($dates as $date) {
+			
+			$client = new Client();
+
+			$dayNumber = date('d', strtotime($date));
+
+			$crawler = $client->request('GET', 'http://www.scoresandodds.com/grid_'.$year.''.$monthNumber.''.$dayNumber.'.html');			
+
+			$numTableRows = $crawler->filter('tr.team')->count();
+		
+			for ($i = 0; $i < $numTableRows; $i++) { 
+
+				$tableRow = $crawler->filter('tr.team')->eq($i)->filter('td')->eq(0)->text();
+				
+				prf($tableRow);
+			}
+
+			ddAll('end');
+		}
+
+		
+	}
+
+	public function scrapeBasketballReferenceGames($month, $year) {
+
 		$client = new Client();
 
 		$crawler = $client->request('GET', 'http://www.basketball-reference.com/leagues/NBA_'.$year.'_games-'.strtolower($month).'.html');

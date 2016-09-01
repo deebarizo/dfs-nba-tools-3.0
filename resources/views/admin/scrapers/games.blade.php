@@ -11,14 +11,14 @@
 			<div class="col-lg-3"> 
 				<div class="form-group">
 					{!! Form::label('month', 'Month:') !!}
-					{!! Form::text('month', '', ['class' => 'form-control']) !!}
+					{!! Form::text('month', 'October', ['class' => 'form-control']) !!}
 				</div>
 			</div>
 
 			<div class="col-lg-3"> 
 				<div class="form-group">
 					{!! Form::label('year', 'Year:') !!}
-					{!! Form::text('year', '2016', ['class' => 'form-control']) !!}
+					{!! Form::text('year', '2015', ['class' => 'form-control']) !!}
 				</div>
 			</div>
 
