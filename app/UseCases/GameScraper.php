@@ -22,9 +22,25 @@ class GameScraper {
 
 		$numGames = $crawler->filter('table#schedule > tbody > tr')->count();
 
+		for ($i = 0; $i < $numGames; $i++) { // http://www.basketball-reference.com/leagues/NBA_2016_games-april.html has "Playoffs" table row
+
+			$unformattedDate = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('th')->text();
+
+			if ($unformattedDate === 'Playoffs') {
+
+				$numGames++;
+				break;
+			}
+		}
+
+		ddAll($numGames);
+
 		for ($i = 0; $i < $numGames; $i++) { 
 			
 			$unformattedDate = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('th')->text();
+			if ($unformattedDate === 'Playoffs') {
+				continue;
+			}
 			$games[$i]['date'] = date('Y-m-d', strtotime($unformattedDate));
 
 			$unformattedTime = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(0)->text();
