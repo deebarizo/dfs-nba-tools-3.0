@@ -18,12 +18,12 @@ class GameScraper {
 
 		$monthNumber = date('m', strtotime($month));
 
-		$games = Game::with('game_lines.team')
-						->where('date', '>=', $year.'-'.$monthNumber.'-01')
+		$dates = Game::where('date', '>=', $year.'-'.$monthNumber.'-01')
 						->where('date', '<=', $year.'-'.$monthNumber.'-31')
-						->get();
+						->groupBy('date')
+						->pluck('date');
 
-		ddAll($games);
+
 
 		foreach ($dates as $date) {
 			
@@ -31,19 +31,29 @@ class GameScraper {
 
 			$dayNumber = date('d', strtotime($date));
 
-			$crawler = $client->request('GET', 'http://www.scoresandodds.com/grid_'.$year.''.$monthNumber.''.$dayNumber.'.html');			
+			$crawler = $client->request('GET', 'http://www.scoresandodds.com/grid_'.$year.''.$monthNumber.''.$dayNumber.'.html');	
+
+			$games = Game::with('game_lines.team')
+							->where('date', $date)
+							->get();
 
 			$numTableRows = $crawler->filter('tr.team')->count();
 		
 			for ($i = 0; $i < $numTableRows; $i++) { 
 
-				$tableRow = $crawler->filter('tr.team')->eq($i)->filter('td')->eq(0)->text();
+				$teamTableRow = $crawler->filter('tr.team')->eq($i)->filter('td')->eq(0)->text();
 				
-				prf($tableRow);
+				$saoName = preg_replace("/(\d+\s)(.+)/", "$2", $teamTableRow);
+
+				prf($saoName);
 			}
+
+
+
+			ddAll('end');
 		}
 
-		ddAll('end');
+		
 	}
 
 	public function scrapeBasketballReferenceGames($month, $year) {
