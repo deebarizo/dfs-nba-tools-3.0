@@ -6,10 +6,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Input;
 
-use Goutte\Client;
-use vendor\symfony\DomCrawler\Crawler;
-
-# use App\UseCases\GamesScraper;
+use App\UseCases\GameScraper;
 
 class ScrapersController extends Controller {
 
@@ -17,7 +14,13 @@ class ScrapersController extends Controller {
 
 	public function scrapeGames(Request $request) {
 
-		ddAll($request->input('month'));
+		$gameScraper = new GameScraper;
+
+        $results = $gameScraper->scrapeGames($request->input('month'), $request->input('year'));
+
+        $message = $results->message;
+
+		return redirect()->route('admin.scrapers.games')->with('message', $message);
 	}
 
 }
