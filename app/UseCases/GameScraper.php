@@ -18,10 +18,12 @@ class GameScraper {
 
 		$monthNumber = date('m', strtotime($month));
 
-		$dates = Game::where('date', '>=', $year.'-'.$monthNumber.'-01')
+		$games = Game::with('game_lines.team')
+						->where('date', '>=', $year.'-'.$monthNumber.'-01')
 						->where('date', '<=', $year.'-'.$monthNumber.'-31')
-						->groupBy('date')
-						->pluck('date');
+						->get();
+
+		ddAll($games);
 
 		foreach ($dates as $date) {
 			

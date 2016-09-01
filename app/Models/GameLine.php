@@ -10,4 +10,9 @@ class GameLine extends Model {
 
     	return $this->belongsTo(Game::class);
     }
+
+    public function team() {
+
+    	return $this->belongsTo(Team::class);
+    }
 }
