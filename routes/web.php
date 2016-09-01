@@ -28,13 +28,13 @@ Route::get('/admin', function() {
 SCRAPERS
 ****************************************************************************************/
 
-Route::get('/admin/scrapers/games', function() {
+Route::get('/admin/scrapers/games', ['as' => 'admin.scrapers.games', function() {
 
 	$titleTag = 'Scrape Games | ';
-	$h2Tag = 'Scrape Games';
-	
+    $h2Tag = 'Scrape Games';	
+
 	return View::make('admin/scrapers/games', compact('titleTag', 'h2Tag'));
-});
+}]);
 
 Route::post('/admin/scrapers/games', 'ScrapersController@scrapeGames');
 

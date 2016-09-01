@@ -33,6 +33,13 @@ class GameScraper {
 
 			$games[$i]['br_link'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(5)->filter('a')->link()->getUri();
 
+			if (Game::where('br_link', $games[$i]['br_link'])->count() > 0) {
+
+				$this->message = 'The game with BR link '.$games[$i]['br_link'].' is already in the database.';		
+
+				return $this;
+			}
+
 			$unformattedOvertimePeriods = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(6)->text();
 			if ($unformattedOvertimePeriods == '') { 
 				$games[$i]['ot_periods'] = 0;
@@ -43,14 +50,16 @@ class GameScraper {
 			}
 
 			$teamBrName = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(1)->filter('a')->link()->getUri();
-			$games[$i]['line'][0]['br_name'] = preg_replace("/(http:\/\/www.basketball-reference.com\/teams\/)(\D+)(\/\d+.html)/", "$2", $teamBrName);
-			$games[$i]['line'][0]['pts'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(2)->text();
-			$games[$i]['line'][0]['location'] = 'away';
+			$games[$i]['lines'][0]['br_name'] = preg_replace("/(http:\/\/www.basketball-reference.com\/teams\/)(\D+)(\/\d+.html)/", "$2", $teamBrName);
+			$games[$i]['lines'][0]['pts'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(2)->text();
+			$games[$i]['lines'][0]['location'] = 'away';
 			$teamBrName = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(3)->filter('a')->link()->getUri();
-			$games[$i]['line'][1]['br_name'] = preg_replace("/(http:\/\/www.basketball-reference.com\/teams\/)(\D+)(\/\d+.html)/", "$2", $teamBrName);
-			$games[$i]['line'][1]['pts'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(4)->text();
-			$games[$i]['line'][1]['location'] = 'home';
+			$games[$i]['lines'][1]['br_name'] = preg_replace("/(http:\/\/www.basketball-reference.com\/teams\/)(\D+)(\/\d+.html)/", "$2", $teamBrName);
+			$games[$i]['lines'][1]['pts'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(4)->text();
+			$games[$i]['lines'][1]['location'] = 'home';
 		}
+
+		# ddAll($games);
 
 		foreach ($games as $game) {
 
@@ -63,7 +72,7 @@ class GameScraper {
 
 			$eGame->save();
 
-			foreach ($game as $gameLine) {
+			foreach ($game['lines'] as $gameLine) {
 
 				$eGameLine = new GameLine;
 
@@ -76,7 +85,9 @@ class GameScraper {
 			} 
 		} 
 
-		ddAll($games);
+		$this->message = 'Success!';		
+
+		return $this;
 	}
 
 }

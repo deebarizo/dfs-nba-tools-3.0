@@ -11,7 +11,7 @@
 			<div class="col-lg-3"> 
 				<div class="form-group">
 					{!! Form::label('month', 'Month:') !!}
-					{!! Form::text('month', 'October', ['class' => 'form-control']) !!}
+					{!! Form::text('month', '', ['class' => 'form-control']) !!}
 				</div>
 			</div>
 
