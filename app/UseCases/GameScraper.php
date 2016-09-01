@@ -39,11 +39,9 @@ class GameScraper {
 				
 				prf($tableRow);
 			}
-
-			ddAll('end');
 		}
 
-		
+		ddAll('end');
 	}
 
 	public function scrapeBasketballReferenceGames($month, $year) {
