@@ -22,7 +22,7 @@ class GameScraper {
 
 		$numGames = $crawler->filter('table#schedule > tbody > tr')->count();
 
-		for ($i = 0; $i < 38; $i++) { 
+		for ($i = 0; $i < $numGames; $i++) { 
 			
 			$unformattedDate = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('th')->text();
 			$games[$i]['date'] = date('Y-m-d', strtotime($unformattedDate));
@@ -59,7 +59,7 @@ class GameScraper {
 			$games[$i]['lines'][1]['location'] = 'home';
 		}
 
-		# ddAll($games);
+		ddAll($games);
 
 		foreach ($games as $game) {
 
