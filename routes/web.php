@@ -13,6 +13,20 @@ Route::get('/', function() {
 
 
 /****************************************************************************************
+STUDIES
+****************************************************************************************/
+
+Route::get('/studies', function() {
+
+	$titleTag = 'Studies | ';
+	
+	return View::make('studies/index', compact('titleTag'));
+});
+
+Route::get('/admin/correlations/pts_and_vegas_pts', 'StudiesController@calculateCorrelationBetweenPtsAndVegasPts');
+
+
+/****************************************************************************************
 ADMIN
 ****************************************************************************************/
 

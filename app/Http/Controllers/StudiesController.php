@@ -2,11 +2,24 @@
 
 use App\UseCases\Calculator;
 
-class ResearchController extends Controller {
+class StudiesController extends Controller {
+
+	public function calculateCorrelationBetweenPtsAndVegasPts() {
+
+		$titleTag = 'Correlation between PTS and Vegas PTS | ';
+		$h2Tag = 'Correlation between PTS and Vegas PTS';
+
+		return view('studies.correlations.pts_and_vegas_pts', compact('titleTag', 'h2Tag'));
+	}
+
+
+	/****************************************************************************************
+	HELPERS
+	****************************************************************************************/
 
 	// Needs two arrays of numbers
 
-	public function calculateCorrelation($xNumbers = [14.2, 16.4, 11.9, 15.2, 18.5, 22.1, 19.4, 25.1, 23.4, 18.1, 22.6, 17.2],
+	private function calculateCorrelation($xNumbers = [14.2, 16.4, 11.9, 15.2, 18.5, 22.1, 19.4, 25.1, 23.4, 18.1, 22.6, 17.2],
 										 $yNumbers = [215, 325, 185, 332, 406, 522, 412, 614, 544, 421, 445, 408]) {
 
 		if (count($xNumbers) !== count($yNumbers)) {
@@ -24,7 +37,7 @@ class ResearchController extends Controller {
 
 	// Needs array of numbers
 
-	public function calculateCV($numbers = [600, 470, 170, 430, 300]) {
+	private function calculateCV($numbers = [600, 470, 170, 430, 300]) {
 
 		$calculator = new Calculator;
 
