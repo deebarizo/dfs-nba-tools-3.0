@@ -59,22 +59,37 @@ class GameScraper {
 
 							if (strpos($unformattedVegasScore, '-') === false && $unformattedVegasScore !== 'PK') {
 
-								$total = $unformattedVegasScore;
+								$total = [
+
+									'pts' => $unformattedVegasScore,
+									'location' => $game->game_lines[$gameLineIndex]->location
+								];
 							
 							} else if (strpos($unformattedVegasScore, '-') !== false) {
 
-								$spread = $unformattedVegasScore;
+								$spread = [
+
+									'pts' => $unformattedVegasScore,
+									'location' => $game->game_lines[$gameLineIndex]->location
+								];
 							
 							} else if ($unformattedVegasScore === 'PK') {
+								
+								$spread = [
 
-								$spread = 0;
+									'pts' => 0,
+									'location' => $game->game_lines[$gameLineIndex]->location
+								];
 							}
 						}
 					}			
 				}
 
-				prf('Total: '.$total);
-				prf('Spread: '.$spread);
+				prf('Total:');
+				prf($total);
+				prf('');
+				prf('Spread:');
+				prf($spread);
 			}
 
 			
