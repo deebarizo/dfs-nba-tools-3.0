@@ -1,5 +1,7 @@
 <?php namespace App\Http\Controllers;
 
+use App\Models\GameLine;
+
 use App\UseCases\Calculator;
 
 class StudiesController extends Controller {
@@ -8,6 +10,16 @@ class StudiesController extends Controller {
 
 		$titleTag = 'Correlation between PTS and Vegas PTS | ';
 		$h2Tag = 'Correlation between PTS and Vegas PTS';
+
+		$xNumbers = GameLine::orderBy('id', 'asc')->pluck('pts')->toArray();
+		$yNumbers = GameLine::orderBy('id', 'asc')->pluck('vegas_pts')->toArray();
+
+		$data = $this->calculateCorrelation($xNumbers, $yNumbers);
+
+		$data['xTitle'] = 'PTS';
+		$data['yTitle'] = 'Vegas PTS';
+
+		ddAll($data);
 
 		return view('studies.correlations.pts_and_vegas_pts', compact('titleTag', 'h2Tag'));
 	}
@@ -18,9 +30,10 @@ class StudiesController extends Controller {
 	****************************************************************************************/
 
 	// Needs two arrays of numbers
+	// default arrays are from https://www.mathsisfun.com/data/correlation.html
 
 	private function calculateCorrelation($xNumbers = [14.2, 16.4, 11.9, 15.2, 18.5, 22.1, 19.4, 25.1, 23.4, 18.1, 22.6, 17.2],
-										 $yNumbers = [215, 325, 185, 332, 406, 522, 412, 614, 544, 421, 445, 408]) {
+										 $yNumbers = [215, 325, 185, 332, 406, 522, 412, 614, 544, 421, 445, 408]) { 
 
 		if (count($xNumbers) !== count($yNumbers)) {
 
