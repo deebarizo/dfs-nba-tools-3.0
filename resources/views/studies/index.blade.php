@@ -12,6 +12,7 @@
 			<ul>
 				<li><a href="/studies/correlations/pts_and_vegas_pts">PTS and Vegas PTS</a></li>
 				<li><a href="/studies/correlations/totals_and_vegas_totals">Totals and Vegas Totals</a></li>
+				<li><a href="/studies/correlations/spreads_and_vegas_spreads">Spreads and Vegas Spreads</a></li>
 			</ul>
 		</div>
 	</div>
