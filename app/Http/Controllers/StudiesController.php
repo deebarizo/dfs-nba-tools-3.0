@@ -1,10 +1,35 @@
 <?php namespace App\Http\Controllers;
 
+use App\Models\Game;
 use App\Models\GameLine;
 
 use App\UseCases\Calculator;
 
 class StudiesController extends Controller {
+
+	public function calculateCorrelationBetweenTotalsAndVegasTotals() {
+
+		$h2Tag = 'Correlation between Totals and Vegas Totals';
+		$titleTag = $h2Tag.' | ';
+		
+		$games = Game::with('game_lines')
+						->orderBy('id', 'asc')
+						->get();
+
+		foreach ($games as $game) {
+			
+			$xNumbers[] = $game->game_lines[0]->pts + $game->game_lines[1]->pts;
+			$yNumbers[] = $game->game_lines[0]->vegas_pts + $game->game_lines[1]->vegas_pts;
+		}
+
+		$data = $this->calculateCorrelation($xNumbers, $yNumbers);
+
+		$data = $this->addCorrelationChartData($data, 'Totals', 'Vegas Totals', 150, 250);
+
+		# ddAll($data);
+
+		return view('studies.correlations.index', compact('titleTag', 'h2Tag', 'data'));
+	}
 
 	public function calculateCorrelationBetweenPtsAndVegasPts() {
 
