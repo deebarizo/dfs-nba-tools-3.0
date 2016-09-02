@@ -115,11 +115,11 @@ class GameScraper {
 					return $this;					
 				}
 			}
-
-			$this->message = 'Success!';		
-
-			return $this;			
 		}
+
+		$this->message = 'Success!';		
+
+		return $this;		
 	}
 
 	public function scrapeBasketballReferenceGames($month, $year) {
