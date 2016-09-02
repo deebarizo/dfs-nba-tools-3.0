@@ -41,7 +41,7 @@ class StudiesController extends Controller {
 
 		# ddAll($data);
 
-		return view('studies.correlations.pts_and_vegas_pts', compact('titleTag', 'h2Tag', 'data'));
+		return view('studies.correlations.index', compact('titleTag', 'h2Tag', 'data'));
 	}
 
 
