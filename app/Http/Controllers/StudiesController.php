@@ -19,9 +19,29 @@ class StudiesController extends Controller {
 		$data['xTitle'] = 'PTS';
 		$data['yTitle'] = 'Vegas PTS';
 
-		ddAll($data);
+		for ($x=40; $x <= 150 ; $x++) { 
+		
+			$y = ($data['bOne'] * $x) + $data['bNaught'];
+			$jsonLineOfBestFit[] = [$x, $y];
+		}
 
-		return view('studies.correlations.pts_and_vegas_pts', compact('titleTag', 'h2Tag'));
+		$data['jsonLineOfBestFit'] = $jsonLineOfBestFit;
+
+		$jsonPerfectLine = [];
+
+		for ($x=40; $x <= 150 ; $x++) { 
+			
+			$y = $x;
+			$jsonPerfectLine[] = [$x, $y];
+		}
+
+		$data['jsonPerfectLine'] = $jsonPerfectLine;
+
+		$data['equation'] = '('.$data['yTitle'].' - '.$data['bNaught'].') / '.$data['bOne']; 
+
+		# ddAll($data);
+
+		return view('studies.correlations.pts_and_vegas_pts', compact('titleTag', 'h2Tag', 'data'));
 	}
 
 

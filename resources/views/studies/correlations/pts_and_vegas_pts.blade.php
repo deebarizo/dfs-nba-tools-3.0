@@ -7,6 +7,13 @@
 
 			<hr>
 
+			<p><strong>Correlation:</strong> {{ $data['correlation'] }}</p>
+			<p><strong>Calculate Predicted Score:</strong> {{ $data['equation'] }}</p>
+
+			<div id="container" style="width:100%; height:800px;"></div>
+
 		</div>
 	</div>
+
+	@include('studies.correlations._chart')
 @stop

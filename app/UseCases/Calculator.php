@@ -62,7 +62,7 @@ class Calculator {
 			$finalSums[$secondaryAxis.'_squared'] = array_sum($finalNumbers[$secondaryAxis.'_squared']);	
 		}
 
-		$correlation = $finalSums['axb'] / sqrt($finalSums['a_squared'] * $finalSums['b_squared']);
+		$correlation = numFormat($finalSums['axb'] / sqrt($finalSums['a_squared'] * $finalSums['b_squared']), 2);
 
 		$jsonNumbers = [];
 
@@ -74,12 +74,12 @@ class Calculator {
 		// https://www.youtube.com/watch?v=JvS2triCgOY Line of Best Fit
 		// http://www.mathopenref.com/coordequation.html Calculate Points on the Line of Best Fit
 
-		$bOne = $finalSums['axb'] / $finalSums['a_squared'];
-		$bNaught = $means['y'] - ($means['x'] * $bOne);
+		$bOne = numFormat($finalSums['axb'] / $finalSums['a_squared'], 2);
+		$bNaught = numFormat($means['y'] - ($means['x'] * $bOne), 2);
 
 		return [
 			'correlation' => $correlation,
-			'dataSetsJSON' => $jsonNumbers,
+			'jsonNumbers' => $jsonNumbers,
 			'bOne' => $bOne,
 			'bNaught' => $bNaught,
 		];
