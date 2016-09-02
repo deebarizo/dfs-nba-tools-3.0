@@ -16,28 +16,7 @@ class StudiesController extends Controller {
 
 		$data = $this->calculateCorrelation($xNumbers, $yNumbers);
 
-		$data['xTitle'] = 'PTS';
-		$data['yTitle'] = 'Vegas PTS';
-
-		for ($x=40; $x <= 150 ; $x++) { 
-		
-			$y = ($data['bOne'] * $x) + $data['bNaught'];
-			$jsonLineOfBestFit[] = [$x, $y];
-		}
-
-		$data['jsonLineOfBestFit'] = $jsonLineOfBestFit;
-
-		$jsonPerfectLine = [];
-
-		for ($x=40; $x <= 150 ; $x++) { 
-			
-			$y = $x;
-			$jsonPerfectLine[] = [$x, $y];
-		}
-
-		$data['jsonPerfectLine'] = $jsonPerfectLine;
-
-		$data['equation'] = '('.$data['yTitle'].' - '.$data['bNaught'].') / '.$data['bOne']; 
+		$data = $this->addCorrelationChartData($data, 'PTS', 'Vegas PTS', 40, 150);
 
 		# ddAll($data);
 
@@ -48,6 +27,34 @@ class StudiesController extends Controller {
 	/****************************************************************************************
 	HELPERS
 	****************************************************************************************/
+
+	private function addCorrelationChartData($data, $xTitle, $yTitle, $lowestXValue, $highestXValue) {
+
+		$data['xTitle'] = $xTitle;
+		$data['yTitle'] = $yTitle;
+
+		for ($x = $lowestXValue; $x <= $highestXValue; $x++) { 
+		
+			$y = ($data['bOne'] * $x) + $data['bNaught'];
+			$jsonLineOfBestFit[] = [$x, $y];
+		}
+
+		$data['jsonLineOfBestFit'] = $jsonLineOfBestFit;
+
+		$jsonPerfectLine = [];
+
+		for ($x = $lowestXValue; $x <= $highestXValue; $x++) { 
+			
+			$y = $x;
+			$jsonPerfectLine[] = [$x, $y];
+		}
+
+		$data['jsonPerfectLine'] = $jsonPerfectLine;
+
+		$data['equation'] = '('.$data['yTitle'].' - '.$data['bNaught'].') / '.$data['bOne']; 
+
+		return $data;
+	}
 
 	// Needs two arrays of numbers
 	// default arrays are from https://www.mathsisfun.com/data/correlation.html
