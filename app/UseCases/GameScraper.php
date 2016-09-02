@@ -69,7 +69,7 @@ class GameScraper {
 
 								$spread = [
 
-									'pts' => $unformattedVegasScore,
+									'pts' => abs(preg_replace("/(-\S+)(\s.+)/", "$1", $unformattedVegasScore)),
 									'location' => $game->game_lines[$gameLineIndex]->location
 								];
 							
@@ -85,23 +85,41 @@ class GameScraper {
 					}			
 				}
 
-				prf('Total:');
-				prf($total);
-				prf('');
-				prf('Spread:');
-				prf($spread);
+				if ($total['location'] === 'away') {
+
+					$game->game_lines[0]->vegas_pts = ($total['pts'] - $spread['pts']) / 2;
+				
+				} else if ($total['location'] === 'home')  {
+
+					$game->game_lines[1]->vegas_pts = ($total['pts'] - $spread['pts']) / 2;
+				}
+
+				if ($spread['location'] === 'away') {
+
+					$game->game_lines[0]->vegas_pts = ($total['pts'] + $spread['pts']) / 2;
+				
+				} else if ($spread['location'] === 'home')  {
+
+					$game->game_lines[1]->vegas_pts = ($total['pts'] + $spread['pts']) / 2;
+				}
+
+				if ($game->game_lines[0]->vegas_pts + $game->game_lines[1]->vegas_pts == $total['pts']) {
+
+					$game->game_lines[0]->save();
+					$game->game_lines[1]->save();
+				
+				} else {
+
+					$this->message = 'The vegas pts for the game on '.$game->date.' between '.$game->game_lines[0]->team->br_name.' and '.$game->game_lines[0]->team->br_name.' does not equal the total of '.$total['pts'].'.';		
+
+					return $this;					
+				}
 			}
 
-			
-		
-	
+			$this->message = 'Success!';		
 
-
-
-			ddAll('end');
+			return $this;			
 		}
-
-		
 	}
 
 	public function scrapeBasketballReferenceGames($month, $year) {
