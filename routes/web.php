@@ -23,7 +23,7 @@ Route::get('/studies', function() {
 	return View::make('studies/index', compact('titleTag'));
 });
 
-Route::get('/admin/correlations/pts_and_vegas_pts', 'StudiesController@calculateCorrelationBetweenPtsAndVegasPts');
+Route::get('/studies/correlations/pts_and_vegas_pts', 'StudiesController@calculateCorrelationBetweenPtsAndVegasPts');
 
 
 /****************************************************************************************

@@ -10,7 +10,7 @@
 			<h4>Correlations</h4>
 
 			<ul>
-				<li><a href="/admin/correlations/pts_and_vegas_pts">PTS and Vegas PTS</a></li>
+				<li><a href="/studies/correlations/pts_and_vegas_pts">PTS and Vegas PTS</a></li>
 			</ul>
 		</div>
 	</div>
