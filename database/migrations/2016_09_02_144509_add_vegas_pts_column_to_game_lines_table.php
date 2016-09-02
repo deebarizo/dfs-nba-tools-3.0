@@ -15,7 +15,7 @@ class AddVegasPtsColumnToGameLinesTable extends Migration
     {
         Schema::table('game_lines', function ($table) {
             
-            $table->integer('vegas_pts')->after('pts');
+            $table->integer('vegas_pts')->nullable()->after('pts');
         });
     }
 
