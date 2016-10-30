@@ -19,7 +19,7 @@ class BoxScoreLineScraper {
 
 	public function scrapeBoxScoreLines() {
 
-		$games = Game::where('date', '<', '2015-12-01')->get();
+		$games = Game::where('date', '<', '2016-09-01')->get();
 
 		# ddAll($games);
 
@@ -221,7 +221,7 @@ class BoxScoreLineScraper {
 						$boxScoreLine['drb_percentage'] = $playerRow->filter('td')->eq(6)->text();
 						$boxScoreLine['trb_percentage'] = $playerRow->filter('td')->eq(7)->text();
 						$boxScoreLine['ast_percentage'] = $playerRow->filter('td')->eq(8)->text();
-						if ($boxScoreLine['ast_percentage'] == '-1000.0') {
+						if ($boxScoreLine['ast_percentage'] == '-1000.0' || $boxScoreLine['ast_percentage'] == '') {
 							$boxScoreLine['ast_percentage'] = 0;
 						}
 						$boxScoreLine['stl_percentage'] = $playerRow->filter('td')->eq(9)->text();
