@@ -59,9 +59,4 @@ Route::post('/admin/scrapers/games', 'ScrapersController@scrapeGames');
 ONE TIME PROCESS
 ****************************************************************************************/
 
-// use App\Models\Team;
-
-Route::get('/one_time_process', function() {
-
-	ddAll('Success!');
-});
+Route::get('/one_time_process', 'ScrapersController@scrapeBoxScoreLines');

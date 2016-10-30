@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
 use App\UseCases\GameScraper;
+use App\UseCases\BoxScoreLineScraper;
 
 class ScrapersController extends Controller {
 
@@ -21,6 +22,15 @@ class ScrapersController extends Controller {
         $message = $results->message;
 
 		return redirect()->route('admin.scrapers.games')->with('message', $message);
+	}
+
+	public function scrapeBoxScoreLines() {
+
+		$boxScoreLineScraper = new BoxScoreLineScraper;
+
+		$boxScoreLineScraper->scrapeBoxScoreLines();
+
+		ddAll('Success');
 	}
 
 }
