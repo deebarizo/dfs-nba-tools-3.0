@@ -25,9 +25,9 @@ class CreateBoxScoreLinesTable extends Migration
             $table->integer('fg');
             $table->integer('fga');
             $table->decimal('fg_percentage', 4, 3)->nullable(); // if they take no shots
-            $table->integer('3p');
-            $table->integer('3pa');
-            $table->decimal('3p_percentage', 4, 3)->nullable();
+            $table->integer('threep');
+            $table->integer('threepa');
+            $table->decimal('threep_percentage', 4, 3)->nullable();
             $table->integer('ft');
             $table->integer('fta');
             $table->decimal('ft_percentage', 4, 3)->nullable();
@@ -43,7 +43,7 @@ class CreateBoxScoreLinesTable extends Migration
             $table->integer('dk_pts');
             $table->decimal('ts_percentage', 4, 3)->nullable();
             $table->decimal('efg_percentage', 4, 3)->nullable();
-            $table->decimal('3pa_rate', 4, 3)->nullable();
+            $table->decimal('threepa_rate', 4, 3)->nullable();
             $table->decimal('fta_rate', 4, 3)->nullable();
             $table->decimal('orb_percentage', 4, 1);
             $table->decimal('drb_percentage', 4, 1);
