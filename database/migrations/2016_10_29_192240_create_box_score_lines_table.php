@@ -24,13 +24,13 @@ class CreateBoxScoreLinesTable extends Migration
             $table->decimal('mp', 5, 2);
             $table->integer('fg');
             $table->integer('fga');
-            $table->decimal('fg_percentage', 5, 2)->nullable(); // if they take no shots
+            $table->decimal('fg_percentage', 4, 3)->nullable(); // if they take no shots
             $table->integer('3p');
             $table->integer('3pa');
-            $table->decimal('3p_percentage', 5, 2)->nullable();
+            $table->decimal('3p_percentage', 4, 3)->nullable();
             $table->integer('ft');
             $table->integer('fta');
-            $table->decimal('ft_percentage', 5, 2)->nullable();
+            $table->decimal('ft_percentage', 4, 3)->nullable();
             $table->integer('orb');
             $table->integer('drb');
             $table->integer('trb');
@@ -41,18 +41,18 @@ class CreateBoxScoreLinesTable extends Migration
             $table->integer('pf');
             $table->integer('pts');
             $table->integer('dk_pts');
-            $table->decimal('ts_percentage', 5, 2)->nullable();
-            $table->decimal('efg_percentage', 5, 2)->nullable();
-            $table->decimal('3pa_rate', 5, 2)->nullable();
-            $table->decimal('fta_rate', 5, 2)->nullable();
-            $table->decimal('orb_percentage', 5, 2);
-            $table->decimal('drb_percentage', 5, 2);
-            $table->decimal('trb_percentage', 5, 2);
-            $table->decimal('ast_percentage', 5, 2);
-            $table->decimal('stl_percentage', 5, 2);
-            $table->decimal('blk_percentage', 5, 2);
-            $table->decimal('tov_percentage', 5, 2)->nullable();
-            $table->decimal('usg_percentage', 5, 2);
+            $table->decimal('ts_percentage', 4, 3)->nullable();
+            $table->decimal('efg_percentage', 4, 3)->nullable();
+            $table->decimal('3pa_rate', 4, 3)->nullable();
+            $table->decimal('fta_rate', 4, 3)->nullable();
+            $table->decimal('orb_percentage', 4, 1);
+            $table->decimal('drb_percentage', 4, 1);
+            $table->decimal('trb_percentage', 4, 1);
+            $table->decimal('ast_percentage', 4, 1);
+            $table->decimal('stl_percentage', 4, 1);
+            $table->decimal('blk_percentage', 4, 1);
+            $table->decimal('tov_percentage', 4, 1)->nullable();
+            $table->decimal('usg_percentage', 4, 1);
             $table->timestamps();
         });
     }
