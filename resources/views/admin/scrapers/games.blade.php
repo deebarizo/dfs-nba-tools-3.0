@@ -10,15 +10,8 @@
 
 			<div class="col-lg-3"> 
 				<div class="form-group">
-					{!! Form::label('month', 'Month:') !!}
-					{!! Form::text('month', '', ['class' => 'form-control']) !!}
-				</div>
-			</div>
-
-			<div class="col-lg-3"> 
-				<div class="form-group">
-					{!! Form::label('year', 'Year:') !!}
-					{!! Form::text('year', '', ['class' => 'form-control']) !!}
+					{!! Form::label('date', 'Date:') !!}
+					{!! Form::text('date', '2016-10-25', ['class' => 'form-control']) !!}
 				</div>
 			</div>
 

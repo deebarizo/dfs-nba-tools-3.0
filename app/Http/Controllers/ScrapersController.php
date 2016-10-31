@@ -17,7 +17,7 @@ class ScrapersController extends Controller {
 
 		$gameScraper = new GameScraper;
 
-        $results = $gameScraper->scrapeGames($request->input('month'), $request->input('year'));
+        $results = $gameScraper->scrapeGames($request->input('date'));
 
         $message = $results->message;
 

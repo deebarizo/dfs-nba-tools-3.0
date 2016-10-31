@@ -32,7 +32,7 @@ function setActive($path, $active = 'active') {
 
 
 /****************************************************************************************
-NUMBER FORMAT
+FORMAT NUMBER
 ****************************************************************************************/
 
 function numFormat($number, $decimalPlaces = 2) {
@@ -40,4 +40,16 @@ function numFormat($number, $decimalPlaces = 2) {
 	$number = number_format(round($number, $decimalPlaces), $decimalPlaces);
 
 	return $number;
+}
+
+
+/****************************************************************************************
+GET TODAY DATE
+****************************************************************************************/
+
+function getTodayDate() {
+
+	date_default_timezone_set('America/Chicago'); 
+	
+	return date('Y-m-d');	
 }

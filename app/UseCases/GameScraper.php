@@ -14,117 +14,24 @@ use vendor\symfony\DomCrawler\Crawler;
 
 class GameScraper {
 
-	public function scrapeGames($month, $year) {
+	public function scrapeGames($date) {
 
-		$monthNumber = date('m', strtotime($month));
-
-		$dates = Game::where('date', '>=', $year.'-'.$monthNumber.'-01')
-						->where('date', '<=', $year.'-'.$monthNumber.'-31')
-						->groupBy('date')
-						->pluck('date');
-
-
-
-		foreach ($dates as $date) {
-			
-			$client = new Client();
-
-			$dayNumber = date('d', strtotime($date));
-
-			$crawler = $client->request('GET', 'http://www.scoresandodds.com/grid_'.$year.''.$monthNumber.''.$dayNumber.'.html');	
-
-			$games = Game::with('game_lines.team')
-							->where('date', $date)
-							->get();
-
-			$numTableRows = $crawler->filter('tr.team')->count();
-
-			foreach ($games as $game) {
-
-				$gameLineIndex = 0;
-
-				for ($gameLineIndex = 0; $gameLineIndex < 2; $gameLineIndex++) { 
-		
-					for ($i = 0; $i < $numTableRows; $i++) { 
-
-						$tableRow = $crawler->filter('tr.team')->eq($i);
-
-						$unformattedTeam = trim($tableRow->filter('td')->eq(0)->text());
-
-						$saoName = preg_replace("/(\d+\s)(.+)/", "$2", $unformattedTeam);
-
-						if ($saoName === $game->game_lines[$gameLineIndex]->team->sao_name) {
-
-							$unformattedVegasScore = trim($tableRow->filter('td')->eq(3)->text());
-
-							if (strpos($unformattedVegasScore, '-') === false && $unformattedVegasScore !== 'PK') {
-
-								$total = [
-
-									'pts' => $unformattedVegasScore,
-									'location' => $game->game_lines[$gameLineIndex]->location
-								];
-							
-							} else if (strpos($unformattedVegasScore, '-') !== false) {
-
-								$spread = [
-
-									'pts' => abs(preg_replace("/(-\S+)(\s.+)/", "$1", $unformattedVegasScore)),
-									'location' => $game->game_lines[$gameLineIndex]->location
-								];
-							
-							} else if ($unformattedVegasScore === 'PK') {
-								
-								$spread = [
-
-									'pts' => 0,
-									'location' => $game->game_lines[$gameLineIndex]->location
-								];
-							}
-						}
-					}			
-				}
-
-				if ($total['location'] === 'away') {
-
-					$game->game_lines[0]->vegas_pts = ($total['pts'] - $spread['pts']) / 2;
-				
-				} else if ($total['location'] === 'home')  {
-
-					$game->game_lines[1]->vegas_pts = ($total['pts'] - $spread['pts']) / 2;
-				}
-
-				if ($spread['location'] === 'away') {
-
-					$game->game_lines[0]->vegas_pts = ($total['pts'] + $spread['pts']) / 2;
-				
-				} else if ($spread['location'] === 'home')  {
-
-					$game->game_lines[1]->vegas_pts = ($total['pts'] + $spread['pts']) / 2;
-				}
-
-				if ($game->game_lines[0]->vegas_pts + $game->game_lines[1]->vegas_pts == $total['pts']) {
-
-					$game->game_lines[0]->save();
-					$game->game_lines[1]->save();
-				
-				} else {
-
-					$this->message = 'The vegas pts for the game on '.$game->date.' between '.$game->game_lines[0]->team->br_name.' and '.$game->game_lines[0]->team->br_name.' does not equal the total of '.$total['pts'].'.';		
-
-					return $this;					
-				}
-			}
-		}
-
-		$this->message = 'Success!';		
-
-		return $this;		
-	}
-
-	public function scrapeBasketballReferenceGames($month, $year) {
+		/****************************************************************************************
+		SCRAPE BASKETBALL REFERENCE
+		****************************************************************************************/
 
 		$client = new Client();
+
+		$year = intval(date('Y', strtotime($date)));
+
+		$monthNumber = intval(date('m', strtotime($date)));
+
+		$month = date('F', strtotime($date));
+
+		if ($monthNumber >= 9) {
+
+			$year += 1;
+		}
 
 		$crawler = $client->request('GET', 'http://www.basketball-reference.com/leagues/NBA_'.$year.'_games-'.strtolower($month).'.html');
 
@@ -136,38 +43,47 @@ class GameScraper {
 			if ($unformattedDate === 'Playoffs') {
 				continue;
 			}
-			$games[$i]['date'] = date('Y-m-d', strtotime($unformattedDate));
 
-			$unformattedTime = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(0)->text();
-			$unformattedTime2 = \DateTime::createFromFormat('H:i A', $unformattedTime);
-			$games[$i]['eastern_time'] = $unformattedTime2->format('H:i:s');
+			$formattedDate = date('Y-m-d', strtotime($unformattedDate));
 
-			$games[$i]['br_link'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(5)->filter('a')->link()->getUri();
+			if ($formattedDate === $date) {
 
-			if (Game::where('br_link', $games[$i]['br_link'])->count() > 0) {
+				$games[$i]['date'] = $formattedDate;
 
-				$this->message = 'The game with BR link '.$games[$i]['br_link'].' is already in the database.';		
+				$unformattedTime = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(0)->text();
+				$unformattedTime2 = \DateTime::createFromFormat('H:i A', $unformattedTime);
+				$games[$i]['eastern_time'] = $unformattedTime2->format('H:i:s');
 
-				return $this;
+				$games[$i]['br_link'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(5)->filter('a')->link()->getUri();
+
+				if (Game::where('br_link', $games[$i]['br_link'])->count() > 0) {
+
+					$this->message = 'The game with BR link '.$games[$i]['br_link'].' is already in the database.';		
+
+					return $this;
+				}
+
+				$unformattedOvertimePeriods = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(6)->text();
+				if ($unformattedOvertimePeriods == '') { 
+					$games[$i]['ot_periods'] = 0;
+				} else if ($unformattedOvertimePeriods === 'OT') { 
+					$games[$i]['ot_periods'] = 1;
+				} else {
+					$games[$i]['ot_periods'] = preg_replace("/(\d)(OT)/", "$1", $unformattedOvertimePeriods);
+				}
+
+				$teamBrName = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(1)->filter('a')->link()->getUri();
+				$games[$i]['lines'][0]['br_name'] = preg_replace("/(http:\/\/www.basketball-reference.com\/teams\/)(\D+)(\/\d+.html)/", "$2", $teamBrName);
+				$games[$i]['lines'][0]['team_id'] = Team::where('br_name', $games[$i]['lines'][0]['br_name'])->pluck('id')[0];
+				$games[$i]['lines'][0]['pts'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(2)->text();
+				$games[$i]['lines'][0]['location'] = 'away';
+
+				$teamBrName = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(3)->filter('a')->link()->getUri();
+				$games[$i]['lines'][1]['br_name'] = preg_replace("/(http:\/\/www.basketball-reference.com\/teams\/)(\D+)(\/\d+.html)/", "$2", $teamBrName);
+				$games[$i]['lines'][1]['team_id'] = Team::where('br_name', $games[$i]['lines'][1]['br_name'])->pluck('id')[0];
+				$games[$i]['lines'][1]['pts'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(4)->text();
+				$games[$i]['lines'][1]['location'] = 'home';			
 			}
-
-			$unformattedOvertimePeriods = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(6)->text();
-			if ($unformattedOvertimePeriods == '') { 
-				$games[$i]['ot_periods'] = 0;
-			} else if ($unformattedOvertimePeriods === 'OT') { 
-				$games[$i]['ot_periods'] = 1;
-			} else {
-				$games[$i]['ot_periods'] = preg_replace("/(\d)(OT)/", "$1", $unformattedOvertimePeriods);
-			}
-
-			$teamBrName = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(1)->filter('a')->link()->getUri();
-			$games[$i]['lines'][0]['br_name'] = preg_replace("/(http:\/\/www.basketball-reference.com\/teams\/)(\D+)(\/\d+.html)/", "$2", $teamBrName);
-			$games[$i]['lines'][0]['pts'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(2)->text();
-			$games[$i]['lines'][0]['location'] = 'away';
-			$teamBrName = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(3)->filter('a')->link()->getUri();
-			$games[$i]['lines'][1]['br_name'] = preg_replace("/(http:\/\/www.basketball-reference.com\/teams\/)(\D+)(\/\d+.html)/", "$2", $teamBrName);
-			$games[$i]['lines'][1]['pts'] = $crawler->filter('table#schedule > tbody > tr')->eq($i)->filter('td')->eq(4)->text();
-			$games[$i]['lines'][1]['location'] = 'home';
 		}
 
 		# ddAll($games);
@@ -188,13 +104,109 @@ class GameScraper {
 				$eGameLine = new GameLine;
 
 				$eGameLine->game_id = $eGame->id;
-				$eGameLine->team_id = Team::where('br_name', $gameLine['br_name'])->pluck('id')[0];
+				$eGameLine->team_id = $gameLine['team_id'];
 				$eGameLine->pts = $gameLine['pts'];
 				$eGameLine->location = $gameLine['location'];
 
 				$eGameLine->save();
 			} 
 		} 
+
+
+		/****************************************************************************************
+		SCRAPE SCORES AND ODDS
+		****************************************************************************************/
+
+		$year = date('Y', strtotime($date));
+
+		$monthNumber = date('m', strtotime($date));
+
+		$dayNumber = date('d', strtotime($date));
+
+		$crawler = $client->request('GET', 'http://www.scoresandodds.com/grid_'.$year.''.$monthNumber.''.$dayNumber.'.html');	
+
+		$games = Game::with('game_lines.team')
+						->where('date', $date)
+						->get();
+
+		$numTableRows = $crawler->filter('tr.team')->count();
+
+		foreach ($games as $game) {
+
+			$gameLineIndex = 0;
+
+			for ($gameLineIndex = 0; $gameLineIndex < 2; $gameLineIndex++) { 
+	
+				for ($i = 0; $i < $numTableRows; $i++) { 
+
+					$tableRow = $crawler->filter('tr.team')->eq($i);
+
+					$unformattedTeam = trim($tableRow->filter('td')->eq(0)->text());
+
+					$saoName = preg_replace("/(\d+\s)(.+)/", "$2", $unformattedTeam);
+
+					if ($saoName === $game->game_lines[$gameLineIndex]->team->sao_name) {
+
+						$unformattedVegasScore = trim($tableRow->filter('td')->eq(3)->text());
+
+						if (strpos($unformattedVegasScore, '-') === false && $unformattedVegasScore !== 'PK') {
+
+							$total = [
+
+								'pts' => $unformattedVegasScore,
+								'location' => $game->game_lines[$gameLineIndex]->location
+							];
+						
+						} else if (strpos($unformattedVegasScore, '-') !== false) {
+
+							$spread = [
+
+								'pts' => abs(preg_replace("/(-\S+)(\s.+)/", "$1", $unformattedVegasScore)),
+								'location' => $game->game_lines[$gameLineIndex]->location
+							];
+						
+						} else if ($unformattedVegasScore === 'PK') {
+							
+							$spread = [
+
+								'pts' => 0,
+								'location' => $game->game_lines[$gameLineIndex]->location
+							];
+						}
+					}
+				}			
+			}
+
+			if ($total['location'] === 'away') {
+
+				$game->game_lines[0]->vegas_pts = ($total['pts'] - $spread['pts']) / 2;
+			
+			} else if ($total['location'] === 'home')  {
+
+				$game->game_lines[1]->vegas_pts = ($total['pts'] - $spread['pts']) / 2;
+			}
+
+			if ($spread['location'] === 'away') {
+
+				$game->game_lines[0]->vegas_pts = ($total['pts'] + $spread['pts']) / 2;
+			
+			} else if ($spread['location'] === 'home')  {
+
+				$game->game_lines[1]->vegas_pts = ($total['pts'] + $spread['pts']) / 2;
+			}
+
+			if ($game->game_lines[0]->vegas_pts + $game->game_lines[1]->vegas_pts == $total['pts']) {
+
+				$game->game_lines[0]->save();
+				$game->game_lines[1]->save();
+			
+			} else {
+
+				$this->message = 'The vegas pts for the game on '.$game->date.' between '.$game->game_lines[0]->team->br_name.' and '.$game->game_lines[0]->team->br_name.' does not equal the total of '.$total['pts'].'.';		
+
+				return $this;					
+			}
+		}
 
 		$this->message = 'Success!';		
 
