@@ -15,22 +15,24 @@ class ScrapersController extends Controller {
 
 	public function scrapeGames(Request $request) {
 
+		$date = $request->input('date');
+
 		$gameScraper = new GameScraper;
 
-        $results = $gameScraper->scrapeGames($request->input('date'));
+        $results = $gameScraper->scrapeGames($date);
 
         $message = $results->message;
 
-		return redirect()->route('admin.scrapers.games')->with('message', $message);
-	}
+        if ($message === 'Success!') {
 
-	public function scrapeBoxScoreLines() {
+	 		$boxScoreLineScraper = new BoxScoreLineScraper;
 
-		$boxScoreLineScraper = new BoxScoreLineScraper;
+			$results = $boxScoreLineScraper->scrapeBoxScoreLines($date);
 
-		$boxScoreLineScraper->scrapeBoxScoreLines();
+			$message = $results->message;			
+        } 
 
-		ddAll('Success');
+        return redirect()->route('admin.scrapers.games')->with('message', $message);       	
 	}
 
 }

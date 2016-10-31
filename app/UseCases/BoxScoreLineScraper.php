@@ -17,9 +17,18 @@ use vendor\symfony\DomCrawler\Crawler;
 
 class BoxScoreLineScraper {
 
-	public function scrapeBoxScoreLines() {
+	public function scrapeBoxScoreLines($date) {
 
-		$games = Game::where('date', '<', '2016-09-01')->get();
+		$year = intval(date('Y', strtotime($date)));
+
+		$monthNumber = intval(date('m', strtotime($date)));
+
+		if ($monthNumber >= 9) {
+
+			$year += 1;
+		}
+
+		$games = Game::where('date', $date)->get();
 
 		# ddAll($games);
 
@@ -27,7 +36,7 @@ class BoxScoreLineScraper {
 
 		foreach ($games as $game) {
 
-			$boxScoreLinesExist = BoxScoreLine::where('game_id', $game->id)->first();
+			$boxScoreLinesExist = BoxScoreLine::where('game_id', $game->id)->count();
 
 			if ($boxScoreLinesExist) {
 
@@ -44,9 +53,9 @@ class BoxScoreLineScraper {
 
 				$teamLink = trim($crawler->filter('div.scorebox')->filter('strong')->eq($i)->filter('a')->link()->getUri());
 				$teamLink = preg_replace('/http:\\/\\/www.basketball-reference.com\\/teams\\//', '', $teamLink);
-				$team = preg_replace('/\\/2016.html/', '', $teamLink);
+				$team = preg_replace('/\\/'.$year.'.html/', '', $teamLink);
 
-				# dd($teamLink);
+				# dd($team);
 
 				$teams[$i]['id'] = Team::where('br_name', $team)->pluck('id')[0];
 				$teams[$i]['br_name'] = $team;
@@ -96,9 +105,9 @@ class BoxScoreLineScraper {
 
 						$boxScoreLine['raw_mp'] = $playerRow->filter('td')->eq(0)->text();
 
-						if ($boxScoreLine['raw_mp'] == 'Did Not Play' || 
-							$boxScoreLine['raw_mp'] == 'Player Suspended' || 
-							$boxScoreLine['raw_mp'] == '0:00') {
+						preg_match("/\d+:\d+/", $boxScoreLine['raw_mp'], $thisPlayerPlayed);
+
+						if (!$thisPlayerPlayed || $boxScoreLine['raw_mp'] == '0:00') {
 
 							continue;
 						} 
@@ -286,7 +295,9 @@ class BoxScoreLineScraper {
 			$numOfGamesSaved++;
 		}
 
-		prf('Games Saved: '.$numOfGamesSaved);
+		$this->message = 'Success!';		
+
+		return $this;
 	}
 
 }
