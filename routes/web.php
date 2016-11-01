@@ -56,6 +56,19 @@ Route::post('/admin/scrapers/games', 'ScrapersController@scrapeGames');
 
 
 /****************************************************************************************
+PARSERS
+****************************************************************************************/
+
+Route::get('/admin/parsers/dk_player_pool', ['as' => 'admin.parsers.dk_player_pool', function() {
+
+	$titleTag = 'Parse DK Player Pool | ';
+    $h2Tag = 'Parse DK Player Pool';	
+
+	return View::make('admin/parsers/dk_player_pool', compact('titleTag', 'h2Tag'));
+}]);
+
+
+/****************************************************************************************
 ONE TIME PROCESS
 ****************************************************************************************/
 
