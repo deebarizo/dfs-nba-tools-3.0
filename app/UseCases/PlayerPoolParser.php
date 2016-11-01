@@ -38,7 +38,24 @@ class PlayerPoolParser {
 				       	'dk_team' => $row[5]
 				    );
 
-				    $playerIdExists = Player::$this->dkPlayers[$i]['dk_name']
+				    $dkNameMatchesBrName = Player::where('br_name', $this->dkPlayers[$i]['dk_name'])->first();
+				    $dkNameMatchesDkName = Player::where('dk_name', $this->dkPlayers[$i]['dk_name'])->first();
+
+					if (!$dkNameMatchesBrName && !$dkNameMatchesDkName) {
+
+						$this->message = 'The DK name, '.$this->dkPlayers[$i]['dk_name'].', does not match any BR name in the database.';
+
+						return $this;
+				    }
+
+				    if (!$dkNameMatchesDkName) {
+
+				    	$dkPlayer = $dkNameMatchesBrName;
+
+				    	$dkPlayer->dk_name = $this->dkPlayers[$i]['dk_name'];
+
+				    	$dkPlayer->save();
+				    }
 
 				    $matchup = preg_replace("/(\w+@\w+)(\s)(.*)/", "$1", $this->dkPlayers[$i]['game_info']);
 				    $matchupWithoutAtSymbol = preg_replace("/@/", "", $matchup);
