@@ -3,6 +3,7 @@
 use App\Models\DkPlayerPool;
 use App\Models\Player;
 use App\Models\Team;
+use App\Models\DkPlayer;
 
 class PlayerPoolParser {
 
@@ -130,7 +131,7 @@ class PlayerPoolParser {
 				$i++;
 			}
 
-			ddAll($this->dkPlayers);
+			# ddAll($this->dkPlayers);
 		} 
 
 		$this->saveDkPlayers($date, $slate);
@@ -138,42 +139,28 @@ class PlayerPoolParser {
 		return $this;	
 	}
 
-	private function saveDkPlayers($date, $site, $timePeriod) {
+	private function saveDkPlayers($date, $slate) {
 
-		$playerPool = new PlayerPool;
+		$dkPlayerPool = new DkPlayerPool;
 
-		$playerPool->date = $date;
-		$playerPool->time_period = $timePeriod;
-		$playerPool->site = $site;
-		$playerPool->buy_in = 0;
-
-		$playerPool->save();
+		$dkPlayerPool->date = $date;
+		$dkPlayerPool->slate = $slate;
+		
+		$dkPlayerPool->save();
 
 		foreach ($this->dkPlayers as $dkPlayer) {
 
-			$teamId = Team::where('name_dk', $dkPlayer['teamNameDk'])->pluck('id')[0];
-
-			$playerExists = Player::where('name_dk', $dkPlayer['nameDk'])->where('team_id', $teamId)->count();
-
-			if (!$playerExists) {
-
-				$player = new Player;
-
-				$player->team_id = $teamId;
-				$player->name_dk = $dkPlayer['nameDk'];
-
-				$player->save();
-			}
-
 			$eDkPlayer = new DkPlayer;
 
-			$eDkPlayer->player_pool_id = $playerPool->id;
-			$eDkPlayer->player_id = Player::where('name_dk', $dkPlayer['nameDk'])->pluck('id')[0];
-			$eDkPlayer->dk_id = $dkPlayer['dkId'];
-			$eDkPlayer->team_id = $teamId;
-			$eDkPlayer->opp_team_id = Team::where('name_dk', $dkPlayer['oppTeamNameDk'])->pluck('id')[0];
-			$eDkPlayer->position = $dkPlayer['position'];
+			$eDkPlayer->dk_player_pool_id = $dkPlayerPool->id;
+			$eDkPlayer->player_id = $dkPlayer['player_id'];
+			$eDkPlayer->team_id = $dkPlayer['team_id'];
+			$eDkPlayer->opp_team_id = $dkPlayer['opp_team_id'];
+			$eDkPlayer->first_position = $dkPlayer['first_position'];
+			$eDkPlayer->second_position = $dkPlayer['second_position'];
 			$eDkPlayer->salary = $dkPlayer['salary'];
+			$eDkPlayer->location = $dkPlayer['location'];
+			$eDkPlayer->game_time = $dkPlayer['game_time'];
 
 			$eDkPlayer->save();
 		}
