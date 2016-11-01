@@ -19,7 +19,7 @@ class BoxScoreLineScraper {
 
 	public function scrapeBoxScoreLines($date) {
 
-		$year = intval(date('Y', strtotime($date)));
+	/*	$year = intval(date('Y', strtotime($date)));
 
 		$monthNumber = intval(date('m', strtotime($date)));
 
@@ -30,9 +30,13 @@ class BoxScoreLineScraper {
 
 		$games = Game::where('date', $date)->get();
 
-		# ddAll($games);
+		*/
 
-		$numOfGamesSaved = 0;
+		$games = Game::where('date', '<', $date)->get();
+
+		$year = 2016;
+
+
 
 		foreach ($games as $game) {
 
@@ -291,8 +295,6 @@ class BoxScoreLineScraper {
 				
 				$eBoxScoreLine->save();
 			}
-
-			$numOfGamesSaved++;
 		}
 
 		$this->message = 'Success!';		

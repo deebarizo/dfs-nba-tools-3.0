@@ -35,4 +35,11 @@ class ScrapersController extends Controller {
         return redirect()->route('admin.scrapers.games')->with('message', $message);       	
 	}
 
+	public function oneTimeProcess() {
+
+	 	$boxScoreLineScraper = new BoxScoreLineScraper;
+
+		$boxScoreLineScraper->scrapeBoxScoreLines('2016-09-01');				
+	}
+
 }
