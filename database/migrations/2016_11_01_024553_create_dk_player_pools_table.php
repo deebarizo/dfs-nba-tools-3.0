@@ -28,6 +28,6 @@ class CreateDkPlayerPoolsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('teams');
+        Schema::drop('dk_player_pools');
     }
 }
