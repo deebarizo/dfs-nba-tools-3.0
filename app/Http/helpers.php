@@ -47,9 +47,9 @@ function numFormat($number, $decimalPlaces = 2) {
 GET TODAY DATE
 ****************************************************************************************/
 
-function getTodayDate() {
+function getYesterdayDate() {
 
 	date_default_timezone_set('America/Chicago'); 
-	
-	return date('Y-m-d');	
+
+	return date("Y-m-d", strtotime("yesterday"));
 }
