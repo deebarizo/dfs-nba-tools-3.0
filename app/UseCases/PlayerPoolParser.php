@@ -57,6 +57,8 @@ class PlayerPoolParser {
 				    	$dkPlayer->save();
 				    }
 
+				    $this->dkPlayers[$i]['player_id'] = Player::where('dk_name', $this->dkPlayers[$i]['dk_name'])->pluck('id')[0];
+
 				    $matchup = preg_replace("/(\w+@\w+)(\s)(.*)/", "$1", $this->dkPlayers[$i]['game_info']);
 				    $matchupWithoutAtSymbol = preg_replace("/@/", "", $matchup);
 				    $this->dkPlayers[$i]['opp_dk_team'] = preg_replace("/".$this->dkPlayers[$i]['dk_team']."/", "", $matchupWithoutAtSymbol);
@@ -87,7 +89,7 @@ class PlayerPoolParser {
 
 				    foreach ($teams as $team) {
 
-					    $teamExists = Team::where('dk_name', $this->dkPlayers[$i][$team['key']])->count();
+					    $teamExists = Team::where('dk_name', $this->dkPlayers[$i][$team['key']])->first();
 
 					    if (!$teamExists) {
 
@@ -95,7 +97,34 @@ class PlayerPoolParser {
 
 							return $this;
 					    }	
+
+					    $eTeam = $teamExists;
+
+					    if ($team['key'] === 'dk_team') {
+
+					    	$this->dkPlayers[$i]['team_id'] = $eTeam->id;
+					    }
+
+					    if ($team['key'] === 'opp_dk_team') {
+
+					    	$this->dkPlayers[$i]['opp_team_id'] = $eTeam->id;
+					    }					    
 				    } 
+
+				    if (strpos($this->dkPlayers[$i]['positions'], '/') !== false) {
+
+				    	$this->dkPlayers[$i]['first_position'] = preg_replace("/(\D+)(\/\D+)/", "$1", $this->dkPlayers[$i]['positions']);
+				    	$this->dkPlayers[$i]['second_position'] = preg_replace("/(\D+\/)(\D+)/", "$2", $this->dkPlayers[$i]['positions']);
+
+				    } else {
+
+				    	$this->dkPlayers[$i]['first_position'] = $this->dkPlayers[$i]['positions'];
+				    	$this->dkPlayers[$i]['second_position'] = null;
+				    }
+
+				    $this->dkPlayers[$i]['game_time_eastern'] = preg_replace("/(\S+@\S+\s+)(.+)(\sET)/", "$2", $this->dkPlayers[$i]['game_info']);
+
+				    $this->dkPlayers[$i]['game_time'] = date('g:i A', strtotime($this->dkPlayers[$i]['game_time_eastern']) - 3600);
 				}
 
 				$i++;
@@ -107,6 +136,49 @@ class PlayerPoolParser {
 		$this->saveDkPlayers($date, $slate);
 
 		return $this;	
+	}
+
+	private function saveDkPlayers($date, $site, $timePeriod) {
+
+		$playerPool = new PlayerPool;
+
+		$playerPool->date = $date;
+		$playerPool->time_period = $timePeriod;
+		$playerPool->site = $site;
+		$playerPool->buy_in = 0;
+
+		$playerPool->save();
+
+		foreach ($this->dkPlayers as $dkPlayer) {
+
+			$teamId = Team::where('name_dk', $dkPlayer['teamNameDk'])->pluck('id')[0];
+
+			$playerExists = Player::where('name_dk', $dkPlayer['nameDk'])->where('team_id', $teamId)->count();
+
+			if (!$playerExists) {
+
+				$player = new Player;
+
+				$player->team_id = $teamId;
+				$player->name_dk = $dkPlayer['nameDk'];
+
+				$player->save();
+			}
+
+			$eDkPlayer = new DkPlayer;
+
+			$eDkPlayer->player_pool_id = $playerPool->id;
+			$eDkPlayer->player_id = Player::where('name_dk', $dkPlayer['nameDk'])->pluck('id')[0];
+			$eDkPlayer->dk_id = $dkPlayer['dkId'];
+			$eDkPlayer->team_id = $teamId;
+			$eDkPlayer->opp_team_id = Team::where('name_dk', $dkPlayer['oppTeamNameDk'])->pluck('id')[0];
+			$eDkPlayer->position = $dkPlayer['position'];
+			$eDkPlayer->salary = $dkPlayer['salary'];
+
+			$eDkPlayer->save();
+		}
+
+		$this->message = 'Success!';
 	}
 
 }
