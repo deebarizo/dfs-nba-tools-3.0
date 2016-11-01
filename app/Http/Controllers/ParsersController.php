@@ -20,11 +20,9 @@ class ParsersController extends Controller {
 
 		$csvFile = $fileUploader->uploadDkPlayerPool($request, $date, $slate);
 
-		dd('stop');
-
 		$playerPoolParser = new PlayerPoolParser;
 
-        $results = $playerPoolParser->parseDkPlayerPool($date, $slate);
+        $results = $playerPoolParser->parseDkPlayerPool($csvFile, $date, $slate);
 
         $message = $results->message;
 
