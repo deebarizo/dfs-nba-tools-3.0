@@ -11,8 +11,6 @@ use App\UseCases\BoxScoreLineScraper;
 
 class ScrapersController extends Controller {
 
-	// Needs two arrays of numbers
-
 	public function scrapeGames(Request $request) {
 
 		$date = $request->input('date');

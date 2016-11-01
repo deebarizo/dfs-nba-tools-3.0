@@ -67,6 +67,8 @@ Route::get('/admin/parsers/dk_player_pool', ['as' => 'admin.parsers.dk_player_po
 	return View::make('admin/parsers/dk_player_pool', compact('titleTag', 'h2Tag'));
 }]);
 
+Route::post('/admin/parsers/dk_player_pool', 'ParsersController@parseDkPlayerPool');
+
 
 /****************************************************************************************
 ONE TIME PROCESS
