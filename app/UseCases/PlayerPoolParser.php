@@ -1,6 +1,7 @@
 <?php namespace App\UseCases;
 
 use App\Models\DkPlayerPool;
+use App\Models\Player;
 use App\Models\Team;
 
 class PlayerPoolParser {
@@ -36,6 +37,8 @@ class PlayerPoolParser {
 				       	'game_info' => $row[3],
 				       	'dk_team' => $row[5]
 				    );
+
+				    $playerIdExists = Player::$this->dkPlayers[$i]['dk_name']
 
 				    $matchup = preg_replace("/(\w+@\w+)(\s)(.*)/", "$1", $this->dkPlayers[$i]['game_info']);
 				    $matchupWithoutAtSymbol = preg_replace("/@/", "", $matchup);
@@ -84,7 +87,7 @@ class PlayerPoolParser {
 			ddAll($this->dkPlayers);
 		} 
 
-		$this->saveDkPlayers($date, $site, $timePeriod);
+		$this->saveDkPlayers($date, $slate);
 
 		return $this;	
 	}
