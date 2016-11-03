@@ -19,7 +19,21 @@
 		@endif
 
 		@if (Session::has('message'))
-			<div class="alert <?php echo (Session::get('message') === 'Success!' ? 'alert-info success-alert' : 'alert-danger'); ?> fade in success-message" role="alert">
+
+			<?php 
+
+				if (strpos(Session::get('message'), 'Success!') !== false) {
+
+					$alertHtml = 'alert-info success-alert';
+
+				} else {
+
+					$alertHtml = 'alert-danger';
+				}
+
+			?>
+
+			<div class="alert {{ $alertHtml }} fade in success-message" role="alert">
 				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
 
 				{!! Session::get('message') !!}

@@ -30,6 +30,8 @@ class BoxScoreLineScraper {
 
 		$games = Game::where('date', $date)->get();
 
+		$numScrapedGames = 0;
+
 		foreach ($games as $game) {
 
 			$boxScoreLinesExist = BoxScoreLine::where('game_id', $game->id)->count();
@@ -240,7 +242,7 @@ class BoxScoreLineScraper {
 
 						$boxScoreLines[] = $boxScoreLine;
 
-						prf($boxScoreLine);
+						# prf($boxScoreLine);
 					} 
 				}
 			}
@@ -287,9 +289,11 @@ class BoxScoreLineScraper {
 				
 				$eBoxScoreLine->save();
 			}
+
+			$numScrapedGames++;
 		}
 
-		$this->message = 'Success!';		
+		$this->message = 'Success! '.$numScrapedGames.' games were scraped.';		
 
 		return $this;
 	}
