@@ -9,7 +9,101 @@ class PlayerPoolParser {
 
 	public function parseDkOwnershipPercentages($csvFile, $date, $slate) {
 
+		$alreadyParsed = DkPlayerPool::join('dk_players', function($join) {
+		  
+											$join->on('dk_players.dk_player_pool_id', '=', 'dk_player_pools.id');
+										})
+										->where('date', $date)
+										->whereNotNull('ownership_percentage')
+										->count();
+
+		if ($alreadyParsed) {
+
+            $this->message = 'The ownership percentages for this player pool, '.$date.' '.$slate.', has already been parsed.';
+
+            return $this;		
+		}
+
+		$sum = 0;
+
+		if (($handle = fopen($csvFile, 'r')) !== false) {
+			
+			$i = 0; // index
+
+			$this->ownershipPercentages = [];
+
+			while (($row = fgetcsv($handle, 5000, ',')) !== false) {
 				
+				if ($i > 0) { 
+
+					$dkName = $row[7];
+					$ownershipPercentage = floatval(preg_replace('/%/', '', $row[8]));
+
+				    if ($ownershipPercentage == 0) {
+
+				    	break;
+				    }
+
+				    $sum += $ownershipPercentage;
+
+				    $player = Player::where('dk_name', $dkName)->first();
+
+				    if (!$player) {
+
+			            $this->message = 'The player with DK name, '.$dkName.', does not exist in the players table.';
+
+			            return $this;				    	
+				    }
+
+				    $dkPlayer = DkPlayer::select('dk_players.id')
+				    						->join('dk_player_pools', function($join) {
+		  
+												$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+											})
+				    						->where('date', $date)
+				    						->where('player_id', $player->id)
+				    						->first();
+
+				    if (!$dkPlayer) {
+
+			            $this->message = 'The player with DK name, '.$dkName.', does not exist in the dk_players table.';
+
+			            return $this;				    	
+				    }
+
+				    # ddAll($dkPlayer->id);
+
+				    $this->ownershipPercentages[$i] = array( 
+
+				    	'dk_name' => $dkName,
+				       	'ownership_percentage' => $ownershipPercentage,
+				       	'dk_player_id' => $dkPlayer->id
+				    );
+				}	
+
+				$i++;	
+			}
+		}
+
+		if ($sum <= 798 || $sum >= 801) {
+
+            $this->message = 'The total ownership percentages for this player pool is '.$sum.'. It should be closer to 800.'; // 800 because 8 positions X 100%.
+
+            return $this;			
+		}
+
+		foreach ($this->ownershipPercentages as $ownershipPercentage) {
+			
+			$dkPlayer = DkPlayer::where('id', $ownershipPercentage['dk_player_id'])->first();
+
+			$dkPlayer->ownership_percentage = $ownershipPercentage['ownership_percentage'];
+
+			$dkPlayer->save();
+		}
+
+		$this->message = 'Success!';
+
+		return $this;
 	}
 
 	public function parseDkPlayerPool($csvFile, $date, $slate) {
@@ -20,7 +114,7 @@ class PlayerPoolParser {
 
         if ($duplicatePlayerPoolExists) {
 
-            $this->message = 'This player pool has already been parsed.';
+            $this->message = 'The player pool, '.$date.' '.$slate.', has already been parsed.';
 
             return $this;
         } 
