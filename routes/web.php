@@ -70,6 +70,17 @@ Route::get('/admin/parsers/dk_player_pool', ['as' => 'admin.parsers.dk_player_po
 Route::post('/admin/parsers/dk_player_pool', 'ParsersController@parseDkPlayerPool');
 
 
+Route::get('/admin/parsers/dk_ownership_percentages', ['as' => 'admin.parsers.dk_ownership_percentages', function() {
+
+	$titleTag = 'Parse DK Ownership Percentages | ';
+    $h2Tag = 'Parse DK Ownership Percentages';	
+
+	return View::make('admin/parsers/dk_ownership_percentages', compact('titleTag', 'h2Tag'));
+}]);
+
+Route::post('/admin/parsers/dk_ownership_percentages', 'ParsersController@parseDkOwnershipPercentages');
+
+
 /****************************************************************************************
 ONE TIME PROCESS
 ****************************************************************************************/
