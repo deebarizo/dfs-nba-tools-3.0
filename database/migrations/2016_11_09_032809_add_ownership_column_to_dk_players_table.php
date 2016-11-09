@@ -15,7 +15,7 @@ class AddOwnershipColumnToDkPlayersTable extends Migration
     {
         Schema::table('dk_players', function ($table) {
             
-            $table->decimal('ownership', 5, 2)->nullable()->after('game_time');
+            $table->decimal('ownership_percentage', 5, 2)->nullable()->after('game_time');
         });
     }
 
@@ -28,7 +28,7 @@ class AddOwnershipColumnToDkPlayersTable extends Migration
     {
         Schema::table('dk_players', function ($table) {
 
-            $table->dropColumn('ownership');
+            $table->dropColumn('ownership_percentage');
         });
     }
 }
