@@ -7,6 +7,11 @@ use App\Models\DkPlayer;
 
 class PlayerPoolParser {
 
+	public function parseDkOwnershipPercentages($csvFile, $date, $slate) {
+
+				
+	}
+
 	public function parseDkPlayerPool($csvFile, $date, $slate) {
 
         $duplicatePlayerPoolExists = DkPlayerPool::where('date', $date)

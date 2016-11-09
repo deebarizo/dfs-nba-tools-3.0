@@ -29,4 +29,22 @@ class ParsersController extends Controller {
         return redirect()->route('admin.parsers.dk_player_pool')->with('message', $message);       	
 	}
 
+	public function parseDkOwnershipPercentages(Request $request) {
+
+		$date = $request->input('date');
+		$slate = $request->input('slate');
+
+		$fileUploader = new FileUploader;
+
+		$csvFile = $fileUploader->uploadDkOwnershipPercentages($request, $date, $slate);
+
+		$playerPoolParser = new PlayerPoolParser;
+
+        $results = $playerPoolParser->parseDkOwnershipPercentages($csvFile, $date, $slate);
+
+        $message = $results->message;
+
+        return redirect()->route('admin.parsers.dk_ownership_percentages')->with('message', $message);       	
+	}
+
 }

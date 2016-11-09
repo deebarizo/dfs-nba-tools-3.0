@@ -17,4 +17,15 @@ class FileUploader {
         return $fileDirectory . $fileName;   
     }
 
+    public function uploadDkOwnershipPercentages($request, $date, $slate) {
+
+    	$fileDirectory = 'files/dk_ownership_percentages/';
+
+        $fileName = $date.'-'.$slate.'.csv';
+
+       	Input::file('csv')->move($fileDirectory, $fileName);    
+
+        return $fileDirectory . $fileName;   
+    }
+
 }
