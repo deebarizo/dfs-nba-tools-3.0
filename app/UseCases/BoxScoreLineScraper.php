@@ -304,18 +304,31 @@ class BoxScoreLineScraper {
 		  
 							$join->on('game_lines.game_id', '=', 'games.id');
 						})
-						->whereNull('dk_pts')
+						->where('games.date', $date)
 						->get();
 
 		foreach ($gameLines as $gameLine) {
 			
-			$dkPts = BoxScoreLine::where('game_id', $gameLine->game_id)
+			$gameLineDkPts = BoxScoreLine::where('game_id', $gameLine->game_id)
 									->where('team_id', $gameLine->team_id)
 									->sum('dk_pts');
 
-			$gameLine->dk_pts = $dkPts;
+			$gameLine->dk_pts = $gameLineDkPts;
 
 			$gameLine->save();
+
+			$boxScoreLines = BoxScoreLine::where('game_id', $gameLine->game_id)
+									->where('team_id', $gameLine->team_id)
+									->get();
+
+			foreach ($boxScoreLines as $boxScoreLine) {
+				
+				$dkShare = $boxScoreLine->dk_pts / $gameLine->dk_pts * 100;
+
+				$boxScoreLine->dk_share = $dkShare;
+
+				$boxScoreLine->save();
+			}
 		}
 
 		$this->message = 'Success! '.$numScrapedGames.' games were scraped.';		

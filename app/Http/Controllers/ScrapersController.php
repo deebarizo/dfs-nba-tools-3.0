@@ -41,8 +41,6 @@ class ScrapersController extends Controller {
 
 	public function oneTimeProcess() {
 
-
-
 		ddAll('Success!');
 	}
 
