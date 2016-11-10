@@ -50,22 +50,31 @@ class PlayerPoolsController extends Controller {
 
 		$teams = Team::all();
 
+		$activeTeams = [];
+
 		foreach ($dkPlayers as &$dkPlayer) {
 			
 			foreach ($teams as $team) {
 				
 				if ($team->id === $dkPlayer['opp_team_id']) {
 
+					$activeTeams[] = $dkPlayer['team'];
+
 					$dkPlayer['opp_team'] = $team->dk_name;
+
+					break;
 				}
 			}
 		}
 
 		unset($dkPlayer);
 
-		# ddAll($dkPlayers);
+		$activeTeams = array_unique($activeTeams);
+		sort($activeTeams);
 
-		return view('player_pools/show', compact('titleTag', 'h2Tag', 'dkPlayers'));
+		# ddAll($activeTeams);
+
+		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers'));
 	}
 
 }

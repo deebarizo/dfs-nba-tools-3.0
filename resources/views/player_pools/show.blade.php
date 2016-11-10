@@ -7,6 +7,36 @@
 
 			<hr>
 
+			<form class="form-inline" style="margin-bottom: 20px">
+
+				<label>Teams</label>
+				<select class="form-control team-filter" style="width: 10%; margin-right: 20px">
+				  	<option value="All">All</option>
+				  	@foreach ($activeTeams as $team)
+					  	<option value="{{ $team }}">{{ $team }}</option>
+				  	@endforeach
+				</select>	
+
+				<label>Positions</label>
+				<select class="form-control position-filter" style="width: 10%; margin-right: 20px">
+				  	<option value="All">All</option>
+				  	<option value="PG">PG</option>
+				  	<option value="SG">SG</option>
+				  	<option value="SF">SF</option>
+				  	<option value="PF">PF</option>
+				  	<option value="C">C</option>
+				  	<option value="G">G</option>
+				  	<option value="F">F</option>
+				</select>
+
+				<label>Salary</label>
+				<input class="salary-input form-control" type="number" value="100000" style="width: 10%">
+				<input class="form-control" type="radio" name="salary-toggle" id="greater-than" value="greater-than">>=
+				<input class="form-control" type="radio" name="salary-toggle" id="less-than" value="less-than" checked="checked"><=				
+				<input style="width: 10%; margin-right: 20px; outline: none; margin-left: 5px" class="salary-reset btn btn-default" name="salary-reset" value="Salary Reset">
+
+			</form>
+
 			<table id="player-pool" class="table table-striped table-bordered table-hover table-condensed">
 				<thead>
 					<tr>
@@ -40,4 +70,17 @@
 
 		</div>
 	</div>
+
+	<script type="text/javascript">
+
+		var playerPoolTable = $('#player-pool').DataTable({
+			
+			"scrollY": "600px",
+			"paging": false,
+			"order": [[5, "desc"]]
+		});
+
+		$('#player-pool_filter').hide();
+
+	</script>
 @stop
