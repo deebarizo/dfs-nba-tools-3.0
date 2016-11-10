@@ -46,6 +46,7 @@
 						<th>Pos</th>
 						<th>Pos2</th>
 						<th>Sal</th>
+						<th>Both Pos</th> <!-- hidden -->
 					</tr>
 				</thead>
 				<tbody>
@@ -63,6 +64,7 @@
 						    	<td>{{ $dkPlayer['first_position'] }}</td>
 						    	<td>{{ $dkPlayer['second_position'] }}</td>
 						    	<td>{{ $dkPlayer['salary'] }}</td>
+						    	<td>{{ $dkPlayer['both_positions'] }}</td>
 					    </tr>
 					@endforeach
 				</tbody>
@@ -77,10 +79,18 @@
 			
 			"scrollY": "600px",
 			"paging": false,
-			"order": [[5, "desc"]]
+			"order": [[5, "desc"]],
+	        "columnDefs": [ 
+	        	{
+	            	"visible": false,
+	            	"targets": 6
+	        	}
+	        ]
 		});
 
 		$('#player-pool_filter').hide();
 
 	</script>
+
+	<script src="/js/player_pools/index.js"></script>
 @stop

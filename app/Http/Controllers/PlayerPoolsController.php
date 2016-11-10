@@ -53,6 +53,15 @@ class PlayerPoolsController extends Controller {
 		$activeTeams = [];
 
 		foreach ($dkPlayers as &$dkPlayer) {
+
+			if ($dkPlayer['second_position'] !== null) {
+
+				$dkPlayer['both_positions'] = $dkPlayer['first_position'].'/'.$dkPlayer['second_position'];
+			
+			} else {
+
+				$dkPlayer['both_positions'] = $dkPlayer['first_position'];
+			}
 			
 			foreach ($teams as $team) {
 				
@@ -72,7 +81,7 @@ class PlayerPoolsController extends Controller {
 		$activeTeams = array_unique($activeTeams);
 		sort($activeTeams);
 
-		# ddAll($activeTeams);
+		# ddAll($dkPlayers);
 
 		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers'));
 	}
