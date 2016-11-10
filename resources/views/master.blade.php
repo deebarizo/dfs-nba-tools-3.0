@@ -31,6 +31,7 @@
 				</div>
 				<div class="collapse navbar-collapse">
 					<ul class="nav navbar-nav">
+						<li class="{!! setActive('player_pools*') !!}"><a href="/player_pools">Player Pools</a></li>
 						<li class="{!! setActive('admin*') !!}"><a href="/admin">Admin</a></li>
 						<li class="{!! setActive('studies*') !!}"><a href="/studies">Studies</a></li>
 					</ul>

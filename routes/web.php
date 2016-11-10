@@ -8,8 +8,15 @@ Route::get('/', function() {
 
 	$titleTag = '';
 	
-	return View::make('master', compact('titleTag'));
+	return View::make('/player_pools', compact('titleTag'));
 });
+
+
+/****************************************************************************************
+PLAYER POOLS
+****************************************************************************************/
+
+Route::get('/player_pools', 'PlayerPoolsController@index');
 
 
 /****************************************************************************************
