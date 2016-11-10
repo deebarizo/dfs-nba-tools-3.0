@@ -17,6 +17,7 @@ PLAYER POOLS
 ****************************************************************************************/
 
 Route::get('/player_pools', 'PlayerPoolsController@index');
+Route::get('/player_pools/{id}', 'PlayerPoolsController@show');
 
 
 /****************************************************************************************
