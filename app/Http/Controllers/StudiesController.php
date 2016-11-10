@@ -72,6 +72,23 @@ class StudiesController extends Controller {
 		return view('studies.correlations.index', compact('titleTag', 'h2Tag', 'data'));
 	}
 
+	public function calculateCorrelationBetweenDkPtsAndVegasPts() {
+
+		$titleTag = 'Correlation between DK PTS and Vegas PTS | ';
+		$h2Tag = 'Correlation between DK PTS and Vegas PTS';
+
+		$xNumbers = GameLine::orderBy('id', 'asc')->pluck('dk_pts')->toArray();
+		$yNumbers = GameLine::orderBy('id', 'asc')->pluck('vegas_pts')->toArray();
+
+		$data = $this->calculateCorrelation($xNumbers, $yNumbers);
+
+		$data = $this->addCorrelationChartData($data, 'DK PTS', 'Vegas PTS', 110, 320);
+
+		# ddAll($data);
+
+		return view('studies.correlations.index', compact('titleTag', 'h2Tag', 'data'));
+	}
+
 
 	/****************************************************************************************
 	HELPERS
@@ -92,10 +109,21 @@ class StudiesController extends Controller {
 
 		$jsonPerfectLine = [];
 
-		for ($x = $lowestXValue; $x <= $highestXValue; $x++) { 
-			
-			$y = $x;
-			$jsonPerfectLine[] = [$x, $y];
+		if ($xTitle === 'DK PTS' && $yTitle === 'Vegas PTS') {
+
+			for ($x = $lowestXValue; $x <= $highestXValue; $x++) { 
+				
+				$y = $x * 0.476882; // based on "SELECT sum(vegas_pts) / sum(dk_pts) FROM dfsninja.game_lines;"
+				$jsonPerfectLine[] = [$x, $y];
+			}	
+
+		} else {
+
+			for ($x = $lowestXValue; $x <= $highestXValue; $x++) { 
+				
+				$y = $x;
+				$jsonPerfectLine[] = [$x, $y];
+			}		
 		}
 
 		$data['jsonPerfectLine'] = $jsonPerfectLine;

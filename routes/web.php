@@ -23,6 +23,7 @@ Route::get('/studies', function() {
 	return View::make('studies/index', compact('titleTag'));
 });
 
+Route::get('/studies/correlations/dk_pts_and_vegas_pts', 'StudiesController@calculateCorrelationBetweenDkPtsAndVegasPts');
 Route::get('/studies/correlations/pts_and_vegas_pts', 'StudiesController@calculateCorrelationBetweenPtsAndVegasPts');
 Route::get('/studies/correlations/totals_and_vegas_totals', 'StudiesController@calculateCorrelationBetweenTotalsAndVegasTotals');
 Route::get('/studies/correlations/spreads_and_vegas_spreads', 'StudiesController@calculateCorrelationBetweenSpreadsAndVegasSpreads');
