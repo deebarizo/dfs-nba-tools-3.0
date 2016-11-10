@@ -85,4 +85,4 @@ Route::post('/admin/parsers/dk_ownership_percentages', 'ParsersController@parseD
 ONE TIME PROCESS
 ****************************************************************************************/
 
-// Route::get('/one_time_process', 'ScrapersController@oneTimeProcess');
+Route::get('/one_time_process', 'ScrapersController@oneTimeProcess');

@@ -3,6 +3,7 @@
 ini_set('max_execution_time', 10800); // 10800 seconds = 3 hours
 
 use App\Models\Game;
+use App\Models\GameLine;
 
 use App\Models\Team;
 
@@ -291,6 +292,30 @@ class BoxScoreLineScraper {
 			}
 
 			$numScrapedGames++;
+		}
+
+		$gameLines = GameLine::select(DB::raw('game_lines.id,
+										game_lines.game_id,
+										game_lines.team_id,
+										game_lines.pts,
+										game_lines.vegas_pts,
+										game_lines.dk_pts'))
+						->join('games', function($join) {
+		  
+							$join->on('game_lines.game_id', '=', 'games.id');
+						})
+						->whereNull('dk_pts')
+						->get();
+
+		foreach ($gameLines as $gameLine) {
+			
+			$dkPts = BoxScoreLine::where('game_id', $gameLine->game_id)
+									->where('team_id', $gameLine->team_id)
+									->sum('dk_pts');
+
+			$gameLine->dk_pts = $dkPts;
+
+			$gameLine->save();
 		}
 
 		$this->message = 'Success! '.$numScrapedGames.' games were scraped.';		
