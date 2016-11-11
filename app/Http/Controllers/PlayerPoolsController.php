@@ -204,10 +204,22 @@ class PlayerPoolsController extends Controller {
 
 		foreach ($dkPlayers as &$dkPlayer) {
 			
-			
+			foreach ($activeTeams as $activeTeam) {
+				
+				if ($dkPlayer['team'] === $activeTeam['dk_name']) {
+
+					$dkPlayer['total'] = $activeTeam['real_total'];
+					$dkPlayer['spread'] = $activeTeam['real_spread'];
+					$dkPlayer['projected_team_dk_pts'] = $activeTeam['projected_dk_pts'];
+
+					break;
+				}
+			}
 		}
 
-		unset($dkPlayer)
+		unset($dkPlayer);
+
+		# ddAll($dkPlayers);
 
 		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers'));
 	}

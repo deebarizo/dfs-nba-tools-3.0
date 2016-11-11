@@ -42,6 +42,8 @@
 					<tr>
 						<th>Name</th>
 						<th>Time</th>
+						<th>Total</th>
+						<th>Spread</th>
 						<th>Team</th>
 						<th>Opp</th>
 						<th>Pos</th>
@@ -61,6 +63,8 @@
 					    	class="player-row">
 						    	<td>{{ $dkPlayer['name'] }}</td>
 						    	<td>{{ $dkPlayer['game_time'] }}</td>
+						    	<td>{{ $dkPlayer['total'] }}</td>
+						    	<td>{{ $dkPlayer['spread'] }}</td>
 						    	<td>{{ $dkPlayer['team'] }}</td>
 						    	<td>{{ $dkPlayer['opp_team'] }}</td>
 						    	<td>{{ $dkPlayer['first_position'] }}</td>
@@ -81,11 +85,11 @@
 			
 			"scrollY": "600px",
 			"paging": false,
-			"order": [[6, "desc"]],
+			"order": [[8, "desc"]],
 	        "columnDefs": [ 
 	        	{
 	            	"visible": false,
-	            	"targets": 7
+	            	"targets": 9
 	        	}
 	        ]
 		});
