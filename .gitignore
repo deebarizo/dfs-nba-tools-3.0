@@ -1,5 +1,6 @@
 /node_modules
-/public/files
+/public/files/dk_ownership_percentages
+/public/files/dk_player_pools
 /vendor
 /.idea
 Homestead.json
