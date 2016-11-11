@@ -28,8 +28,44 @@ class TeamsController extends Controller {
 
 	public function show($id) {
 
-		$games = Game::with('box_score_lines')
-						->join('game_lines', function($join) {
+		$team = Team::where('id', $id)->first();
+
+		$h2Tag = 'Teams - '.$team->dk_name;
+		$titleTag = $h2Tag.' | ';
+
+		$dates = Game::join('game_lines', function($join) {
+
+							$join->on('game_lines.game_id', '=', 'games.id');
+						})
+						->take(7)
+						->orderBy('date', 'desc')
+						->where('team_id', $id)
+						->pluck('date')
+						->toArray();
+
+		$dates = array_reverse($dates);
+
+		$players = Game::join('box_score_lines', function($join) {
+
+								$join->on('box_score_lines.game_id', '=', 'games.id');
+							})
+							->join('players', function($join) {
+
+								$join->on('players.id', '=', 'box_score_lines.player_id');
+							})
+							->orderBy('date', 'desc')
+							->orderBy('box_score_lines.id', 'asc')
+							->where('box_score_lines.team_id', $id)
+							->where('date', '>=', $dates[0])
+							->pluck('players.br_name')
+							->toArray();
+
+		$players = array_values(array_unique($players));
+
+
+		ddAll($players);
+
+		$games = Game::join('game_lines', function($join) {
 
 							$join->on('game_lines.game_id', '=', 'games.id');
 						})
@@ -57,6 +93,8 @@ class TeamsController extends Controller {
 		unset($game);
 
 		ddAll($games);
+
+		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'games'));
 	}
 
 }
