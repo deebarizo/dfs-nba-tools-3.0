@@ -40,6 +40,7 @@ class TeamsController extends Controller {
 						->take(7)
 						->orderBy('date', 'desc')
 						->where('team_id', $id)
+						->where('date', '>', '2016-09-30')
 						->pluck('date')
 						->toArray();
 
@@ -65,29 +66,32 @@ class TeamsController extends Controller {
 		$series = []; // for series property in line chart
 
 		foreach ($players as $player) {
-			
+
 			$series[] = [
 
 				'name' => $player,
-				'data' => [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2]
+				'data' => [] // minutes
 			];
 		}
 
-		# ddAll($players);
+		# ddAll($series);
 
 		$games = Game::join('game_lines', function($join) {
 
 							$join->on('game_lines.game_id', '=', 'games.id');
 						})
 						->take(7)
-						->orderBy('date', 'desc')
+						->orderBy('date', 'asc')
 						->where('team_id', $id)
+						->where('date', '>=', $dates[0])
 						->get()
 						->toArray();
 
-		foreach ($games as &$game) {
+		# ddAll($games);
+
+		foreach ($games as $gameIndex => &$game) {
 			
-			$boxScoreLines = BoxScoreLine::select('dk_name', 'mp')
+			$boxScoreLines = BoxScoreLine::select('players.br_name', 'mp')
 											->join('players', function($join) {
 
 												$join->on('players.id', '=', 'box_score_lines.player_id');
@@ -98,13 +102,39 @@ class TeamsController extends Controller {
 											->toArray();
 
 			$game['box_score_lines'] = $boxScoreLines;
+
+			# ddAll($boxScoreLines);
+
+			foreach ($series as &$player) {
+
+				$playerFound = false;
+
+				foreach ($boxScoreLines as $boxScoreLine) {
+
+					if ($boxScoreLine['br_name'] === $player['name']) {
+
+						$player['data'][] = floatval($boxScoreLine['mp']);
+
+						$playerFound = true;
+
+						break;
+					}		
+				}
+
+				if (!$playerFound) {
+
+					$player['data'][] = null;
+				}
+			}
+
+			unset($player);
 		}
 
 		unset($game);
 
-		# ddAll($games);
+		# ddAll($series);
 
-		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games'));
+		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series'));
 	}
 
 }

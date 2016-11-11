@@ -7,7 +7,7 @@
 
 			<hr>
 
-			<div class="team-rotation-line-chart"></div>
+			<div class="team-rotation-line-chart" style="height: 600px"></div>
 		</div>
 	</div>
 
