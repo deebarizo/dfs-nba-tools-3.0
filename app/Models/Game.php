@@ -10,4 +10,9 @@ class Game extends Model {
 
     	return $this->hasMany(GameLine::class);
     }
+
+    public function box_score_lines() {
+
+    	return $this->hasMany(BoxScoreLine::class);
+    }
 }
