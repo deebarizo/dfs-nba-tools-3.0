@@ -12,8 +12,8 @@
 				<label>Teams</label>
 				<select class="form-control team-filter" style="width: 10%; margin-right: 20px">
 				  	<option value="All">All</option>
-				  	@foreach ($activeTeams as $team)
-					  	<option value="{{ $team }}">{{ $team }}</option>
+				  	@foreach ($activeTeams as $activeTeam)
+					  	<option value="{{ $activeTeam->dk_name }}">{{ $activeTeam->dk_name }}</option>
 				  	@endforeach
 				</select>	
 
@@ -41,6 +41,7 @@
 				<thead>
 					<tr>
 						<th>Name</th>
+						<th>Time</th>
 						<th>Team</th>
 						<th>Opp</th>
 						<th>Pos</th>
@@ -59,6 +60,7 @@
 					    	data-salary="{{ $dkPlayer['salary'] }}"
 					    	class="player-row">
 						    	<td>{{ $dkPlayer['name'] }}</td>
+						    	<td>{{ $dkPlayer['game_time'] }}</td>
 						    	<td>{{ $dkPlayer['team'] }}</td>
 						    	<td>{{ $dkPlayer['opp_team'] }}</td>
 						    	<td>{{ $dkPlayer['first_position'] }}</td>
@@ -79,11 +81,11 @@
 			
 			"scrollY": "600px",
 			"paging": false,
-			"order": [[5, "desc"]],
+			"order": [[6, "desc"]],
 	        "columnDefs": [ 
 	        	{
 	            	"visible": false,
-	            	"targets": 6
+	            	"targets": 7
 	        	}
 	        ]
 		});
