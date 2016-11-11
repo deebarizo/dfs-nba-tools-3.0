@@ -175,11 +175,39 @@ class PlayerPoolsController extends Controller {
 			
 			foreach ($mirrorActiveTeams as $mirrorActiveTeam) {
 				
-				
+				if ($activeTeam['opp_dk_name'] === $mirrorActiveTeam['dk_name']) {
+
+					if (isset($activeTeam['total'])) {
+
+						$activeTeam['vegas_pts'] = ($activeTeam['total'] - $mirrorActiveTeam['spread']) / 2;
+						$activeTeam['real_total'] = $activeTeam['total'];
+						$activeTeam['real_spread'] = $mirrorActiveTeam['spread'];
+					}
+
+					if (isset($activeTeam['spread'])) {
+
+						$activeTeam['vegas_pts'] = ($mirrorActiveTeam['total'] + $activeTeam['spread']) / 2;
+						$activeTeam['real_total'] = $mirrorActiveTeam['total'];
+						$activeTeam['real_spread'] = $activeTeam['spread'] * -1;
+					}
+
+					$activeTeam['projected_dk_pts'] = $activeTeam['vegas_pts'] * 2.097070; // based on "SELECT sum(dk_pts) / sum(vegas_pts) FROM dfsninja.game_lines;"
+
+					break;
+				}
 			}
 		}
 
 		unset($activeTeam);
+
+		# ddAll($activeTeams);
+
+		foreach ($dkPlayers as &$dkPlayer) {
+			
+			
+		}
+
+		unset($dkPlayer)
 
 		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers'));
 	}

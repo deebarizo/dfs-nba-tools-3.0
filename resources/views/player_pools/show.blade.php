@@ -13,7 +13,7 @@
 				<select class="form-control team-filter" style="width: 10%; margin-right: 20px">
 				  	<option value="All">All</option>
 				  	@foreach ($activeTeams as $activeTeam)
-					  	<option value="{{ $activeTeam->dk_name }}">{{ $activeTeam->dk_name }}</option>
+					  	<option value="{{ $activeTeam['dk_name'] }}">{{ $activeTeam['dk_name'] }}</option>
 				  	@endforeach
 				</select>	
 
