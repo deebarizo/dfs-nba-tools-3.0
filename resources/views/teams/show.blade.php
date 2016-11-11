@@ -13,7 +13,9 @@
 
 	<script>
 		
-		var games = <?php echo json_encode($games); ?>
+		var team = '<?php echo $team->dk_name; ?>';
+		var dates = <?php echo json_encode($dates); ?>;
+		var series = <?php echo json_encode($series); ?>;
 
 	</script>
 

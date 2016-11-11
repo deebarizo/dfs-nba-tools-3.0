@@ -62,8 +62,18 @@ class TeamsController extends Controller {
 
 		$players = array_values(array_unique($players));
 
+		$series = []; // for series property in line chart
 
-		ddAll($players);
+		foreach ($players as $player) {
+			
+			$series[] = [
+
+				'name' => $player,
+				'data' => [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2]
+			];
+		}
+
+		# ddAll($players);
 
 		$games = Game::join('game_lines', function($join) {
 
@@ -92,9 +102,9 @@ class TeamsController extends Controller {
 
 		unset($game);
 
-		ddAll($games);
+		# ddAll($games);
 
-		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'games'));
+		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games'));
 	}
 
 }
