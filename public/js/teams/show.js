@@ -13,7 +13,7 @@ $(document).ready(function() {
             categories: dates,
             labels: {
                 formatter: function() {
-                    return this.value+'<br>'+games[this.value]['game_lines'][0]['dk_name']+' '+games[this.value]['game_lines'][0]['pts']+' @'+games[this.value]['game_lines'][1]['dk_name']+' '+games[this.value]['game_lines'][1]['pts']+'<br><a target="_blank" href="'+games[this.value]['game_lines'][0]['br_link']+'">BR</a><br><a target="_blank" href="'+games[this.value]['game_lines'][0]['br_link']+'">PM</a>';
+                    return this.value+'<br>'+games[this.value]['game_lines'][0]['dk_name']+' '+games[this.value]['game_lines'][0]['pts']+' @'+games[this.value]['game_lines'][1]['dk_name']+' '+games[this.value]['game_lines'][1]['pts']+'<br><a target="_blank" href="'+games[this.value]['game_lines'][0]['br_link']+'">BR</a> | <a target="_blank" href="'+games[this.value]['pm_link']+'">PM</a>';
                 },
                 useHTML: true
             }

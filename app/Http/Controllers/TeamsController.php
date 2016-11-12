@@ -152,6 +152,19 @@ class TeamsController extends Controller {
 
 		unset($game);
 
+		foreach ($games as $date => &$game) {
+
+			$year = date('Y', strtotime($date));
+
+			$monthNumber = date('m', strtotime($date));
+
+			$dayNumber = date('d', strtotime($date));
+			
+			$game['pm_link'] = 'http://popcornmachine.net/gf?date='.$year.''.$monthNumber.''.$dayNumber.'&game='.$game['game_lines'][0]['pm_name'].''.$game['game_lines'][1]['pm_name'];
+		}
+
+		unset($game);
+
 		# ddAll($games);
 
 		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games'));
