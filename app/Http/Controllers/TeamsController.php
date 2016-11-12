@@ -111,21 +111,36 @@ class TeamsController extends Controller {
 
 			# ddAll($boxScoreLines);
 
-
+			$baseUrl = url('/');
 
 			foreach ($series as &$player) {
 
 				$playerFound = false;
 
-				foreach ($boxScoreLines as $boxScoreLine) {
+				foreach ($boxScoreLines as $index => $boxScoreLine) {
 
 					if ($boxScoreLine['br_name'] === $player['name']) {
 
-						$player['data'][] = floatval($boxScoreLine['mp']);
+						if ($index > 4) { // bench player
+
+							$player['data'][] = floatval($boxScoreLine['mp']);
+						}
+
+						if ($index <= 4) { // bench player
+
+							$player['data'][] = [
+
+								'y' => floatval($boxScoreLine['mp']),
+								'marker' => [
+
+									'symbol' => 'url('.$baseUrl.'/files/images/basketball-icon.png)'
+								]
+							];
+						}
 
 						$playerFound = true;
 
-						break;
+						break;	
 					}		
 				}
 

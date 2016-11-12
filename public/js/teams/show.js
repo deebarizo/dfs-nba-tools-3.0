@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-	console.log(games);
+	console.log(series);
 
 	$('.team-rotation-line-chart').highcharts({
         chart: {
