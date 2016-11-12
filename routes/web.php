@@ -94,6 +94,21 @@ Route::post('/admin/parsers/dk_ownership_percentages', 'ParsersController@parseD
 
 
 /****************************************************************************************
+CRUD
+****************************************************************************************/
+
+Route::get('/admin/crud/games', ['as' => 'admin.crud.games', function() {
+
+	$titleTag = 'CRUD - Games | ';
+    $h2Tag = 'CRUD - Games';	
+
+	return View::make('admin/crud/games', compact('titleTag', 'h2Tag'));
+}]);
+
+Route::post('/admin/crud/games', 'CrudController@games');
+
+
+/****************************************************************************************
 ONE TIME PROCESS
 ****************************************************************************************/
 
