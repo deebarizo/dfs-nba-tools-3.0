@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-	console.log(series);
+	console.log(games);
 
 	$('.team-rotation-line-chart').highcharts({
         chart: {
@@ -13,7 +13,7 @@ $(document).ready(function() {
             categories: dates,
             labels: {
                 formatter: function() {
-                    return this.value+'<br>'+game_data[this.value]['team1']+' '+game_data[this.value]['score1']+', '+game_data[this.value]['team2']+' '+game_data[this.value]['score2']+'<br><a target="_blank" href="'+game_data[this.value]['espn_link']+'">ESPN</a><br><a target="_blank" href="'+game_data[this.value]['pm_link']+'">PM</a>';
+                    return this.value+'<br>'+games[this.value]['game_lines'][0]['dk_name']+' '+games[this.value]['game_lines'][0]['pts']+' @'+games[this.value]['game_lines'][1]['dk_name']+' '+games[this.value]['game_lines'][1]['pts']+'<br><a target="_blank" href="'+games[this.value]['game_lines'][0]['br_link']+'">BR</a><br><a target="_blank" href="'+games[this.value]['game_lines'][0]['br_link']+'">PM</a>';
                 },
                 useHTML: true
             }

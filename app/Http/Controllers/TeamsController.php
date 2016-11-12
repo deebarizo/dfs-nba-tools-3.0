@@ -76,7 +76,8 @@ class TeamsController extends Controller {
 
 		# ddAll($series);
 
-		$games = Game::join('game_lines', function($join) {
+		$eGames = Game::select('games.id', 'games.date')
+						->join('game_lines', function($join) {
 
 							$join->on('game_lines.game_id', '=', 'games.id');
 						})
@@ -87,23 +88,30 @@ class TeamsController extends Controller {
 						->get()
 						->toArray();
 
+		$games = [];
+
+		foreach ($eGames as $game) {
+			
+			$games[$game['date']] = $game;
+		}
+
 		# ddAll($games);
 
-		foreach ($games as $gameIndex => &$game) {
+		foreach ($games as $key => &$game) {
 			
 			$boxScoreLines = BoxScoreLine::select('players.br_name', 'mp')
 											->join('players', function($join) {
 
 												$join->on('players.id', '=', 'box_score_lines.player_id');
 											})
-											->where('game_id', $game['game_id'])
+											->where('game_id', $game['id'])
 											->where('box_score_lines.team_id', $id)
 											->get()
 											->toArray();
 
-			$game['box_score_lines'] = $boxScoreLines;
-
 			# ddAll($boxScoreLines);
+
+
 
 			foreach ($series as &$player) {
 
@@ -128,13 +136,25 @@ class TeamsController extends Controller {
 			}
 
 			unset($player);
+
+			$game['game_lines'] = GameLine::join('games', function($join) {
+
+												$join->on('games.id', '=', 'game_lines.game_id');
+											})
+											->join('teams', function($join) {
+
+												$join->on('teams.id', '=', 'game_lines.team_id');
+											})
+											->where('game_id', $game['id'])
+											->get()
+											->toArray();
 		}
 
 		unset($game);
 
-		# ddAll($series);
+		# ddAll($games);
 
-		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series'));
+		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games'));
 	}
 
 }
