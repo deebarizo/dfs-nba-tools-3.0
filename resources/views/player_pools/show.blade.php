@@ -105,6 +105,10 @@
 
 			team: 4,
 			salary: 8,
+			dk_pts: 9,
+			salary2: 10,
+			value: 11,
+			ownership_percentage: 12,
 			position: 13
 		};
 
@@ -112,12 +116,30 @@
 			
 			"scrollY": "600px",
 			"paging": false,
-			"order": [[9, "desc"]],
+			"order": [[columnIndexes.salary, "desc"]],
 	        "columnDefs": [ 
 	        	{
 	            	"visible": false,
 	            	"targets": columnIndexes.position
 	        	}
+	        	<?php if ($playerPoolIsActive) { ?>
+	        		,{
+		            	"visible": false,
+		            	"targets": columnIndexes.dk_pts
+	        		},
+					{
+		            	"visible": false,
+		            	"targets": columnIndexes.salary2
+	        		},
+					{
+		            	"visible": false,
+		            	"targets": columnIndexes.value
+	        		},
+					{
+		            	"visible": false,
+		            	"targets": columnIndexes.ownership_percentage
+	        		}
+	        	<?php } ?>
 	        ]
 		});
 

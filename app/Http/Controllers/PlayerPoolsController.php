@@ -66,6 +66,8 @@ class PlayerPoolsController extends Controller {
 
 		if(count($boxScoreLines)) {
 
+			$playerPoolIsActive = false; // this means the games have already been played
+
 			foreach ($dkPlayers as &$dkPlayer) {
 
 				$playerFound = false;
@@ -92,6 +94,10 @@ class PlayerPoolsController extends Controller {
 			}
 
 			unset($dkPlayer);
+		
+		} else {
+
+			$playerPoolIsActive = true; 
 		}
 
 		# ddAll($dkPlayers);
@@ -263,7 +269,7 @@ class PlayerPoolsController extends Controller {
 
 		# ddAll($dkPlayers);
 
-		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers'));
+		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive'));
 	}
 
 }
