@@ -4,6 +4,7 @@ use App\Models\DkPlayerPool;
 use App\Models\DkPlayer;
 use App\Models\Player;
 use App\Models\Team;
+use App\Models\BoxScoreLine;
 
 use DB;
 
@@ -37,7 +38,9 @@ class PlayerPoolsController extends Controller {
 												first_position,
 												second_position,
 												salary,
-												game_time'))
+												game_time,
+												players.id as player_id,
+												ownership_percentage'))
 								->join('dk_player_pools', function($join) {
 
 									$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
@@ -53,6 +56,45 @@ class PlayerPoolsController extends Controller {
 								->where('dk_player_pools.id', $id)
 								->get()
 								->toArray();
+
+		$boxScoreLines = boxScoreLine::join('games', function($join) {
+
+											$join->on('games.id', '=', 'box_score_lines.game_id');
+										})
+										->where('games.date', $date)
+										->get();
+
+		if(count($boxScoreLines)) {
+
+			foreach ($dkPlayers as &$dkPlayer) {
+
+				$playerFound = false;
+				
+				foreach ($boxScoreLines as $boxScoreLine) {
+					
+					if ($dkPlayer['player_id'] === $boxScoreLine->player_id) {
+
+						$dkPlayer['dk_pts'] = $boxScoreLine->dk_pts;
+
+						$dkPlayer['value'] = $dkPlayer['dk_pts'] / ($dkPlayer['salary'] / 1000);
+
+						$playerFound = true;
+
+						break;
+					}
+				}
+
+				if (!$playerFound) {
+
+					$dkPlayer['dk_pts'] = 0;
+					$dkPlayer['value'] = 0;
+				}
+			}
+
+			unset($dkPlayer);
+		}
+
+		# ddAll($dkPlayers);
 
 		$teams = Team::all();
 

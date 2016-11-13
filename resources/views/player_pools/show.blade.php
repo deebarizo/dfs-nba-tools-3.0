@@ -49,6 +49,10 @@
 						<th>Pos</th>
 						<th>Pos2</th>
 						<th>Sal</th>
+						<th>DK Pts</th>
+						<th>Sal</th>
+						<th>Value</th>
+						<th>Own%</th>
 						<th>Both Pos</th> <!-- hidden -->
 					</tr>
 				</thead>
@@ -70,6 +74,22 @@
 						    	<td>{{ $dkPlayer['first_position'] }}</td>
 						    	<td>{{ $dkPlayer['second_position'] }}</td>
 						    	<td>{{ $dkPlayer['salary'] }}</td>
+						    	@if (isset($dkPlayer['dk_pts']))
+						    		<td>{{ $dkPlayer['dk_pts'] }}</td>
+						    	@else
+						    		<td>{{ numFormat(0, 2) }}</td>
+						    	@endif
+						    	<td>{{ $dkPlayer['salary'] }}</td>
+						    	@if (isset($dkPlayer['value']))
+						    		<td>{{ numFormat($dkPlayer['value'], 2) }}</td>
+						    	@else
+						    		<td>{{ numFormat(0, 2) }}</td>
+						    	@endif
+						    	@if ($dkPlayer['ownership_percentage'])
+						    		<td>{{ $dkPlayer['ownership_percentage'] }}</td>
+						    	@else
+						    		<td>{{ numFormat(0, 2) }}</td>
+						    	@endif
 						    	<td>{{ $dkPlayer['both_positions'] }}</td>
 					    </tr>
 					@endforeach
@@ -81,22 +101,31 @@
 
 	<script type="text/javascript">
 
+		var columnIndexes = {
+
+			team: 4,
+			salary: 8,
+			position: 13
+		};
+
 		var playerPoolTable = $('#player-pool').DataTable({
 			
 			"scrollY": "600px",
 			"paging": false,
-			"order": [[8, "desc"]],
+			"order": [[9, "desc"]],
 	        "columnDefs": [ 
 	        	{
 	            	"visible": false,
-	            	"targets": 9
+	            	"targets": columnIndexes.position
 	        	}
 	        ]
 		});
 
 		$('#player-pool_filter').hide();
 
+
+
 	</script>
 
-	<script src="/js/player_pools/index.js"></script>
+	<script src="/js/player_pools/show.js"></script>
 @stop

@@ -58,7 +58,7 @@ $(document).ready(function() {
 
 	        var modifier = $('input:radio[name=salary-toggle]:checked').val();
 
-	        var salary = parseFloat(data[5]) || 0; // use data for the salary column
+	        var salary = parseFloat(data[columnIndexes.salary]) || 0; // use data for the salary column
 
 	        if (modifier === 'greater-than') {
 
@@ -113,7 +113,7 @@ $(document).ready(function() {
 
 		var value = $('select.position-filter').val();
 		
-		var filter = new Filter('position', 6, value, null);
+		var filter = new Filter('position', columnIndexes.position, value, null);
 
 		filter.execute();
 	});
@@ -127,7 +127,7 @@ $(document).ready(function() {
 
 		var value = $('select.team-filter').val();
 		
-		var filter = new Filter('team', 1, value, null);
+		var filter = new Filter('team', columnIndexes.team, value, null);
 
 		filter.execute();
 	});
