@@ -69,8 +69,8 @@
 						    	<td>{{ $dkPlayer['game_time'] }}</td>
 						    	<td>{{ $dkPlayer['total'] }}</td>
 						    	<td>{{ $dkPlayer['spread'] }}</td>
-						    	<td>{{ $dkPlayer['team'] }}</td>
-						    	<td>{{ $dkPlayer['opp_team'] }}</td>
+						    	<td><a href="/teams/{{ $dkPlayer['team_id'] }}" target="_blank">{{ $dkPlayer['team'] }}</a></td>
+						    	<td><a href="/teams/{{ $dkPlayer['opp_team_id'] }}" target="_blank">{{ $dkPlayer['opp_team'] }}</a></td>
 						    	<td>{{ $dkPlayer['first_position'] }}</td>
 						    	<td>{{ $dkPlayer['second_position'] }}</td>
 						    	<td>{{ $dkPlayer['salary'] }}</td>

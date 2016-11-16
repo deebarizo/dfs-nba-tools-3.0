@@ -34,7 +34,8 @@ class PlayerPoolsController extends Controller {
 
 		$dkPlayers = DkPlayer::select(DB::raw('players.dk_name as name,
 												teams.dk_name as team,
-												opp_team_id, 
+												dk_players.team_id, 
+												dk_players.opp_team_id, 
 												first_position,
 												second_position,
 												salary,
