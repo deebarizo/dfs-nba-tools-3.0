@@ -16,36 +16,30 @@
 				<h3>DK Players</h3>
 			</div>
 
-			<table class="table table-striped table-bordered table-hover table-condensed" style="width: 20%">
-				<thead>
-					<tr>
-						<th>Team</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach ($teams as $team)
+
+
+			<div class="col-lg-4">
+
+				<table class="table table-striped table-bordered table-hover table-condensed">
+					<thead>
 						<tr>
-							<td><a href="/teams/{{ $team->id }}">{{ $team->dk_name }}</a></td>
+							<th style="width: 70%">DK Player</th>
+							<th>P DK Share</th>
 						</tr>
-					@endforeach
-				</tbody>
-			</table>
-
-			<div class="col-lg-2">
-				
-
-				@foreach ($dkPlayers as $dkPlayer)
-
-					<div class="form-group">
-						{!! Form::label($dkPlayer->id, $dkPlayer->dk_name) !!}
-						{!! Form::text($dkPlayer->id, '', ['class' => 'form-control', 'style' => 'width: 30%']) !!}
-					</div>
-
-				@endforeach
+					</thead>
+					<tbody>
+						@foreach ($dkPlayers as $dkPlayer)
+							<tr>
+								<td>{{ $dkPlayer->dk_name }}</td>
+								<td><div class="form-group">{!! Form::text($dkPlayer->id, '', ['class' => 'form-control']) !!}</div></td>
+							</tr>
+						@endforeach
+					</tbody>
+				</table>
 			</div>
 
 			<div class="col-lg-4"> 
-				{!! Form::submit('Submit', ['class' => 'btn btn-primary', 'style' => 'margin-top: 10px']) !!}
+				{!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
 			</div>
 
 		{!!	Form::close() !!}
