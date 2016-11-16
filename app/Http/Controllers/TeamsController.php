@@ -182,7 +182,32 @@ class TeamsController extends Controller {
 
 		# ddAll($games);
 
-		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games'));
+		$latestDkPlayersDate = DkPlayer::select('date')
+											->join('dk_player_pools', function($join) {
+
+												$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+											})
+											->where('team_id', $id)
+											->groupBy('date')
+											->orderBy('date', 'desc')
+											->take(1)
+											->pluck('date')[0];
+
+		$dkPlayers = DkPlayer::join('players', function($join) {
+
+									$join->on('players.id', '=', 'dk_players.player_id');
+								})
+								->join('dk_player_pools', function($join) {
+
+									$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+								})
+								->where('date', $latestDkPlayersDate)
+								->where('dk_players.team_id', $id)
+								->get();
+
+		# ddAll($dkPlayers);
+
+		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games', 'dkPlayers', 'id'));
 	}
 
 }
