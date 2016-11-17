@@ -41,14 +41,6 @@ class PlayerPoolsController extends Controller {
 		$timeDiffHour = $currentHour - $updatedAtHour;
 		$timeDiffMinute = $currentMinute - $updatedAtMinute;
 
-		if ($timeDiffHour > 0 || $timeDiffMinute > 14) { // update every 15 minutes
-
-
-
-		}
-
-		dd($currentHour);
-
 		$playerPool = DkPlayerPool::where('id', $id)->first();
 
 		$h2Tag = 'Player Pool - '.$playerPool->date.' - '.$playerPool->slate;
@@ -198,101 +190,143 @@ class PlayerPoolsController extends Controller {
 		SCRAPE SCORES AND ODDS
 		****************************************************************************************/
 
-		$client = new Client();
+		if ($timeDiffHour > 0 || $timeDiffMinute > 14) { // update every 15 minutes
 
-		$year = date('Y', strtotime($date));
+			$client = new Client();
 
-		$monthNumber = date('m', strtotime($date));
+			$year = date('Y', strtotime($date));
 
-		$dayNumber = date('d', strtotime($date));
+			$monthNumber = date('m', strtotime($date));
 
-		$crawler = $client->request('GET', 'http://www.scoresandodds.com/grid_'.$year.''.$monthNumber.''.$dayNumber.'.html');	
+			$dayNumber = date('d', strtotime($date));
 
-		$numTableRows = $crawler->filter('tr.team')->count();
+			$crawler = $client->request('GET', 'http://www.scoresandodds.com/grid_'.$year.''.$monthNumber.''.$dayNumber.'.html');	
 
-		foreach ($activeTeams as &$activeTeam) {
-			
-			for ($i = 0; $i < $numTableRows; $i++) { 
+			$numTableRows = $crawler->filter('tr.team')->count();
 
-				$tableRow = $crawler->filter('tr.team')->eq($i);
-
-				$unformattedTeam = trim($tableRow->filter('td')->eq(0)->text());
-
-				$saoName = preg_replace("/(\d+\s)(.+)/", "$2", $unformattedTeam);
-
-				if ($saoName === $activeTeam['sao_name']) {
-
-					$unformattedVegasScore = trim($tableRow->filter('td')->eq(3)->text());
-
-					if (strpos($unformattedVegasScore, '-') === false && $unformattedVegasScore !== 'PK') {
-
-						$activeTeam['total'] = $unformattedVegasScore;
-
-					} else if (strpos($unformattedVegasScore, '-') !== false) {
-
-						$activeTeam['spread'] = abs(preg_replace("/(-\S+)(\s.+)/", "$1", $unformattedVegasScore));
-
-					} else if ($unformattedVegasScore === 'PK') {
-						
-						$activeTeam['spread'] = 0;
-					}
-				}
-			}				
-		}
-
-		unset($activeTeam);
-
-		$mirrorActiveTeams = $activeTeams;
-
-		foreach ($activeTeams as &$activeTeam) {
-			
-			foreach ($mirrorActiveTeams as $mirrorActiveTeam) {
+			foreach ($activeTeams as &$activeTeam) {
 				
-				if ($activeTeam['opp_dk_name'] === $mirrorActiveTeam['dk_name']) {
+				for ($i = 0; $i < $numTableRows; $i++) { 
 
-					if (isset($activeTeam['total'])) {
+					$tableRow = $crawler->filter('tr.team')->eq($i);
 
-						$activeTeam['vegas_pts'] = ($activeTeam['total'] - $mirrorActiveTeam['spread']) / 2;
-						$activeTeam['real_total'] = $activeTeam['total'];
-						$activeTeam['real_spread'] = $mirrorActiveTeam['spread'];
+					$unformattedTeam = trim($tableRow->filter('td')->eq(0)->text());
+
+					$saoName = preg_replace("/(\d+\s)(.+)/", "$2", $unformattedTeam);
+
+					if ($saoName === $activeTeam['sao_name']) {
+
+						$unformattedVegasScore = trim($tableRow->filter('td')->eq(3)->text());
+
+						if ($unformattedVegasScore === '') {
+
+							$activeTeam['total'] = null;
+							$activeTeam['spread'] = null;
+
+							continue;
+						}
+
+						if (strpos($unformattedVegasScore, '-') === false && $unformattedVegasScore !== 'PK') {
+
+							$activeTeam['total'] = $unformattedVegasScore;
+
+						} else if (strpos($unformattedVegasScore, '-') !== false) {
+
+							$activeTeam['spread'] = abs(preg_replace("/(-\S+)(\s.+)/", "$1", $unformattedVegasScore));
+
+						} else if ($unformattedVegasScore === 'PK') {
+							
+							$activeTeam['spread'] = 0;
+						}
 					}
+				}				
+			}
 
-					if (isset($activeTeam['spread'])) {
+			unset($activeTeam);
 
-						$activeTeam['vegas_pts'] = ($mirrorActiveTeam['total'] + $activeTeam['spread']) / 2;
-						$activeTeam['real_total'] = $mirrorActiveTeam['total'];
-						$activeTeam['real_spread'] = $activeTeam['spread'] * -1;
+			$mirrorActiveTeams = $activeTeams;
+
+			foreach ($activeTeams as &$activeTeam) {
+				
+				foreach ($mirrorActiveTeams as $mirrorActiveTeam) {
+					
+					if ($activeTeam['opp_dk_name'] === $mirrorActiveTeam['dk_name']) {
+
+						// http://php.net/manual/en/function.isset.php 
+						// "isset() will return FALSE if testing a variable that has been set to NULL."
+
+						if (isset($activeTeam['total'])) { 
+
+							$activeTeam['vegas_pts'] = ($activeTeam['total'] - $mirrorActiveTeam['spread']) / 2;
+							$activeTeam['real_total'] = $activeTeam['total'];
+							$activeTeam['real_spread'] = $mirrorActiveTeam['spread'];
+						}
+
+						if (isset($activeTeam['spread'])) {
+
+							$activeTeam['vegas_pts'] = ($mirrorActiveTeam['total'] + $activeTeam['spread']) / 2;
+							$activeTeam['real_total'] = $mirrorActiveTeam['total'];
+							$activeTeam['real_spread'] = $activeTeam['spread'] * -1;
+						}
+
+						if (!isset($activeTeam['vegas_pts'])) {
+
+							$activeTeam['vegas_pts'] = 100;
+							$activeTeam['real_total'] = null;
+							$activeTeam['real_spread'] = null;						
+						}
+
+						$activeTeam['projected_dk_pts'] = $activeTeam['vegas_pts'] * 2.097070; // based on "SELECT sum(dk_pts) / sum(vegas_pts) FROM dfsninja.game_lines;"
+
+						Cache::forever($activeTeam['dk_name'], $activeTeam['dk_name']);
+						Cache::forever($activeTeam['dk_name'].'_total', $activeTeam['real_total']);
+						Cache::forever($activeTeam['dk_name'].'_spread', $activeTeam['real_spread']);
+						Cache::forever($activeTeam['dk_name'].'_projected_dk_pts', $activeTeam['projected_dk_pts']);
+
+						break;
 					}
-
-					$activeTeam['projected_dk_pts'] = $activeTeam['vegas_pts'] * 2.097070; // based on "SELECT sum(dk_pts) / sum(vegas_pts) FROM dfsninja.game_lines;"
-
-					break;
 				}
 			}
-		}
 
-		unset($activeTeam);
+			unset($activeTeam);
 
-		# ddAll($activeTeams);
+			# ddAll($activeTeams);
 
-		foreach ($dkPlayers as &$dkPlayer) {
-			
-			foreach ($activeTeams as $activeTeam) {
+			foreach ($dkPlayers as &$dkPlayer) {
 				
-				if ($dkPlayer['team'] === $activeTeam['dk_name']) {
+				foreach ($activeTeams as $activeTeam) {
+					
+					if ($dkPlayer['team'] === $activeTeam['dk_name']) {
 
-					$dkPlayer['total'] = $activeTeam['real_total'];
-					$dkPlayer['spread'] = $activeTeam['real_spread'];
-					$dkPlayer['projected_team_dk_pts'] = $activeTeam['projected_dk_pts'];
+						$dkPlayer['total'] = $activeTeam['real_total'];
+						$dkPlayer['spread'] = $activeTeam['real_spread'];
+						$dkPlayer['projected_team_dk_pts'] = $activeTeam['projected_dk_pts'];
 
-					break;
+						break;
+					}
 				}
 			}
+
+			unset($dkPlayer);
+
+			Cache::forever('updated_at_hour', $currentHour);
+			Cache::forever('updated_at_minute', $currentMinute);
+
+			# dd($dkPlayers);
+
+		} else {
+
+			foreach ($dkPlayers as &$dkPlayer) {
+				
+				$dkPlayer['total'] = Cache::get($dkPlayer['team'].'_total');
+				$dkPlayer['spread'] = Cache::get($dkPlayer['team'].'_spread');
+				$dkPlayer['projected_team_dk_pts'] = Cache::get($dkPlayer['team'].'_projected_dk_pts');
+			}
+
+			unset($dkPlayer);
 		}
 
-		unset($dkPlayer);
-
-		# ddAll($dkPlayers);
+		ddAll($dkPlayers);
 
 		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive'));
 	}
