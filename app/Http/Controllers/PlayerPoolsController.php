@@ -1,5 +1,7 @@
 <?php namespace App\Http\Controllers;
 
+date_default_timezone_set('America/Chicago'); 
+
 use App\Models\DkPlayerPool;
 use App\Models\DkPlayer;
 use App\Models\Player;
@@ -8,8 +10,12 @@ use App\Models\BoxScoreLine;
 
 use DB;
 
+use DateTime;
+
 use Goutte\Client;
 use vendor\symfony\DomCrawler\Crawler;
+
+use Illuminate\Support\Facades\Cache;
 
 class PlayerPoolsController extends Controller {
 
@@ -24,6 +30,24 @@ class PlayerPoolsController extends Controller {
 	}
 
 	public function show($id) {
+
+		$currentDate = new DateTime();
+		$currentHour = intval($currentDate->format('H'));
+		$currentMinute = intval($currentDate->format('i'));
+
+		$updatedAtHour = Cache::get('updated_at_hour', 0);
+		$updatedAtMinute = Cache::get('updated_at_minute', 0);
+
+		$timeDiffHour = $currentHour - $updatedAtHour;
+		$timeDiffMinute = $currentMinute - $updatedAtMinute;
+
+		if ($timeDiffHour > 0 || $timeDiffMinute > 14) { // update every 15 minutes
+
+
+
+		}
+
+		dd($currentHour);
 
 		$playerPool = DkPlayerPool::where('id', $id)->first();
 
