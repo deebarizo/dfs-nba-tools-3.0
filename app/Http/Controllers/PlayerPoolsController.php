@@ -48,6 +48,8 @@ class PlayerPoolsController extends Controller {
 
 	    $date = $playerPool->date;
 
+		$dateDiff = date_diff(new DateTime($date), $currentDateTime);
+
 	    $dkPlayers = DkPlayer::select(DB::raw('players.dk_name as name,
 												teams.dk_name as team,
 												dk_players.team_id, 
@@ -115,8 +117,6 @@ class PlayerPoolsController extends Controller {
 		} else {
 
 			$playerPoolIsActive = true; 
-
-		    $dateDiff = date_diff(new DateTime($date), $currentDateTime);
 
 		    if ($currentHour >= 18 || $dateDiff->days >= 1) {
 
@@ -202,7 +202,7 @@ class PlayerPoolsController extends Controller {
 		SCRAPE SCORES AND ODDS
 		****************************************************************************************/
 
-		if ($timeDiffHour > 0 || $timeDiffMinute > 14) { // update every 15 minutes
+		if ($timeDiffHour > 0 || $timeDiffMinute > 14 || $dateDiff->days == 0) { // update every 15 minutes
 
 			$client = new Client();
 
