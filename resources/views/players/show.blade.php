@@ -45,6 +45,23 @@
 							<th>Score</th>
 							<th>Line</th>
 							<th>Links</th>
+							<th>Mp</th>
+							<th>Ot</th>
+							<th>Fg</th>
+							<th>3p</th>
+							<th>Ft</th>
+							<th>Or</th>
+							<th>Dr</th>
+							<th>Tr</th>
+							<th>Ast</th>
+							<th>Bl</th>
+							<th>St</th>
+							<th>Pf</th>
+							<th>To</th>
+							<th>Pt</th>
+							<th>Usg</th>
+							<th>DK</th>
+							<th>DKS</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -70,6 +87,23 @@
 						    	<td>{!! $gameMetadata['html_score'] !!}</td>
 						    	<td>{{ $gameMetadata['line'] }}</td>
 						    	<td><a target="_blank" href="{{ $boxScoreLine->br_link }}">BR</a> | <a target="_blank" href="{{ $pmLink }}">PM</a></td>
+						    	<td>{{ $boxScoreLine->mp }}</td>
+						    	<td>{{ $boxScoreLine->game->ot_periods }}</td>
+						    	<td>{{ $boxScoreLine->fg }}-{{ $boxScoreLine->fga }}</td>
+						    	<td>{{ $boxScoreLine->threep }}-{{ $boxScoreLine->threepa }}</td>
+						    	<td>{{ $boxScoreLine->ft }}-{{ $boxScoreLine->fta }}</td>
+						    	<td>{{ $boxScoreLine->orb }}</td>
+						    	<td>{{ $boxScoreLine->drb }}</td>
+						    	<td>{{ $boxScoreLine->trb }}</td>
+						    	<td>{{ $boxScoreLine->ast }}</td>
+						    	<td>{{ $boxScoreLine->blk }}</td>
+						    	<td>{{ $boxScoreLine->stl }}</td>
+						    	<td>{{ $boxScoreLine->pf }}</td>
+						    	<td>{{ $boxScoreLine->tov }}</td>
+						    	<td>{{ $boxScoreLine->pts }}</td>
+						    	<td>{{ $boxScoreLine->usg_percentage }}</td>
+						    	<td>{{ $boxScoreLine->dk_pts }}</td>
+						    	<td>{{ $boxScoreLine->dk_share }}</td>
 						    </tr>
 						@endforeach
 					</tbody>
