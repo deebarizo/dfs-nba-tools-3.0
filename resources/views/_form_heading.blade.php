@@ -38,6 +38,8 @@
 
 				{!! Session::get('message') !!}
 		    </div>
+
+		    <?php Session::forget('message'); ?>
 		@endif
 	</div>
 </div>
