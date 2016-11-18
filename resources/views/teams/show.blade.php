@@ -10,13 +10,13 @@
 			<div class="team-rotation-line-chart" style="height: 600px"></div>
 		</div>
 
-		{!! Form::open(array('url' => '/team/'.$id )) !!}
+		{!! Form::open(array('url' => '/update_projected_dk_share' )) !!}
+
+			<input name="id" type="hidden" value="{{ $id }}">
 
 			<div class="col-lg-12">
 				<h3>DK Players</h3>
 			</div>
-
-
 
 			<div class="col-lg-4">
 
@@ -31,7 +31,7 @@
 						@foreach ($dkPlayers as $dkPlayer)
 							<tr>
 								<td>{{ $dkPlayer->dk_name }}</td>
-								<td><div class="form-group">{!! Form::text($dkPlayer->id, '', ['class' => 'form-control']) !!}</div></td>
+								<td><div class="form-group">{!! Form::text('dk_player_id_'.$dkPlayer->id, $dkPlayer->p_dk_share, ['class' => 'form-control']) !!}</div></td>
 							</tr>
 						@endforeach
 					</tbody>
@@ -48,7 +48,7 @@
 
 	<script>
 		
-		var team = '<?php echo $team->dk_name; ?>';
+		var team = <?php echo "'".$team->dk_name."'"; ?>;
 		var dates = <?php echo json_encode($dates); ?>;
 		var series = <?php echo json_encode($series); ?>;
 		var games = <?php echo json_encode($games); ?>;

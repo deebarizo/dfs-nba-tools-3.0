@@ -24,7 +24,13 @@ TEAMS
 ****************************************************************************************/
 
 Route::get('/teams', 'TeamsController@index');
-Route::get('/teams/{id}', 'TeamsController@show');
+Route::get('/teams/{id}', [
+
+	'as' => 'teams.show',
+	'uses' => 'TeamsController@show'
+]);
+
+Route::post('/update_projected_dk_share', 'TeamsController@updateProjectedDkShare');
 
 
 /****************************************************************************************

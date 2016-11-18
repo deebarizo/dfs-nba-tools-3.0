@@ -14,6 +14,10 @@ use DB;
 use Goutte\Client;
 use vendor\symfony\DomCrawler\Crawler;
 
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Input;
+
 class TeamsController extends Controller {
 
 	public function index() {
@@ -182,6 +186,38 @@ class TeamsController extends Controller {
 
 		# ddAll($games);
 
+		$dkPlayers = $this->getDkPlayers($id);
+
+		# ddAll($dkPlayers);
+
+		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games', 'dkPlayers', 'id'));
+	}
+
+	public function updateProjectedDkShare(Request $request) {
+
+		$id = $request->input('id');
+
+		$dkPlayers = $this->getDkPlayers($id);
+
+		foreach ($dkPlayers as $dkPlayer) {
+
+			$projectedDkShare = $request->input('dk_player_id_'.$dkPlayer->id);
+
+			if ($projectedDkShare == '') {
+
+				$projectedDkShare = null;
+			}
+
+			$dkPlayer->p_dk_share = $projectedDkShare;
+
+			$dkPlayer->save();
+		}
+
+		return redirect()->route('teams.show', $id); 
+	} 
+
+	private function getDkPlayers($id) {
+
 		$latestDkPlayersDate = DkPlayer::select('date')
 											->join('dk_player_pools', function($join) {
 
@@ -193,21 +229,20 @@ class TeamsController extends Controller {
 											->take(1)
 											->pluck('date')[0];
 
-		$dkPlayers = DkPlayer::join('players', function($join) {
+		return DkPlayer::select('dk_players.id', 
+									'dk_players.p_dk_share',
+									'players.dk_name')
+							->join('players', function($join) {
 
-									$join->on('players.id', '=', 'dk_players.player_id');
-								})
-								->join('dk_player_pools', function($join) {
+								$join->on('players.id', '=', 'dk_players.player_id');
+							})
+							->join('dk_player_pools', function($join) {
 
-									$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
-								})
-								->where('date', $latestDkPlayersDate)
-								->where('dk_players.team_id', $id)
-								->get();
-
-		# ddAll($dkPlayers);
-
-		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games', 'dkPlayers', 'id'));
+								$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+							})
+							->where('date', $latestDkPlayersDate)
+							->where('dk_players.team_id', $id)
+							->get();
 	}
 
 }
