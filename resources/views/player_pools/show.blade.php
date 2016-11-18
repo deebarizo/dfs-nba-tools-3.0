@@ -2,10 +2,10 @@
 
 @section('content')
 	<div class="row">
-		<div class="col-lg-12">
-			<h2>{{ $h2Tag }}</h2>
 
-			<hr>
+		<div class="col-lg-12">
+
+			@include('_form_heading')
 
 			<form class="form-inline" style="margin-bottom: 20px">
 

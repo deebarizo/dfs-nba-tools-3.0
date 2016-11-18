@@ -12,7 +12,11 @@ PLAYER POOLS
 ****************************************************************************************/
 
 Route::get('/player_pools', 'PlayerPoolsController@index');
-Route::get('/player_pools/{id}', 'PlayerPoolsController@show');
+Route::get('/player_pools/{id}', [
+
+	'as' => 'player_pools.show',
+	'uses' => 'PlayerPoolsController@show'
+]);
 
 
 /****************************************************************************************
@@ -28,7 +32,11 @@ PLAYERS
 ****************************************************************************************/
 
 Route::get('/players', 'PlayersController@index');
-Route::get('/players/{id}', 'PlayersController@show');
+Route::get('/players/{id}', [
+
+	'as' => 'players.show',
+	'uses' => 'PlayersController@show'
+]);
 
 
 /****************************************************************************************

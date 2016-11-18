@@ -31,9 +31,9 @@ class PlayerPoolsController extends Controller {
 
 	public function show($id) {
 
-		$currentDate = new DateTime();
-		$currentHour = intval($currentDate->format('H'));
-		$currentMinute = intval($currentDate->format('i'));
+		$currentDateTime = new DateTime();
+		$currentHour = intval($currentDateTime->format('H'));
+		$currentMinute = intval($currentDateTime->format('i'));
 
 		$updatedAtHour = Cache::get('updated_at_hour', 0);
 		$updatedAtMinute = Cache::get('updated_at_minute', 0);
@@ -48,7 +48,7 @@ class PlayerPoolsController extends Controller {
 
 	    $date = $playerPool->date;
 
-		$dkPlayers = DkPlayer::select(DB::raw('players.dk_name as name,
+	    $dkPlayers = DkPlayer::select(DB::raw('players.dk_name as name,
 												teams.dk_name as team,
 												dk_players.team_id, 
 												dk_players.opp_team_id, 
@@ -115,6 +115,18 @@ class PlayerPoolsController extends Controller {
 		} else {
 
 			$playerPoolIsActive = true; 
+
+		    $dateDiff = date_diff(new DateTime($date), $currentDateTime);
+
+		    if ($currentHour >= 18 || $dateDiff->days >= 1) {
+
+		    	\Session::flash('message', 'Please scrape the finished games of this player pool first.');
+
+		    	$activeTeams = [];
+		    	$dkPlayers = [];
+
+		    	return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive'));
+		    } 
 		}
 
 		# ddAll($dkPlayers);
