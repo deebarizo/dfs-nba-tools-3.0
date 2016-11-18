@@ -30,7 +30,7 @@
 					<tbody>
 						@foreach ($dkPlayers as $dkPlayer)
 							<tr>
-								<td>{{ $dkPlayer->dk_name }}</td>
+								<td><a href="/players/{{ $dkPlayer->player_id }}" target="_blank">{{ $dkPlayer->dk_name }}</a></td>
 								<td><div class="form-group">{!! Form::text('dk_player_id_'.$dkPlayer->id, $dkPlayer->p_dk_share, ['class' => 'form-control']) !!}</div></td>
 							</tr>
 						@endforeach
