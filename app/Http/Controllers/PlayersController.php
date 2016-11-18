@@ -106,21 +106,28 @@ class PlayersController extends Controller {
 																	->where('player_id', $id)
 																	->avg('dk_share');
 
-			$boxScoreLines[$season] = BoxScoreLine::select('*')
+			$seasons[$season] = BoxScoreLine::select('*')
 													->join('games', function($join) {
 
 														$join->on('games.id', '=', 'box_score_lines.game_id');
 													})
-													->with('game.game_lines')
+													->join('teams', function($join) {
+
+														$join->on('teams.id', '=', 'box_score_lines.team_id');
+													})
+													->with('game.game_lines.team')
 													->where('date', '>', $years[$i].'-09-01')
 													->where('date', '<', $years[$i+1].'-09-01')
 													->where('player_id', $id)
+													->orderBy('games.date', 'desc')
 													->get();
 		}
 
-		# ddAll($overviews);
+		$seasons = array_reverse($seasons);
+
+		# ddAll($seasons);
 		
-		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'overviews', 'boxScoreLines'));
+		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'overviews', 'seasons'));
 	}
 
 }
