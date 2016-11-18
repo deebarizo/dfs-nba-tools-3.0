@@ -65,7 +65,7 @@
 					    	data-second-position="{{ $dkPlayer['second_position'] }}"
 					    	data-salary="{{ $dkPlayer['salary'] }}"
 					    	class="player-row">
-						    	<td>{{ $dkPlayer['name'] }}</td>
+						    	<td><a href="/players/{{ $dkPlayer['player_id'] }}" target="_blank">{{ $dkPlayer['name'] }}</a></td>
 						    	<td>{{ $dkPlayer['game_time'] }}</td>
 						    	<td>{{ $dkPlayer['total'] }}</td>
 						    	<td>{{ $dkPlayer['spread'] }}</td>

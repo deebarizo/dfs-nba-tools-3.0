@@ -35,6 +35,9 @@ class PlayersController extends Controller {
 		return view('players/index', compact('titleTag', 'h2Tag', 'players'));
 	}
 
+	public function show($id) {
 
+		
+	}
 
 }
