@@ -48,7 +48,9 @@
 						<th>Opp</th>
 						<th>Pos</th>
 						<th>Pos2</th>
+						<th>P DK Pts</th>
 						<th>Sal</th>
+						<th>P Value</th>
 						<th>DK Pts</th>
 						<th>Sal</th>
 						<th>Value</th>
@@ -73,7 +75,9 @@
 						    	<td><a href="/teams/{{ $dkPlayer['opp_team_id'] }}" target="_blank">{{ $dkPlayer['opp_team'] }}</a></td>
 						    	<td>{{ $dkPlayer['first_position'] }}</td>
 						    	<td>{{ $dkPlayer['second_position'] }}</td>
+						    	<td>{{ numFormat($dkPlayer['p_dk_pts'], 2) }}</td>
 						    	<td>{{ $dkPlayer['salary'] }}</td>
+						    	<td>{{ numFormat($dkPlayer['p_value'], 2) }}</td>
 						    	@if (isset($dkPlayer['dk_pts']))
 						    		<td>{{ $dkPlayer['dk_pts'] }}</td>
 						    	@else
@@ -104,12 +108,12 @@
 		var columnIndexes = {
 
 			team: 4,
-			salary: 8,
-			dk_pts: 9,
-			salary2: 10,
-			value: 11,
-			ownership_percentage: 12,
-			position: 13
+			salary: 9,
+			dk_pts: 11,
+			salary2: 12,
+			value: 13,
+			ownership_percentage: 14,
+			position: 15
 		};
 
 		var playerPoolTable = $('#player-pool').DataTable({

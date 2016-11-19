@@ -55,9 +55,9 @@ class PlayersController extends Controller {
 														->where('player_id', $id)
 														->avg('mp');
 
-		if ($overviews['Both']['avg_mp'] > 25) {
+		if ($overviews['Both']['avg_mp'] > 20) {
 
-			$minutesFloor = 25;
+			$minutesFloor = 20;
 
 			$overviews['Both']['avg_mp'] = BoxScoreLine::join('games', function($join) {
 
@@ -69,20 +69,16 @@ class PlayersController extends Controller {
 															->where('mp', '>', $minutesFloor)
 															->avg('mp');
 		
-		} else {
-
-			$minutesFloor = 15;
 		}
 
 		$overviews['Both']['avg_dk_share'] = BoxScoreLine::join('games', function($join) {
 
-																	$join->on('games.id', '=', 'box_score_lines.game_id');
-																})
-																->where('date', '>', $years[0].'-09-01')
-																->where('date', '<', $years[2].'-09-01')
-																->where('mp', '>', $minutesFloor)
-																->where('player_id', $id)
-																->avg('dk_share');
+																$join->on('games.id', '=', 'box_score_lines.game_id');
+															})
+															->where('date', '>', $years[0].'-09-01')
+															->where('date', '<', $years[2].'-09-01')
+															->where('player_id', $id)
+															->avg('dk_share');
 
 		for ($i = 0; $i < 2; $i++) { 
 			
@@ -97,9 +93,9 @@ class PlayersController extends Controller {
 															->where('player_id', $id)
 															->avg('mp');
 
-			if ($overviews[$season]['avg_mp'] > 25) {
+			if ($overviews[$season]['avg_mp'] > 20) {
 
-				$minutesFloor = 25;
+				$minutesFloor = 20;
 
 				$overviews[$season]['avg_mp'] = BoxScoreLine::join('games', function($join) {
 
@@ -110,6 +106,16 @@ class PlayersController extends Controller {
 																->where('player_id', $id)
 																->where('mp', '>', $minutesFloor)
 																->avg('mp');
+
+				$overviews[$season]['avg_dk_share'] = BoxScoreLine::join('games', function($join) {
+
+																		$join->on('games.id', '=', 'box_score_lines.game_id');
+																	})
+																	->where('date', '>', $years[$i].'-09-01')
+																	->where('date', '<', $years[$i+1].'-09-01')
+																	->where('mp', '>', $minutesFloor)
+																	->where('player_id', $id)
+																	->avg('dk_share');
 
 			} else {
 
@@ -124,17 +130,17 @@ class PlayersController extends Controller {
 																->where('player_id', $id)
 																->where('mp', '<', $minutesCeiling)
 																->avg('mp');
-			}
 
-			$overviews[$season]['avg_dk_share'] = BoxScoreLine::join('games', function($join) {
+				$overviews[$season]['avg_dk_share'] = BoxScoreLine::join('games', function($join) {
 
 																		$join->on('games.id', '=', 'box_score_lines.game_id');
 																	})
 																	->where('date', '>', $years[$i].'-09-01')
 																	->where('date', '<', $years[$i+1].'-09-01')
-																	->where('mp', '>', $minutesFloor)
+																	->where('mp', '<', $minutesCeiling)
 																	->where('player_id', $id)
 																	->avg('dk_share');
+			}
 
 			$seasons[$season] = BoxScoreLine::select('*')
 													->join('games', function($join) {
@@ -155,7 +161,7 @@ class PlayersController extends Controller {
 
 		$seasons = array_reverse($seasons);
 
-		# ddAll($seasons);
+		# ddAll($overviews);
 		
 		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'overviews', 'seasons'));
 	}

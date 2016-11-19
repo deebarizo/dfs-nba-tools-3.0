@@ -59,7 +59,8 @@ class PlayerPoolsController extends Controller {
 												salary,
 												game_time,
 												players.id as player_id,
-												ownership_percentage'))
+												ownership_percentage,
+												p_dk_share'))
 								->join('dk_player_pools', function($join) {
 
 									$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
@@ -337,6 +338,20 @@ class PlayerPoolsController extends Controller {
 
 			unset($dkPlayer);
 		}
+
+		foreach ($dkPlayers as &$dkPlayer) {
+
+			if ($dkPlayer['p_dk_share'] === null) {
+
+				$dkPlayer['p_dk_share'] = 0;
+			}
+			
+			$dkPlayer['p_dk_pts'] = $dkPlayer['p_dk_share'] / 100 * $dkPlayer['projected_team_dk_pts'];
+
+			$dkPlayer['p_value'] = $dkPlayer['p_dk_pts'] / ($dkPlayer['salary'] / 1000);
+		}
+
+		unset($dkPlayer);
 
 		# ddAll($dkPlayers);
 
