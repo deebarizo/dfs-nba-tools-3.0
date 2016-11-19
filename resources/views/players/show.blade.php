@@ -21,14 +21,16 @@
 						<th>Season</th>
 						<th>Mp</th>
 						<th>DK Share</th>
+						<th>DKS/Mp</th>
 					</tr>
 				</thead>
 				<tbody>
 					@foreach ($overviews as $timePeriod => $overview)
 						<tr>
 							<td>{{ $timePeriod }}</td>
-							<td>{{ numFormat($overview['avg_mp'], 2) }}</td>
 							<td>{{ numFormat($overview['avg_dk_share'], 2) }}%</td>
+							<td>{{ numFormat($overview['avg_mp'], 2) }}</td>
+							<td>{{ numFormat($overview['avg_dk_share_slash_avg_mp'], 2) }}</td>
 						</tr>
 					@endforeach
 				</tbody>
