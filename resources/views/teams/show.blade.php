@@ -7,6 +7,8 @@
 
 			<hr>
 
+			<p><strong>Links: </strong><a href="http://www.rotoworld.com/teams/nba/{{ $team->rt_name }}" target="_blank">RT</a></p>
+
 			<div class="team-rotation-line-chart" style="height: 600px"></div>
 		</div>
 
