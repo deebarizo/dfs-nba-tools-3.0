@@ -42,6 +42,23 @@ class PlayersController extends Controller {
 		$h2Tag = $player->br_name;
 		$titleTag = $h2Tag.' | ';
 
+		$currentProjectedDkShare = DkPlayer::select('p_dk_share')
+													->join('dk_player_pools', function($join) {
+
+														$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+													})
+													->where('dk_players.player_id', $id)
+													->orderBy('dk_player_pools.date', 'desc')
+													->take(1)
+													->pluck('p_dk_share')[0];
+
+		if ($currentProjectedDkShare === null) {
+
+			$currentProjectedDkShare = 0;
+		}
+
+		$metadata['p_dk_share'] = $currentProjectedDkShare;
+
 		$overviews = [];
 
 		$years = [2015, 2016, 2017];
@@ -163,7 +180,7 @@ class PlayersController extends Controller {
 
 		# ddAll($overviews);
 		
-		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'overviews', 'seasons'));
+		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'metadata', 'overviews', 'seasons'));
 	}
 
 }

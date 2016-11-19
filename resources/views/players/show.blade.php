@@ -11,7 +11,9 @@
 
 			<h4>Overviews</h4>
 
-			<p><strong>Links:</strong> <a target="_blank" href="http://www.google.com/search?q={{ $player->br_name }}+Rotoworld">RT</a> | <a target="_blank" href="{{ $player->br_link }}#all_advanced">BR</a> | <a target="_blank" href="http://www.google.com/search?q={{ $player->br_name }}+ESPN">ESPN</a>
+			<p><strong>Links:</strong> <a target="_blank" href="http://www.google.com/search?q={{ $player->br_name }}+Rotoworld">RT</a> | <a target="_blank" href="{{ $player->br_link }}#all_advanced">BR</a> | <a target="_blank" href="http://www.google.com/search?q={{ $player->br_name }}+ESPN">ESPN</a></p>
+
+			<p><strong>P DK Share: </strong>{{ $metadata['p_dk_share'] }}%</p>
 
 			<table class="table table-striped table-bordered table-hover table-condensed" style="width: 66%">
 				<thead>

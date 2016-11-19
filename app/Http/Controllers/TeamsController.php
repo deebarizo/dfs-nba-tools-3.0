@@ -290,6 +290,8 @@ class TeamsController extends Controller {
 
 					$dkPlayer->p_dk_share = $notNullDkPlayer->p_dk_share;
 
+					$dkPlayer->save();
+
 					break;
 				}
 			}
