@@ -19,8 +19,8 @@
 				<thead>
 					<tr>
 						<th>Season</th>
-						<th>Mp</th>
 						<th>DK Share</th>
+						<th>Mp</th>
 						<th>DKS/Mp</th>
 					</tr>
 				</thead>
