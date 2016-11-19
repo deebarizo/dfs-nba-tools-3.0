@@ -355,7 +355,16 @@ class PlayerPoolsController extends Controller {
 
 		# ddAll($dkPlayers);
 
-		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive'));
+		if ($playerPoolIsActive) {
+
+			$fontSize = '100%';
+		
+		} else {
+
+			$fontSize = '85%';
+		}
+
+		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize'));
 	}
 
 }

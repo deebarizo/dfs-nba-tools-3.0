@@ -37,29 +37,37 @@
 
 			</form>
 
-			<table id="player-pool" class="table table-striped table-bordered table-hover table-condensed">
+			<table id="player-pool" style="font-size: {{ $fontSize }}" class="table table-striped table-bordered table-hover table-condensed">
 				<thead>
 					<tr>
 						<th>Name</th>
-						<th>Time</th>
-						<th>Total</th>
-						<th>Spread</th>
-						<th>Team</th>
-						<th>Opp</th>
-						<th>Pos</th>
-						<th>Pos2</th>
-						<th>P DK Pts</th>
+						<th>Tim</th>
+						<th>Tot</th>
+						<th>Spr</th>
+						<th>Tm</th>
+						<th>Op</th>
+						<th>P</th>
+						<th>P2</th>
+						<th>PDK</th>
 						<th>Sal</th>
-						<th>P Value</th>
-						<th>DK Pts</th>
+						<th>PV</th>
+						<th>DK</th>
 						<th>Sal</th>
-						<th>Value</th>
-						<th>Own%</th>
+						<th>V</th>
+						<th>Own</th>
 						<th>Both Pos</th> <!-- hidden -->
 					</tr>
 				</thead>
 				<tbody>
 					@foreach ($dkPlayers as $dkPlayer)
+
+						<?php 
+
+							$gameTime = preg_replace('/\s/', '', $dkPlayer['game_time']);
+							$gameTime = preg_replace('/M/', '', $gameTime);
+
+						?>
+
 					    <tr data-name="{{ $dkPlayer['name'] }}"
 					    	data-team="{{ $dkPlayer['team'] }}"
 					    	data-opp-team="{{ $dkPlayer['opp_team'] }}"
@@ -68,7 +76,7 @@
 					    	data-salary="{{ $dkPlayer['salary'] }}"
 					    	class="player-row">
 						    	<td><a href="/players/{{ $dkPlayer['player_id'] }}" target="_blank">{{ $dkPlayer['name'] }}</a></td>
-						    	<td>{{ $dkPlayer['game_time'] }}</td>
+						    	<td>{{ $gameTime }}</td>
 						    	<td>{{ $dkPlayer['total'] }}</td>
 						    	<td>{{ $dkPlayer['spread'] }}</td>
 						    	<td><a href="/teams/{{ $dkPlayer['team_id'] }}" target="_blank">{{ $dkPlayer['team'] }}</a></td>
@@ -121,6 +129,24 @@
 			"scrollY": "600px",
 			"paging": false,
 			"order": [[columnIndexes.salary, "desc"]],
+	        "aoColumns": [
+	            { "orderSequence": [ "desc", "asc" ] }, // 0
+	            { "orderSequence": [ "desc", "asc" ] }, // 1
+	            { "orderSequence": [ "desc", "asc" ] }, // 2
+	            { "orderSequence": [ "desc", "asc" ] }, // 3
+	            { "orderSequence": [ "desc", "asc" ] }, // 4
+	            { "orderSequence": [ "desc", "asc" ] }, // 5
+	            { "orderSequence": [ "desc", "asc" ] }, // 6
+	            { "orderSequence": [ "desc", "asc" ] }, // 7
+	            { "orderSequence": [ "desc", "asc" ] }, // 8
+	            { "orderSequence": [ "desc", "asc" ] }, // 9
+	            { "orderSequence": [ "desc", "asc" ] }, // 10
+	            { "orderSequence": [ "desc", "asc" ] }, // 11
+	            { "orderSequence": [ "desc", "asc" ] }, // 12
+	            { "orderSequence": [ "desc", "asc" ] }, // 13
+	            { "orderSequence": [ "desc", "asc" ] }, // 14
+	            { "orderSequence": [ "desc", "asc" ] } // 15
+	        ],
 	        "columnDefs": [ 
 	        	{
 	            	"visible": false,

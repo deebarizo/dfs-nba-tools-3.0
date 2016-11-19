@@ -218,6 +218,20 @@ class TeamsController extends Controller {
 
 	private function getDkPlayers($id) {
 
+		$notNullLatestDkPlayers = DkPlayer::select('date')
+											->join('dk_player_pools', function($join) {
+
+												$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+											})
+											->where('team_id', $id)
+											->whereNotNull('p_dk_share')
+											->groupBy('date')
+											->orderBy('date', 'desc')
+											->take(1)
+											->first();
+
+		# ddAll($notNullLatestDkPlayers);
+
 		$latestDkPlayersDate = DkPlayer::select('date')
 											->join('dk_player_pools', function($join) {
 
@@ -229,21 +243,59 @@ class TeamsController extends Controller {
 											->take(1)
 											->pluck('date')[0];
 
-		return DkPlayer::select('dk_players.id', 
-									'dk_players.p_dk_share',
-									'players.dk_name',
-									'dk_players.player_id')
-							->join('players', function($join) {
+		$dkPlayers = DkPlayer::select('dk_players.id', 
+										'dk_players.p_dk_share',
+										'players.dk_name',
+										'dk_players.player_id')
+								->join('players', function($join) {
 
-								$join->on('players.id', '=', 'dk_players.player_id');
-							})
-							->join('dk_player_pools', function($join) {
+									$join->on('players.id', '=', 'dk_players.player_id');
+								})
+								->join('dk_player_pools', function($join) {
 
-								$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
-							})
-							->where('date', $latestDkPlayersDate)
-							->where('dk_players.team_id', $id)
-							->get();
+									$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+								})
+								->where('date', $latestDkPlayersDate)
+								->where('dk_players.team_id', $id)
+								->get();
+
+		if (!isset($notNullLatestDkPlayers['date'])) {
+
+			return $dkPlayers;			
+		}
+
+		$notNullLatestDkPlayersDate = $notNullLatestDkPlayers['date'];
+
+		$notNullDkPlayers = DkPlayer::select('dk_players.id', 
+												'dk_players.p_dk_share',
+												'players.dk_name',
+												'dk_players.player_id')
+										->join('players', function($join) {
+
+											$join->on('players.id', '=', 'dk_players.player_id');
+										})
+										->join('dk_player_pools', function($join) {
+
+											$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+										})
+										->where('date', $notNullLatestDkPlayersDate)
+										->where('dk_players.team_id', $id)
+										->get();
+
+		foreach ($dkPlayers as $dkPlayer) {
+			
+			foreach ($notNullDkPlayers as $notNullDkPlayer) {
+				
+				if ($notNullDkPlayer->player_id === $dkPlayer->player_id) {
+
+					$dkPlayer->p_dk_share = $notNullDkPlayer->p_dk_share;
+
+					break;
+				}
+			}
+		}
+
+		return $dkPlayers;
 	}
 
 }
