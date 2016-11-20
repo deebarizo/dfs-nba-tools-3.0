@@ -203,7 +203,7 @@ class PlayerPoolsController extends Controller {
 		SCRAPE SCORES AND ODDS
 		****************************************************************************************/
 
-		if ($timeDiffHour > 0 || $timeDiffMinute > 14 || $dateDiff->days == 0) { // update every 15 minutes
+		if ($timeDiffHour > 0 || $timeDiffMinute > 14) { // update every 15 minutes
 
 			$client = new Client();
 
@@ -241,7 +241,9 @@ class PlayerPoolsController extends Controller {
 
 						if (strpos($unformattedVegasScore, '-') === false && $unformattedVegasScore !== 'PK') {
 
-							$activeTeam['total'] = $unformattedVegasScore;
+
+
+							$activeTeam['total'] = preg_replace('/(o|u)(.+)/', '', $unformattedVegasScore);
 
 						} else if (strpos($unformattedVegasScore, '-') !== false) {
 

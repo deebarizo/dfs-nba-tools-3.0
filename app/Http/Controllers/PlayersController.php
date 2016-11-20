@@ -107,7 +107,14 @@ class PlayersController extends Controller {
 															->where('player_id', $id)
 															->avg('mp');
 
-			$overviews[$season]['avg_dk_share_slash_avg_mp'] = $overviews[$season]['avg_dk_share'] / $overviews[$season]['avg_mp'];
+			if ($overviews[$season]['avg_mp'] === null) {
+
+				$overviews[$season]['avg_dk_share_slash_avg_mp'] = 0;
+
+			} else {
+
+				$overviews[$season]['avg_dk_share_slash_avg_mp'] = $overviews[$season]['avg_dk_share'] / $overviews[$season]['avg_mp'];
+			}
 
 			$seasons[$season] = BoxScoreLine::select('*')
 													->join('games', function($join) {

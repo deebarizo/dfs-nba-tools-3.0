@@ -153,7 +153,7 @@ class GameScraper {
 
 							$total = [
 
-								'pts' => $unformattedVegasScore,
+								'pts' => preg_replace('/(o|u)(.+)/', '', $unformattedVegasScore),
 								'location' => $game->game_lines[$gameLineIndex]->location
 							];
 						
