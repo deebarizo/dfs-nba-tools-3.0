@@ -66,6 +66,7 @@
 							<th>Usg</th>
 							<th>DK</th>
 							<th>DKS</th>
+							<th>DKS/Mp</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -82,6 +83,8 @@
 								$dayNumber = date('d', strtotime($boxScoreLine->date));
 
 								$pmLink = 'http://popcornmachine.net/gf?date='.$year.''.$monthNumber.''.$dayNumber.'&game='.$gameMetadata['away_pm_team'].''.$gameMetadata['home_pm_team'];
+
+								$dksSlashMp = $boxScoreLine->dk_share / $boxScoreLine->mp;
 							?>
 
 							<tr>
@@ -107,7 +110,8 @@
 						    	<td>{{ $boxScoreLine->pts }}</td>
 						    	<td>{{ $boxScoreLine->usg_percentage }}</td>
 						    	<td>{{ $boxScoreLine->dk_pts }}</td>
-						    	<td>{{ $boxScoreLine->dk_share }}</td>
+						    	<td>{{ $boxScoreLine->dk_share }}%</td>
+						    	<td>{{ numFormat($dksSlashMp, 2) }}</td>
 						    </tr>
 						@endforeach
 					</tbody>

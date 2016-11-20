@@ -9,18 +9,14 @@
 
 			<p><strong>Links: </strong><a href="http://www.rotoworld.com/teams/clubhouse/nba/{{ $team->rt_name }}" target="_blank">RT</a></p>
 
-			<div class="team-rotation-line-chart" style="height: 600px"></div>
+			<h3>DK Players</h3>
 		</div>
 
-		{!! Form::open(array('url' => '/update_projected_dk_share' )) !!}
+		<div class="col-lg-4">
 
-			<input name="id" type="hidden" value="{{ $id }}">
+			{!! Form::open(array('url' => '/update_projected_dk_share' )) !!}
 
-			<div class="col-lg-12">
-				<h3>DK Players</h3>
-			</div>
-
-			<div class="col-lg-4">
+				<input name="id" type="hidden" value="{{ $id }}">
 
 				<table class="table table-striped table-bordered table-hover table-condensed">
 					<thead>
@@ -38,14 +34,20 @@
 						@endforeach
 					</tbody>
 				</table>
-			</div>
+		</div>
 
-			<div class="col-lg-4"> 
-				{!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
-			</div>
+		<div class="col-lg-4"> 
+			{!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
 
-		{!!	Form::close() !!}
-		
+			{!!	Form::close() !!}
+		</div>
+
+		<div class="col-lg-12">
+
+			<h3>Rotation</h3>
+
+			<div class="team-rotation-line-chart" style="height: 600px"></div>
+		</div>
 	</div>
 
 	<script>

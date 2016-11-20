@@ -81,9 +81,16 @@ class PlayersController extends Controller {
 														->where('player_id', $id)
 														->avg('mp');
 
+		
 
+		if ($overviews['Both']['avg_mp'] === null) {
 
-		$overviews['Both']['avg_dk_share_slash_avg_mp'] = $overviews['Both']['avg_dk_share'] / $overviews['Both']['avg_mp'];
+			$overviews['Both']['avg_dk_share_slash_avg_mp'] = 0;
+
+		} else {
+
+			$overviews['Both']['avg_dk_share_slash_avg_mp'] = $overviews['Both']['avg_dk_share'] / $overviews['Both']['avg_mp'];
+		}
 
 		for ($i = 0; $i < 2; $i++) { 
 			
