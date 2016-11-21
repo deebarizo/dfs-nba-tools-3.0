@@ -126,7 +126,9 @@ class PlayerPoolsController extends Controller {
 		    	$activeTeams = [];
 		    	$dkPlayers = [];
 
-		    	return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive'));
+		    	$fontSize = '100%';
+
+		    	return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize'));
 		    } 
 		}
 
@@ -365,6 +367,10 @@ class PlayerPoolsController extends Controller {
 
 			$fontSize = '85%';
 		}
+
+		$numGames = count($activeTeams) / 2;
+
+		$h2Tag .= ' ('.$numGames.' Games)';
 
 		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize'));
 	}
