@@ -37,6 +37,7 @@ class PlayerPoolsController extends Controller {
 
 		$updatedAtHour = Cache::get('updated_at_hour', 0);
 		$updatedAtMinute = Cache::get('updated_at_minute', 0);
+		$updatedAtDate = Cache::get('updated_at_date', '2016-11-21');
 
 		$timeDiffHour = $currentHour - $updatedAtHour;
 		$timeDiffMinute = $currentMinute - $updatedAtMinute;
@@ -46,9 +47,7 @@ class PlayerPoolsController extends Controller {
 		$h2Tag = 'Player Pool - '.$playerPool->date.' - '.$playerPool->slate;
 	    $titleTag = $h2Tag.' | ';	
 
-	    $date = $playerPool->date;
-
-		$dateDiff = date_diff(new DateTime($date), $currentDateTime);
+	    $dateDiff = date_diff(new DateTime($playerPool->date), $currentDateTime);
 
 	    $dkPlayers = DkPlayer::select(DB::raw('players.dk_name as name,
 												teams.dk_name as team,
@@ -81,7 +80,7 @@ class PlayerPoolsController extends Controller {
 
 											$join->on('games.id', '=', 'box_score_lines.game_id');
 										})
-										->where('games.date', $date)
+										->where('games.date', $playerPool->date)
 										->get();
 
 		if(count($boxScoreLines)) {
@@ -119,9 +118,9 @@ class PlayerPoolsController extends Controller {
 
 			$playerPoolIsActive = true; 
 
-			if ($date !== getTodayDate()) {
+			if ($playerPool->date !== getTodayDate()) {
 
-		   		if ($currentHour >= 18 || $dateDiff->days >= 1) {
+		   		if ($currentHour >= 9) {
 
 			    	\Session::flash('message', 'Please scrape the finished games of this player pool first.');
 
@@ -208,15 +207,18 @@ class PlayerPoolsController extends Controller {
 		SCRAPE SCORES AND ODDS
 		****************************************************************************************/
 
-		if ($timeDiffHour > 0 || $timeDiffMinute > 14) { // update every 15 minutes
+		# prf($timeDiffHour);
+		# ddAll($timeDiffMinute);
+
+		if ($timeDiffHour > 0 || $timeDiffMinute > 14 || $updatedAtDate !== $playerPool->date) { // update every 15 minutes
 
 			$client = new Client();
 
-			$year = date('Y', strtotime($date));
+			$year = date('Y', strtotime($playerPool->date));
 
-			$monthNumber = date('m', strtotime($date));
+			$monthNumber = date('m', strtotime($playerPool->date));
 
-			$dayNumber = date('d', strtotime($date));
+			$dayNumber = date('d', strtotime($playerPool->date));
 
 			$crawler = $client->request('GET', 'http://www.scoresandodds.com/grid_'.$year.''.$monthNumber.''.$dayNumber.'.html');	
 
@@ -331,6 +333,7 @@ class PlayerPoolsController extends Controller {
 
 			Cache::forever('updated_at_hour', $currentHour);
 			Cache::forever('updated_at_minute', $currentMinute);
+			Cache::forever('updated_at_date', $playerPool->date);
 
 			# dd($dkPlayers);
 
