@@ -119,17 +119,20 @@ class PlayerPoolsController extends Controller {
 
 			$playerPoolIsActive = true; 
 
-		    if ($currentHour >= 18 || $dateDiff->days >= 1) {
+			if ($date !== getTodayDate()) {
 
-		    	\Session::flash('message', 'Please scrape the finished games of this player pool first.');
+		   		if ($currentHour >= 18 || $dateDiff->days >= 1) {
 
-		    	$activeTeams = [];
-		    	$dkPlayers = [];
+			    	\Session::flash('message', 'Please scrape the finished games of this player pool first.');
 
-		    	$fontSize = '100%';
+			    	$activeTeams = [];
+			    	$dkPlayers = [];
 
-		    	return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize'));
-		    } 
+			    	$fontSize = '100%';
+
+			    	return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize'));
+			    } 
+			}
 		}
 
 		# ddAll($dkPlayers);
