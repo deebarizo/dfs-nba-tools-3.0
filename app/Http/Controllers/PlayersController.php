@@ -89,7 +89,25 @@ class PlayersController extends Controller {
 
 		} else {
 
-			$overviews['Both']['avg_dk_share_slash_avg_mp'] = $overviews['Both']['avg_dk_share'] / $overviews['Both']['avg_mp'];
+			$overviews['Both']['total_dk_share'] = BoxScoreLine::join('games', function($join) {
+
+																	$join->on('games.id', '=', 'box_score_lines.game_id');
+																})
+																->where('date', '>', $years[0].'-09-01')
+																->where('date', '<', $years[2].'-09-01')
+																->where('player_id', $id)
+																->sum('dk_share');
+
+			$overviews['Both']['total_mp'] = BoxScoreLine::join('games', function($join) {
+
+																	$join->on('games.id', '=', 'box_score_lines.game_id');
+																})
+																->where('date', '>', $years[0].'-09-01')
+																->where('date', '<', $years[2].'-09-01')
+																->where('player_id', $id)
+																->sum('mp');
+
+			$overviews['Both']['avg_dk_share_slash_avg_mp'] = $overviews['Both']['total_dk_share'] / $overviews['Both']['total_mp'];
 		}
 
 		for ($i = 0; $i < 2; $i++) { 
@@ -120,7 +138,25 @@ class PlayersController extends Controller {
 
 			} else {
 
-				$overviews[$season]['avg_dk_share_slash_avg_mp'] = $overviews[$season]['avg_dk_share'] / $overviews[$season]['avg_mp'];
+				$overviews[$season]['total_dk_share'] = BoxScoreLine::join('games', function($join) {
+
+																		$join->on('games.id', '=', 'box_score_lines.game_id');
+																	})
+																	->where('date', '>', $years[$i].'-09-01')
+																	->where('date', '<', $years[$i+1].'-09-01')
+																	->where('player_id', $id)
+																	->sum('dk_share');
+
+				$overviews[$season]['total_mp'] = BoxScoreLine::join('games', function($join) {
+
+																	$join->on('games.id', '=', 'box_score_lines.game_id');
+																})
+																->where('date', '>', $years[$i].'-09-01')
+																->where('date', '<', $years[$i+1].'-09-01')
+																->where('player_id', $id)
+																->sum('mp');
+
+				$overviews[$season]['avg_dk_share_slash_avg_mp'] = $overviews[$season]['total_dk_share'] / $overviews[$season]['total_mp'];
 			}
 
 			$seasons[$season] = BoxScoreLine::select('*')
