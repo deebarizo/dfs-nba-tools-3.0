@@ -49,7 +49,8 @@ class PlayerPoolsController extends Controller {
 
 	    $dateDiff = date_diff(new DateTime($playerPool->date), $currentDateTime);
 
-	    $dkPlayers = DkPlayer::select(DB::raw('players.dk_name as name,
+	    $dkPlayers = DkPlayer::select(DB::raw('dk_players.id as dk_player_id,
+	    										players.dk_name as name,
 												teams.dk_name as team,
 												dk_players.team_id, 
 												dk_players.opp_team_id, 
@@ -201,6 +202,35 @@ class PlayerPoolsController extends Controller {
 		}
 
 		# ddAll($activeTeams);
+
+
+		/****************************************************************************************
+		UPDATE PROJECTED DK SHARE
+		****************************************************************************************/
+
+		if ($updatedAtDate !== $playerPool->date) {
+
+			if ($dkPlayer['p_dk_share'] === null) {
+
+				$latestDkPlayer = DkPlayer::select('*')
+												->join('dk_player_pools', function($join) {
+
+													$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+												})
+												->where('dk_players.player_id', $dkPlayer['player_id'])
+												->whereNotNull('p_dk_share')
+												->orderBy('date', 'desc')
+												->first();
+
+				if ($latestDkPlayer !== null) {
+
+					$dkPlayer['p_dk_share'] = $latestDkPlayer->p_dk_share;
+
+					DkPlayer::where('dk_players.id', $dkPlayer['dk_player_id'])
+								->update(['p_dk_share' => $latestDkPlayer->p_dk_share]);
+				}
+			}
+		}
 
 
 		/****************************************************************************************

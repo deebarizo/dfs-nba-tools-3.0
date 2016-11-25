@@ -7,16 +7,20 @@
 
 			<hr>
 
-			<table class="table table-striped table-bordered table-hover table-condensed" style="width: 20%">
+			<table class="table table-striped table-bordered table-hover table-condensed" style="width: 40%">
 				<thead>
 					<tr>
 						<th>Team</th>
+						<th>Active</th>
+						<th>RT</th>
 					</tr>
 				</thead>
 				<tbody>
 					@foreach ($teams as $team)
 						<tr>
 							<td><a href="/teams/{{ $team->id }}">{{ $team->dk_name }}</a></td>
+							<td></td>
+							<td><a href="http://www.rotoworld.com/teams/clubhouse/nba/{{ $team->rt_name }}" target="_blank">RT</a></td>
 						</tr>
 					@endforeach
 				</tbody>

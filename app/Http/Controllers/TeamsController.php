@@ -26,7 +26,19 @@ class TeamsController extends Controller {
 
 		$h2Tag = 'Teams';
 		$titleTag = $h2Tag.' | ';
-	    
+
+		$activeTeams = DkPlayer::select('dk_players.team_id')
+									->join('dk_player_pools', function($join) {
+
+										$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+									})
+									->where('date', '=', getTodayDate())
+									->whereNotNull('p_dk_share')
+									->groupBy('dk_players.team_id')
+									->pluck('dk_players.team_id');
+
+		ddAll($activeTeams);
+
 		return view('teams/index', compact('titleTag', 'h2Tag', 'teams'));
 	}
 
