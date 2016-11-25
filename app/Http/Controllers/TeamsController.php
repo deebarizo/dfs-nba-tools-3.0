@@ -27,7 +27,7 @@ class TeamsController extends Controller {
 		$h2Tag = 'Teams';
 		$titleTag = $h2Tag.' | ';
 
-		$activeTeams = DkPlayer::select('dk_players.team_id')
+		$activeTeamIds = DkPlayer::select('dk_players.team_id')
 									->join('dk_player_pools', function($join) {
 
 										$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
@@ -37,7 +37,20 @@ class TeamsController extends Controller {
 									->groupBy('dk_players.team_id')
 									->pluck('dk_players.team_id');
 
-		ddAll($activeTeams);
+		foreach ($teams as $team) {
+
+			$team->active = false;
+
+			foreach ($activeTeamIds as $activeTeamId) {
+
+				if ($activeTeamId === $team->id) {
+
+					$team->active = true;
+
+					break;
+				}
+			}
+		}
 
 		return view('teams/index', compact('titleTag', 'h2Tag', 'teams'));
 	}

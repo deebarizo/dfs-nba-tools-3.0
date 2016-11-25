@@ -19,7 +19,7 @@
 					@foreach ($teams as $team)
 						<tr>
 							<td><a href="/teams/{{ $team->id }}">{{ $team->dk_name }}</a></td>
-							<td></td>
+							<td><?php echo ($team->active ? '<img src="/files/images/basketball-icon.png">' :  ''); ?></td>
 							<td><a href="http://www.rotoworld.com/teams/clubhouse/nba/{{ $team->rt_name }}" target="_blank">RT</a></td>
 						</tr>
 					@endforeach
