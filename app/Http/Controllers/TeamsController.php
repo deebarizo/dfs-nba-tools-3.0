@@ -27,7 +27,7 @@ class TeamsController extends Controller {
 		$h2Tag = 'Teams';
 		$titleTag = $h2Tag.' | ';
 
-		$activeTeamIds = DkPlayer::select('dk_players.team_id')
+		$activeTeams = DkPlayer::select(DB::raw('dk_players.team_id as id, dk_players.game_time'))
 									->join('dk_player_pools', function($join) {
 
 										$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
@@ -35,17 +35,18 @@ class TeamsController extends Controller {
 									->where('date', '=', getTodayDate())
 									->whereNotNull('p_dk_share')
 									->groupBy('dk_players.team_id')
-									->pluck('dk_players.team_id');
-
+									->groupBy('dk_players.game_time')
+									->get();
+# ddAll($activeTeams);
 		foreach ($teams as $team) {
 
 			$team->active = false;
 
-			foreach ($activeTeamIds as $activeTeamId) {
+			foreach ($activeTeams as $activeTeam) {
 
-				if ($activeTeamId === $team->id) {
+				if ($activeTeam->id === $team->id) {
 
-					$team->active = true;
+					$team->active = '<img src="/files/images/basketball-icon.png"> '.$activeTeam->game_time;
 
 					break;
 				}

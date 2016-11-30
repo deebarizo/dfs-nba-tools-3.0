@@ -210,26 +210,31 @@ class PlayerPoolsController extends Controller {
 
 		if ($updatedAtDate !== $playerPool->date) {
 
-			if ($dkPlayer['p_dk_share'] === null) {
+			foreach ($dkPlayers as &$dkPlayer) {
 
-				$latestDkPlayer = DkPlayer::select('*')
-												->join('dk_player_pools', function($join) {
+				if ($dkPlayer['p_dk_share'] === null) {
 
-													$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
-												})
-												->where('dk_players.player_id', $dkPlayer['player_id'])
-												->whereNotNull('p_dk_share')
-												->orderBy('date', 'desc')
-												->first();
+					$latestDkPlayer = DkPlayer::select('*')
+													->join('dk_player_pools', function($join) {
 
-				if ($latestDkPlayer !== null) {
+														$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+													})
+													->where('dk_players.player_id', $dkPlayer['player_id'])
+													->whereNotNull('p_dk_share')
+													->orderBy('date', 'desc')
+													->first();
 
-					$dkPlayer['p_dk_share'] = $latestDkPlayer->p_dk_share;
+					if ($latestDkPlayer !== null) {
 
-					DkPlayer::where('dk_players.id', $dkPlayer['dk_player_id'])
-								->update(['p_dk_share' => $latestDkPlayer->p_dk_share]);
+						$dkPlayer['p_dk_share'] = $latestDkPlayer->p_dk_share;
+
+						DkPlayer::where('dk_players.id', $dkPlayer['dk_player_id'])
+									->update(['p_dk_share' => $latestDkPlayer->p_dk_share]);
+					}
 				}
 			}
+
+			unset($dkPlayer);
 		}
 
 
