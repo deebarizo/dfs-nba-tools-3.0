@@ -12,7 +12,7 @@
 			<h3>DK Players</h3>
 		</div>
 
-		<div class="col-lg-4">
+		<div class="col-lg-6">
 
 			{!! Form::open(array('url' => '/update_projected_dk_share' )) !!}
 
@@ -21,7 +21,8 @@
 				<table class="table table-striped table-bordered table-hover table-condensed">
 					<thead>
 						<tr>
-							<th style="width: 70%">DK Player</th>
+							<th style="width: 50%">DK Player</th>
+							<th style="width: 20%">Sal</th>
 							<th>P DK Share</th>
 						</tr>
 					</thead>
@@ -29,6 +30,7 @@
 						@foreach ($dkPlayers as $dkPlayer)
 							<tr>
 								<td><a href="/players/{{ $dkPlayer->player_id }}" target="_blank">{{ $dkPlayer->dk_name }}</a></td>
+								<td>{{ $dkPlayer->salary }}</td>
 								<td><div class="form-group">{!! Form::text('dk_player_id_'.$dkPlayer->id, $dkPlayer->p_dk_share, ['class' => 'form-control']) !!}</div></td>
 							</tr>
 						@endforeach

@@ -272,7 +272,8 @@ class TeamsController extends Controller {
 		$dkPlayers = DkPlayer::select('dk_players.id', 
 										'dk_players.p_dk_share',
 										'players.dk_name',
-										'dk_players.player_id')
+										'dk_players.player_id',
+										'dk_players.salary')
 								->join('players', function($join) {
 
 									$join->on('players.id', '=', 'dk_players.player_id');
