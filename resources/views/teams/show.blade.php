@@ -46,7 +46,7 @@
 
 			<h3>Rotation</h3>
 
-			<div class="team-rotation-line-chart" style="height: 600px"></div>
+			<div class="team-rotation-line-chart" style="height: 800px"></div>
 		</div>
 	</div>
 
