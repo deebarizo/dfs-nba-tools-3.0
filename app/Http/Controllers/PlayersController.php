@@ -169,16 +169,87 @@ class PlayersController extends Controller {
 														$join->on('teams.id', '=', 'box_score_lines.team_id');
 													})
 													->with('game.game_lines.team')
-													->where('date', '>', $years[$i].'-09-01')
-													->where('date', '<', $years[$i+1].'-09-01')
-													->where('player_id', $id)
+													->where('games.date', '>', $years[$i].'-09-01')
+													->where('games.date', '<', $years[$i+1].'-09-01')
+													->where('box_score_lines.player_id', $id)
 													->orderBy('games.date', 'desc')
 													->get();
 		}
 
 		$seasons = array_reverse($seasons);
 
-		# ddAll($overviews);
+		$dkPlayerPools = DkPlayerPool::select(DB::raw('dk_player_pool_id as id'))
+										->join('dk_players', function($join) {
+
+											$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+										})
+										->where('dk_players.player_id', $id)
+										->get();
+
+		# ddAll($dkPlayerPools);
+
+		foreach ($dkPlayerPools as $dkPlayerPool) {
+
+			$teamIds = DkPlayer::select('team_id')
+						->where('dk_player_pool_id', $dkPlayerPool->id)
+						->groupBy('team_id')
+						->get();
+
+			$dkPlayerPool->num_of_games = count($teamIds) / 2;
+		}
+
+		$dkPlayers = DkPlayer::select('*')
+								->join('dk_player_pools', function($join) {
+
+									$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+								})
+								->where('dk_players.player_id', $id)
+								->get();
+
+		foreach ($seasons as $season) {
+			
+			foreach ($season as $boxScoreLine) {
+
+				$dkPlayerExists = false;
+				
+				foreach ($dkPlayers as $dkPlayer) {
+					
+					if ($dkPlayer->date === $boxScoreLine->date) {
+
+						$boxScoreLine->salary = $dkPlayer->salary;
+						$boxScoreLine->ownership_percentage = $dkPlayer->ownership_percentage;
+
+						$boxScoreLine->value = $boxScoreLine->dk_pts / ($boxScoreLine->salary / 1000);
+
+						foreach ($dkPlayerPools as $dkPlayerPool) {
+							
+							if ($dkPlayerPool->id === $dkPlayer->dk_player_pool_id) {
+
+								$boxScoreLine->num_of_games = $dkPlayerPool->num_of_games;
+
+								break;
+							}
+						}
+
+						$dkPlayerExists = true;
+
+						break;
+					}
+				}
+
+				if (!$dkPlayerExists) {
+
+					$placeholder = null;
+
+					$boxScoreLine->salary = $placeholder;
+					$boxScoreLine->ownership_percentage = $placeholder;
+
+					$boxScoreLine->value = $placeholder;
+				}
+			}
+		}
+
+		# ddAll($seasons);
 		
 		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'metadata', 'overviews', 'seasons'));
 	}

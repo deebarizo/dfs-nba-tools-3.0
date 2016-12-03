@@ -40,7 +40,7 @@
 
 				<h4>Box Score Lines ({{ $years }})</h4>
 
-				<table class="table table-striped table-bordered table-hover table-condensed">
+				<table style="font-size: 85%" class="table table-striped table-bordered table-hover table-condensed">
 					<thead>
 						<tr>
 							<th>Date</th>
@@ -65,8 +65,12 @@
 							<th>Pt</th>
 							<th>Usg</th>
 							<th>DK</th>
+							<th>Sal</th>
+							<th>V</th>
 							<th>DKS</th>
 							<th>DKS/Mp</th>
+							<th>Own</th>
+							<th>G</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -110,8 +114,12 @@
 						    	<td>{{ $boxScoreLine->pts }}</td>
 						    	<td>{{ $boxScoreLine->usg_percentage }}</td>
 						    	<td>{{ $boxScoreLine->dk_pts }}</td>
+						    	<td>{{ $boxScoreLine->salary }}</td>
+						    	<td>{{ numFormat($boxScoreLine->value, 2) }}</td>
 						    	<td>{{ $boxScoreLine->dk_share }}%</td>
 						    	<td>{{ numFormat($dksSlashMp, 2) }}</td>
+						    	<td>{{ $boxScoreLine->ownership_percentage }}</td>
+						    	<td>{{ $boxScoreLine->num_of_games }}</td>
 						    </tr>
 						@endforeach
 					</tbody>
