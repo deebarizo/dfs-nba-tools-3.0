@@ -115,7 +115,7 @@
 						    	<td>{{ $boxScoreLine->usg_percentage }}</td>
 						    	<td>{{ $boxScoreLine->dk_pts }}</td>
 						    	<td>{{ $boxScoreLine->salary }}</td>
-						    	<td>{{ numFormat($boxScoreLine->value, 2) }}</td>
+						    	<td><?php echo ($boxScoreLine->value ? numFormat($boxScoreLine->value, 2) : ''); ?></td>
 						    	<td>{{ $boxScoreLine->dk_share }}%</td>
 						    	<td>{{ numFormat($dksSlashMp, 2) }}</td>
 						    	<td>{{ $boxScoreLine->ownership_percentage }}</td>
