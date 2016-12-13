@@ -331,7 +331,7 @@ class BoxScoreLineScraper {
 			}
 		}
 
-		$this->message = 'Success! '.$numScrapedGames.' games were scraped.';		
+		$this->message = 'Success! <strong>'.$numScrapedGames.'</strong> games were scraped.';		
 
 		return $this;
 	}
