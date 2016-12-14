@@ -11,7 +11,7 @@
 			<div class="col-lg-2"> 
 				<div class="form-group">
 					{!! Form::label('date', 'Date:') !!}
-					{!! Form::text('date', '2016-12-11', ['class' => 'form-control']) !!}
+					{!! Form::text('date', getYesterdayDate(), ['class' => 'form-control']) !!}
 				</div>
 			</div>
 

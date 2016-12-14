@@ -67,19 +67,36 @@ class ParsersController extends Controller {
 
 			$rawPlayerName = preg_replace("/(.*)(\s\(.*)/", "$1", $rawLine);
 
-			$dkPlayer = DkPlayer::join('players', function($join) {
+			$dkPlayer = DkPlayer::select('dk_players.id', 'players.dk_name', 'dk_players.your_ownership_percentage')
+									->join('players', function($join) {
 
 										$join->on('players.id', '=', 'dk_players.player_id');
 									})
 									->where('dk_players.dk_player_pool_id', $dkPlayerPool->id)
-									->where('players.dk_name', $raw)
+									->where(function($query) use($rawPlayerName) {
 
-			dd($dkPlayer);
+										return $query->where('dk_name', $rawPlayerName)
+														->orWhere('dk_short_name', $rawPlayerName);
+									})
+									->first();
+
+			if (!$dkPlayer) {
+
+				$message = 'The player name, '.$rawPlayerName.', does not exist in the database.';
+
+				return redirect()->route('admin.parsers.your_dk_ownership_percentages')->with('message', $message);      
+			}
+
+			$yourOwnershipPercentage = preg_replace("/(.*:\s)(.*)(%)/", "$2", $rawLine);
+
+			$dkPlayer->your_ownership_percentage = $yourOwnershipPercentage;
+
+			$dkPlayer->save();
 		}
 
-		ddAll($rawLines);
+		$message = 'Success!';
 
-		
+		return redirect()->route('admin.parsers.your_dk_ownership_percentages')->with('message', $message);  
 	}
 
 }
