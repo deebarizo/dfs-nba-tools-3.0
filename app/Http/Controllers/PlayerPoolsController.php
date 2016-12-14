@@ -60,6 +60,7 @@ class PlayerPoolsController extends Controller {
 												game_time,
 												players.id as player_id,
 												ownership_percentage,
+												your_ownership_percentage, 
 												p_dk_share'))
 								->join('dk_player_pools', function($join) {
 

@@ -54,7 +54,8 @@
 						<th>DK</th>
 						<th>Sal</th>
 						<th>V</th>
-						<th>Own</th>
+						<th>YO</th>
+						<th>O</th>
 						<th>Both Pos</th> <!-- hidden -->
 					</tr>
 				</thead>
@@ -97,6 +98,11 @@
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>
 						    	@endif
+						    	@if ($dkPlayer['your_ownership_percentage'])
+						    		<td>{{ $dkPlayer['your_ownership_percentage'] }}</td>
+						    	@else
+						    		<td>{{ numFormat(0, 2) }}</td>
+						    	@endif
 						    	@if ($dkPlayer['ownership_percentage'])
 						    		<td>{{ $dkPlayer['ownership_percentage'] }}</td>
 						    	@else
@@ -120,8 +126,9 @@
 			dk_pts: 11,
 			salary2: 12,
 			value: 13,
-			ownership_percentage: 14,
-			position: 15
+			your_ownership_percentage: 14, 
+			ownership_percentage: 15,
+			position: 16
 		};
 
 		var playerPoolTable = $('#player-pool').DataTable({
@@ -145,7 +152,8 @@
 	            { "orderSequence": [ "desc", "asc" ] }, // 12
 	            { "orderSequence": [ "desc", "asc" ] }, // 13
 	            { "orderSequence": [ "desc", "asc" ] }, // 14
-	            { "orderSequence": [ "desc", "asc" ] } // 15
+	            { "orderSequence": [ "desc", "asc" ] }, // 15
+	            { "orderSequence": [ "desc", "asc" ] } // 16
 	        ],
 	        "columnDefs": [ 
 	        	{
@@ -168,7 +176,11 @@
 					{
 		            	"visible": false,
 		            	"targets": columnIndexes.ownership_percentage
-	        		}
+	        		},
+					{
+		            	"visible": false,
+		            	"targets": columnIndexes.your_ownership_percentage
+	        		}	        		
 	        	<?php } ?>
 	        ]
 		});
