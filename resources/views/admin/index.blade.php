@@ -18,6 +18,7 @@
 			<ul>
 				<li><a href="/admin/parsers/dk_player_pool">DK Player Pool</a></li>
 				<li><a href="/admin/parsers/dk_ownership_percentages">DK Ownership Percentages</a></li>
+				<li><a href="/admin/parsers/your_dk_ownership_percentages">Your DK Ownership Percentages</a></li>
 			</ul>
 
 			<h4>CRUD</h4>

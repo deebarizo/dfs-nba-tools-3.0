@@ -47,4 +47,14 @@ class ParsersController extends Controller {
         return redirect()->route('admin.parsers.dk_ownership_percentages')->with('message', $message);       	
 	}
 
+	public function parseYourDkOwnershipPercentages(Request $request) {
+
+		$date = trim($request->input('date'));
+		$slate = trim($request->input('slate'));
+
+		$rawTextarea = trim($request->input('your-dk-ownership-percentages'));
+
+		
+	}
+
 }
