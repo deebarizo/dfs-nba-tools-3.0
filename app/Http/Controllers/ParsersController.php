@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Input;
 use App\UseCases\FileUploader;
 use App\UseCases\PlayerPoolParser;
 
+use App\Models\DkPlayerPool;
+use App\Models\Player;
+use App\Models\Team;
+use App\Models\DkPlayer;
+
 class ParsersController extends Controller {
 
 	public function parseDkPlayerPool(Request $request) {
@@ -53,6 +58,26 @@ class ParsersController extends Controller {
 		$slate = trim($request->input('slate'));
 
 		$rawTextarea = trim($request->input('your-dk-ownership-percentages'));
+
+		$dkPlayerPool = DkPlayerPool::where('date', $date)->where('slate', $slate)->first();
+
+		$rawLines = preg_split("/\\r\\n|\\r|\\n/", $rawTextarea);
+
+		foreach ($rawLines as $rawLine) {
+
+			$rawPlayerName = preg_replace("/(.*)(\s\(.*)/", "$1", $rawLine);
+
+			$dkPlayer = DkPlayer::join('players', function($join) {
+
+										$join->on('players.id', '=', 'dk_players.player_id');
+									})
+									->where('dk_players.dk_player_pool_id', $dkPlayerPool->id)
+									->where('players.dk_name', $raw)
+
+			dd($dkPlayer);
+		}
+
+		ddAll($rawLines);
 
 		
 	}
