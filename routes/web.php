@@ -43,6 +43,12 @@ Route::get('/players/{id}', [
 	'as' => 'players.show',
 	'uses' => 'PlayersController@show'
 ]);
+Route::get('/players/{id}/edit', [
+
+	'as' => 'players.edit',
+	'uses' => 'PlayersController@edit'
+]);
+Route::post('/players/{id}/update', 'PlayersController@update');
 
 
 /****************************************************************************************

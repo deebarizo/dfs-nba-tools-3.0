@@ -1,5 +1,9 @@
 <?php namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Input;
+
 use App\Models\DkPlayerPool;
 use App\Models\DkPlayer;
 use App\Models\Player;
@@ -21,6 +25,7 @@ class PlayersController extends Controller {
 		$players = Player::select(DB::raw('players.id,
 											players.br_name,
 											players.dk_name,
+											players.dk_short_name,
 											players.br_link,
 											teams.dk_name as team'))
 							->join('teams', function($join) {
@@ -252,6 +257,39 @@ class PlayersController extends Controller {
 		# ddAll($seasons);
 		
 		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'metadata', 'overviews', 'seasons'));
+	}
+
+	public function edit($id) {
+
+		$player = Player::with('team')->where('id', $id)->first();
+
+		$h2Tag = $player->br_name;
+		$titleTag = $h2Tag.' | ';
+
+		$teams = Team::all();
+
+		# 	ddAll($player);
+
+		return view('players/edit', compact('titleTag', 'h2Tag', 'player', 'teams'));
+	}
+
+	public function update($id, Request $request) {
+
+		$player = Player::find($id);
+
+		$teamDkName = $request->input('team');
+		$team = Team::where('dk_name', $teamDkName)->first();
+
+		$player->team_id = $team->id;
+		$player->br_name = ($request->input('br-name') ? $request->input('br-name') : null);
+		$player->dk_name = ($request->input('dk-name') ? $request->input('dk-name') : null);
+		$player->dk_short_name = ($request->input('dk-short-name') ? $request->input('dk-short-name') : null);
+
+		$player->save();
+
+        $message = 'Success!';
+
+        return redirect('/players/'.$id.'/edit')->with('message', $message);		
 	}
 
 }

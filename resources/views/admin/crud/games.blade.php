@@ -16,7 +16,7 @@
 			</div>
 
 			<div class="col-lg-12"> 
-				{!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
+				{!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
 			</div>
 
 		{!!	Form::close() !!}
