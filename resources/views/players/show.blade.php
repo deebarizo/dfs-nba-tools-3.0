@@ -13,7 +13,42 @@
 
 			<p><strong>Links:</strong> <a target="_blank" href="http://www.google.com/search?q={{ $player->br_name }}+Rotoworld">RT</a> | <a target="_blank" href="{{ $player->br_link }}#all_advanced">BR</a> | <a target="_blank" href="http://www.google.com/search?q={{ $player->br_name }}+ESPN">ESPN</a></p>
 
-			<p><strong>P DK Share: </strong>{{ $metadata['p_dk_share'] }}%</p>
+			<h4>Projected Stats</h4>
+
+			{!! Form::open(array('url' => '/players/update_projected_stats' )) !!}
+
+				<input name="dk-players-id" type="hidden" value="{{ $dkPlayer->id }}">
+
+				<table class="table table-striped table-bordered table-hover table-condensed">
+					<thead>
+						<tr>
+							<th>P Mp</th>
+							<th>P Mp Ui</th>
+							<th>P DKS/Mp</th>
+							<th>P DKS/Mp Ui</th>
+							<th>P DK Share</th>
+							<th>P DK Pts</th>
+							<th style="width: 25%">Note</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><div class="form-group">{!! Form::text('p-mp', $dkPlayer->p_mp, ['class' => 'form-control']) !!}</div></td>
+							<td><div class="form-group">{!! Form::text('p-mp-ui', $dkPlayer->p_mp_ui, ['class' => 'form-control']) !!}</div></td>
+							<td><div class="form-group">{!! Form::text('p-dks-slash-mp', $dkPlayer->p_dks_slash_mp, ['class' => 'form-control']) !!}</div></td>
+							<td><div class="form-group">{!! Form::text('p-dks-slash-mp-ui', $dkPlayer->p_dks_slash_mp_ui, ['class' => 'form-control']) !!}</div></td>
+							<td><div class="form-group">{!! Form::text('p-dk-share', $dkPlayer->p_dk_share, ['class' => 'form-control']) !!}</div></td>
+							<td><div class="form-group">{!! Form::text('p-dk-pts', $dkPlayer->p_dk_pts, ['class' => 'form-control']) !!}</div></td>
+							<td><div class="form-group">{!! Form::text('note', $dkPlayer->note, ['class' => 'form-control']) !!}</div></td>
+						</tr>
+					</tbody>
+				</table>
+
+				{!! Form::submit('Submit', ['class' => 'btn btn-primary', 'style' => 'margin-top: -10px']) !!}
+
+			{!!	Form::close() !!}
+
+			<h4>Season Stats</h4>
 
 			<table class="table table-striped table-bordered table-hover table-condensed" style="width: 66%">
 				<thead>

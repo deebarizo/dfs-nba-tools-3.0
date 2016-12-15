@@ -47,22 +47,23 @@ class PlayersController extends Controller {
 		$h2Tag = $player->br_name;
 		$titleTag = $h2Tag.' | ';
 
-		$currentProjectedDkShare = DkPlayer::select('p_dk_share')
-													->join('dk_player_pools', function($join) {
+		$dkPlayer = DkPlayer::select('dk_players.id',
+										'p_mp',
+										'p_mp_ui',
+										'p_dks_slash_mp',
+										'p_dks_slash_mp_ui',
+										'p_dk_share',
+										'p_dk_pts',
+										'note')
+										->join('dk_player_pools', function($join) {
 
-														$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
-													})
-													->where('dk_players.player_id', $id)
-													->orderBy('dk_player_pools.date', 'desc')
-													->take(1)
-													->pluck('p_dk_share')[0];
+											$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+										})
+										->where('dk_players.player_id', $id)
+										->orderBy('dk_player_pools.date', 'desc')
+										->first();
 
-		if ($currentProjectedDkShare === null) {
-
-			$currentProjectedDkShare = 0;
-		}
-
-		$metadata['p_dk_share'] = $currentProjectedDkShare;
+		# ddAll($projectedStats);
 
 		$overviews = [];
 
@@ -254,9 +255,9 @@ class PlayersController extends Controller {
 			}
 		}
 
-		# ddAll($seasons);
+		# ddAll($player);
 		
-		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'metadata', 'overviews', 'seasons'));
+		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'dkPlayer', 'overviews', 'seasons'));
 	}
 
 	public function edit($id) {

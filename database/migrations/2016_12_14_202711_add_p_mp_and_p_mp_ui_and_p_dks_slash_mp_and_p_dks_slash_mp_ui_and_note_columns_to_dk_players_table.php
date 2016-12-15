@@ -19,7 +19,8 @@ class AddPMpAndPMpUiAndPDksSlashMpAndPDksSlashMpUiAndNoteColumnsToDkPlayersTable
             $table->string('p_mp_ui')->nullable()->after('p_mp'); // 'ui' stands for 'update instructions'
             $table->decimal('p_dks_slash_mp', 4, 2)->nullable()->after('p_mp_ui');
             $table->string('p_dks_slash_mp_ui')->nullable()->after('p_dks_slash_mp');
-            $table->string('note')->nullable()->after('p_dks_slash_mp_ui');
+            
+            $table->string('note')->nullable()->after('p_dk_pts');
         });
     }
 
@@ -36,6 +37,7 @@ class AddPMpAndPMpUiAndPDksSlashMpAndPDksSlashMpUiAndNoteColumnsToDkPlayersTable
             $table->dropColumn('p_mp_ui');
             $table->dropColumn('p_dks_slash_mp');
             $table->dropColumn('p_dks_slash_mp_ui');
+            
             $table->dropColumn('note');
         });
     }
