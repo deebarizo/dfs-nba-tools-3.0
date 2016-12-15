@@ -296,7 +296,7 @@ class PlayersController extends Controller {
 
 		$playerId = $request->input('player-id');
 
-		$pMp = trim($request->input('p-mp'));
+		$pMp = (trim($request->input('p-mp')) == '' ? null : trim($request->input('p-mp')));
 
 		if ($pMp !== $dkPlayer->p_mp) {
 
@@ -334,7 +334,7 @@ class PlayersController extends Controller {
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-		$pDksSlashMp = trim($request->input('p-dks-slash-mp'));
+		$pDksSlashMp = (trim($request->input('p-dks-slash-mp')) == '' ? null : trim($request->input('p-dks-slash-mp')));
 
 		if ($pDksSlashMp !== $dkPlayer->p_dks_slash_mp) {
 
