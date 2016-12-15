@@ -17,6 +17,8 @@ use DB;
 
 class PlayersController extends Controller {
 
+	public $years = [2015, 2016, 2017];
+
 	public function index() {
 
 		$h2Tag = 'Players';
@@ -47,32 +49,9 @@ class PlayersController extends Controller {
 		$h2Tag = $player->br_name;
 		$titleTag = $h2Tag.' | ';
 
-		$dkPlayer = DkPlayer::select('dk_players.id',
-										'salary',
-										'p_mp',
-										'p_mp_ui',
-										'p_dks_slash_mp',
-										'p_dks_slash_mp_ui',
-										'p_dk_share',
-										'p_dk_pts',
-										'note')
-										->join('dk_player_pools', function($join) {
-
-											$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
-										})
-										->join('teams', function($join) {
-
-											$join->on('teams.id', '=', 'dk_players.team_id')
-										})
-										->where('dk_players.player_id', $id)
-										->orderBy('dk_player_pools.date', 'desc')
-										->first();
-
-		# ddAll($projectedStats);
-
 		$overviews = [];
 
-		$years = [2015, 2016, 2017];
+		$years = $this->years;
 
 		$overviews['Both']['avg_dk_share'] = BoxScoreLine::join('games', function($join) {
 
@@ -91,8 +70,6 @@ class PlayersController extends Controller {
 														->where('date', '<', $years[2].'-09-01')
 														->where('player_id', $id)
 														->avg('mp');
-
-		
 
 		if ($overviews['Both']['avg_mp'] === null) {
 
@@ -258,7 +235,30 @@ class PlayersController extends Controller {
 					$boxScoreLine->value = $placeholder;
 				}
 			}
+
+			unset($dkPlayer);
 		}
+
+		$dkPlayer = DkPlayer::select('dk_players.id',
+										'salary',
+										'p_mp',
+										'p_mp_ui',
+										'p_dks_slash_mp',
+										'p_dks_slash_mp_ui',
+										'p_dk_share',
+										'p_dk_pts',
+										'note')
+										->join('dk_player_pools', function($join) {
+
+											$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+										})
+										->join('teams', function($join) {
+
+											$join->on('teams.id', '=', 'dk_players.team_id');
+										})
+										->where('dk_players.player_id', $id)
+										->orderBy('dk_player_pools.date', 'desc')
+										->first();
 
 		# ddAll($player);
 		
@@ -300,9 +300,40 @@ class PlayersController extends Controller {
 
 	public function updateProjectedStats(Request $request) {
 
-		$dkPlayerId = $request->input('dk-player-id');
+		$dkPlayer = DkPlayer::find($request->input('dk-player-id'));
 
-		return redirect()->route('players.show', $request->input('player-id')); 
+		$playerId = $request->input('player-id');
+
+		$pMpUi = trim($request->input('p-mp-ui'));
+
+		# ddAll($dkPlayer);
+
+		switch ($pMpUi) {
+
+			case 'm': // manual
+				$pMp = trim($request->input('p-mp'));
+				break;
+			
+			case 'ts': // this season
+				$pMp = BoxScoreLine::join('games', function($join) {
+
+											$join->on('games.id', '=', 'box_score_lines.game_id');
+										})
+										->where('date', '>', $this->years[1].'-09-01')
+										->where('date', '<', $this->years[2].'-09-01')
+										->where('player_id', $playerId)
+										->avg('mp');
+				break;
+		}
+
+		# ddAll($pMp);
+
+		$dkPlayer->p_mp = $pMp;
+		$dkPlayer->p_mp_ui = $pMpUi;
+
+		$dkPlayer->save();
+
+		return redirect()->route('players.show', $playerId); 
 	} 
 
 }
