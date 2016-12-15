@@ -296,13 +296,20 @@ class PlayersController extends Controller {
 
 		$playerId = $request->input('player-id');
 
-		$pMpUi = trim($request->input('p-mp-ui'));
+		$pMp = trim($request->input('p-mp'));
+
+		if ($pMp !== $dkPlayer->p_mp) {
+
+			$pMpUi = 'm';
+
+		} else {
+
+			$pMpUi = trim($request->input('p-mp-ui'));
+		}
 
 		switch ($pMpUi) {
 
 			case 'm': // manual
-				
-				$pMp = trim($request->input('p-mp'));
 				
 				break;
 			
@@ -324,13 +331,23 @@ class PlayersController extends Controller {
 		$dkPlayer->p_mp = $pMp;
 		$dkPlayer->p_mp_ui = $pMpUi;
 
-		$pDksSlashMpUi = trim($request->input('p-dks-slash-mp-ui'));
+
+		/////////////////////////////////////////////////////////////////////////////////////////////
+
+		$pDksSlashMp = trim($request->input('p-dks-slash-mp'));
+
+		if ($pDksSlashMp !== $dkPlayer->p_dks_slash_mp) {
+
+			$pDksSlashMpUi = 'm';
+
+		} else {
+
+			$pDksSlashMpUi = trim($request->input('p-dks-slash-mp-ui'));
+		}
 
 		switch ($pDksSlashMpUi) {
 
 			case 'm': // manual
-				
-				$pDksSlashMp = trim($request->input('p-dks-slash-mp'));
 				
 				break;
 			
