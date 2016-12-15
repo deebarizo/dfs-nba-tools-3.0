@@ -17,6 +17,9 @@ use DB;
 
 use Illuminate\Support\Facades\Cache;
 
+use App\UseCases\SaoUpdater;
+use App\UseCases\SaoScraper;
+
 class PlayersController extends Controller {
 
 	public $years = [2015, 2016, 2017];
@@ -45,6 +48,8 @@ class PlayersController extends Controller {
 	}
 
 	public function show($id) {
+
+		$saoUpdater = new SaoUpdater;
 
 		$player = Player::where('id', $id)->first();
 
@@ -250,9 +255,11 @@ class PlayersController extends Controller {
 										->orderBy('dk_player_pools.date', 'desc')
 										->first();
 
+		$lastUpdate = $saoUpdater->getLastUpdate();
+
 		# ddAll($player);
 		
-		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'dkPlayer', 'overviews', 'seasons'));
+		return view('players/show', compact('titleTag', 'h2Tag', 'player', 'dkPlayer', 'overviews', 'seasons', 'lastUpdate'));
 	}
 
 	public function edit($id) {

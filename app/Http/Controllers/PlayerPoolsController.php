@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Cache;
 
 use App\UseCases\SaoUpdater;
 use App\UseCases\SaoScraper;
+use App\UseCases\activeTeamsGetter;
 
 class PlayerPoolsController extends Controller {
 
@@ -47,7 +48,10 @@ class PlayerPoolsController extends Controller {
 												players.id as player_id,
 												ownership_percentage,
 												your_ownership_percentage, 
-												p_dk_share'))
+												p_mp,
+												p_dks_slash_mp,
+												p_dk_share,
+												p_dk_pts'))
 								->join('dk_player_pools', function($join) {
 
 									$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
@@ -61,8 +65,9 @@ class PlayerPoolsController extends Controller {
 									$join->on('teams.id', '=', 'dk_players.team_id');
 								})
 								->where('dk_player_pools.id', $id)
-								->get()
-								->toArray();
+								->get();
+
+		# ddAll($dkPlayers);
 
 		$boxScoreLines = boxScoreLine::join('games', function($join) {
 
@@ -75,17 +80,17 @@ class PlayerPoolsController extends Controller {
 
 			$playerPoolIsActive = false; // this means the games have already been played
 
-			foreach ($dkPlayers as &$dkPlayer) {
+			foreach ($dkPlayers as $dkPlayer) {
 
 				$playerFound = false;
 				
 				foreach ($boxScoreLines as $boxScoreLine) {
 					
-					if ($dkPlayer['player_id'] === $boxScoreLine->player_id) {
+					if ($dkPlayer->player_id === $boxScoreLine->player_id) {
 
-						$dkPlayer['dk_pts'] = $boxScoreLine->dk_pts;
+						$dkPlayer->dk_pts = $boxScoreLine->dk_pts;
 
-						$dkPlayer['value'] = $dkPlayer['dk_pts'] / ($dkPlayer['salary'] / 1000);
+						$dkPlayer->value = $dkPlayer->dk_pts / ($dkPlayer->salary / 1000);
 
 						$playerFound = true;
 
@@ -95,12 +100,10 @@ class PlayerPoolsController extends Controller {
 
 				if (!$playerFound) {
 
-					$dkPlayer['dk_pts'] = 0;
-					$dkPlayer['value'] = 0;
+					$dkPlayer->dk_pts = 0;
+					$dkPlayer->value = 0;
 				}
 			}
-
-			unset($dkPlayer);
 		
 		} else {
 
@@ -127,106 +130,24 @@ class PlayerPoolsController extends Controller {
 
 		# ddAll($dkPlayers);
 
-		$teams = Team::all();
+		foreach ($dkPlayers as $dkPlayer) {
 
-		$dkNameActiveTeams = [];
+			if ($dkPlayer->second_position !== null) {
 
-		foreach ($dkPlayers as &$dkPlayer) {
-
-			if ($dkPlayer['second_position'] !== null) {
-
-				$dkPlayer['both_positions'] = $dkPlayer['first_position'].'/'.$dkPlayer['second_position'];
+				$dkPlayer->both_positions = $dkPlayer->first_position.'/'.$dkPlayer->second_position;
 			
 			} else {
 
-				$dkPlayer['both_positions'] = $dkPlayer['first_position'];
-			}
-			
-			foreach ($teams as $team) {
-				
-				if ($team->id === $dkPlayer['opp_team_id']) {
-
-					$dkNameActiveTeams[] = $dkPlayer['team'];
-
-					$dkPlayer['opp_team'] = $team->dk_name;
-
-					break;
-				}
+				$dkPlayer->both_positions = $dkPlayer->first_position;
 			}
 		}
 
-		unset($dkPlayer);
+		$activeTeamsGetter = new ActiveTeamsGetter;
 
-		$dkNameActiveTeams = array_unique($dkNameActiveTeams);
-		sort($dkNameActiveTeams);
+		$activeTeams = $activeTeamsGetter->getActiveTeams($dkPlayers);
 
-		$activeTeams = [];
-
-		foreach ($dkNameActiveTeams as $dkNameActiveTeam) {
-
-			foreach ($teams as $team) {
-
-				if ($team->dk_name === $dkNameActiveTeam) {
-
-					foreach ($dkPlayers as $dkPlayer) {
-						
-						if ($dkPlayer['team'] === $dkNameActiveTeam) {
-
-							$dkNameOppTeam = $dkPlayer['opp_team'];
-
-							break;
-						}
-					}
-
-					$activeTeams[] = [
-
-						'id' => $team->id,
-						'dk_name' => $team->dk_name,
-						'sao_name' => $team->sao_name,
-						'opp_dk_name' => $dkNameOppTeam
-					];
-
-					break;
-				}
-			}
-		}
-
-		# ddAll($activeTeams);
-
-
-		/****************************************************************************************
-		UPDATE PROJECTED DK SHARE
-		****************************************************************************************/
-
-		/*if ($updatedAtDate !== $playerPool->date) {
-
-			foreach ($dkPlayers as &$dkPlayer) {
-
-				if ($dkPlayer['p_dk_share'] === null) {
-
-					$latestDkPlayer = DkPlayer::select('*')
-													->join('dk_player_pools', function($join) {
-
-														$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
-													})
-													->where('dk_players.player_id', $dkPlayer['player_id'])
-													->whereNotNull('p_dk_share')
-													->orderBy('date', 'desc')
-													->first();
-
-					if ($latestDkPlayer !== null) {
-
-						$dkPlayer['p_dk_share'] = $latestDkPlayer->p_dk_share;
-
-						DkPlayer::where('dk_players.id', $dkPlayer['dk_player_id'])
-									->update(['p_dk_share' => $latestDkPlayer->p_dk_share]);
-					}
-				}
-			}
-
-			unset($dkPlayer);
-		} */
-
+		ddAll($activeTeams);
+		
 
 		/****************************************************************************************
 		SCRAPE SCORES AND ODDS
@@ -241,6 +162,25 @@ class PlayerPoolsController extends Controller {
 			$saoScraper = new SaoScraper;
 
 			list($activeTeams, $dkPlayers) = $saoScraper->scrapeSao($playerPool->date, $activeTeams, $dkPlayers, $currentHour, $currentMinute);
+
+			foreach ($dkPlayers as &$dkPlayer) {
+				
+				foreach ($activeTeams as $activeTeam) {
+					
+					if ($dkPlayer['team'] === $activeTeam['dk_name']) {
+
+						$dkPlayer['total'] = $activeTeam['real_total'];
+						$dkPlayer['spread'] = $activeTeam['real_spread'];
+						$dkPlayer['projected_team_dk_pts'] = $activeTeam['projected_dk_pts'];
+
+						break;
+					}
+				}
+			}
+
+			Cache::forever('updated_at_hour', $currentHour);
+			Cache::forever('updated_at_minute', $currentMinute);
+			Cache::forever('updated_at_date', $playerPoolDate);
 
 			# dd($dkPlayers);
 

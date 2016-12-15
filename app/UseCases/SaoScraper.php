@@ -107,28 +107,7 @@ class SaoScraper {
 
 		unset($activeTeam);
 
-		# ddAll($activeTeams);
-
-		foreach ($dkPlayers as &$dkPlayer) {
-			
-			foreach ($activeTeams as $activeTeam) {
-				
-				if ($dkPlayer['team'] === $activeTeam['dk_name']) {
-
-					$dkPlayer['total'] = $activeTeam['real_total'];
-					$dkPlayer['spread'] = $activeTeam['real_spread'];
-					$dkPlayer['projected_team_dk_pts'] = $activeTeam['projected_dk_pts'];
-
-					break;
-				}
-			}
-		}
-
-		unset($dkPlayer);
-
-		Cache::forever('updated_at_hour', $currentHour);
-		Cache::forever('updated_at_minute', $currentMinute);
-		Cache::forever('updated_at_date', $playerPoolDate);
+		ddAll($dkPlayers);
 
 		return array($activeTeams, $dkPlayers);
 	}
