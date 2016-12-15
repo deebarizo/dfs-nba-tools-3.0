@@ -50,6 +50,8 @@ Route::get('/players/{id}/edit', [
 ]);
 Route::post('/players/{id}/update', 'PlayersController@update');
 
+Route::post('/players/update_projected_stats', 'PlayersController@updateProjectedStats');
+
 
 /****************************************************************************************
 STUDIES

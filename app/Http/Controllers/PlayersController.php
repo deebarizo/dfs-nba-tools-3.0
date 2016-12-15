@@ -48,6 +48,7 @@ class PlayersController extends Controller {
 		$titleTag = $h2Tag.' | ';
 
 		$dkPlayer = DkPlayer::select('dk_players.id',
+										'salary',
 										'p_mp',
 										'p_mp_ui',
 										'p_dks_slash_mp',
@@ -58,6 +59,10 @@ class PlayersController extends Controller {
 										->join('dk_player_pools', function($join) {
 
 											$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+										})
+										->join('teams', function($join) {
+
+											$join->on('teams.id', '=', 'dk_players.team_id')
 										})
 										->where('dk_players.player_id', $id)
 										->orderBy('dk_player_pools.date', 'desc')
@@ -292,5 +297,12 @@ class PlayersController extends Controller {
 
         return redirect('/players/'.$id.'/edit')->with('message', $message);		
 	}
+
+	public function updateProjectedStats(Request $request) {
+
+		$dkPlayerId = $request->input('dk-player-id');
+
+		return redirect()->route('players.show', $request->input('player-id')); 
+	} 
 
 }

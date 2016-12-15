@@ -15,9 +15,29 @@
 
 			<h4>Projected Stats</h4>
 
+			<table class="table table-striped table-bordered table-hover table-condensed" style="width: 50%">
+				<thead>
+					<tr>
+						<th>P DK Share</th>
+						<th>P DK Pts</th>
+						<th>Sal</th>
+						<th>P Value</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>{{ $dkPlayer->p_dk_share }}%</td>
+						<td>{{ $dkPlayer->dk_share }}%</td>
+						<td>{{ $dkPlayer->salary }}</td>
+						<td>{{ $dkPlayer->dk_share }}%</td>
+					</tr>
+				</tbody>
+			</table>
+
 			{!! Form::open(array('url' => '/players/update_projected_stats' )) !!}
 
-				<input name="dk-players-id" type="hidden" value="{{ $dkPlayer->id }}">
+				<input name="player-id" type="hidden" value="{{ $player->id }}">
+				<input name="dk-player-id" type="hidden" value="{{ $dkPlayer->id }}">
 
 				<table class="table table-striped table-bordered table-hover table-condensed">
 					<thead>
@@ -26,9 +46,7 @@
 							<th>P Mp Ui</th>
 							<th>P DKS/Mp</th>
 							<th>P DKS/Mp Ui</th>
-							<th>P DK Share</th>
-							<th>P DK Pts</th>
-							<th style="width: 25%">Note</th>
+							<th style="width: 45%">Note</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -37,8 +55,6 @@
 							<td><div class="form-group">{!! Form::text('p-mp-ui', $dkPlayer->p_mp_ui, ['class' => 'form-control']) !!}</div></td>
 							<td><div class="form-group">{!! Form::text('p-dks-slash-mp', $dkPlayer->p_dks_slash_mp, ['class' => 'form-control']) !!}</div></td>
 							<td><div class="form-group">{!! Form::text('p-dks-slash-mp-ui', $dkPlayer->p_dks_slash_mp_ui, ['class' => 'form-control']) !!}</div></td>
-							<td><div class="form-group">{!! Form::text('p-dk-share', $dkPlayer->p_dk_share, ['class' => 'form-control']) !!}</div></td>
-							<td><div class="form-group">{!! Form::text('p-dk-pts', $dkPlayer->p_dk_pts, ['class' => 'form-control']) !!}</div></td>
 							<td><div class="form-group">{!! Form::text('note', $dkPlayer->note, ['class' => 'form-control']) !!}</div></td>
 						</tr>
 					</tbody>
