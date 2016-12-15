@@ -30,7 +30,7 @@ Route::get('/teams/{id}', [
 	'uses' => 'TeamsController@show'
 ]);
 
-Route::post('/update_projected_dk_share', 'TeamsController@updateProjectedDkShare');
+Route::post('/update_projected_stats', 'TeamsController@updateProjectedStats');
 
 
 /****************************************************************************************

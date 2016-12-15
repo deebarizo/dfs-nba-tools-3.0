@@ -18,6 +18,8 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Input;
 
+use Illuminate\Support\Facades\Cache;
+
 class TeamsController extends Controller {
 
 	public function index() {
@@ -37,7 +39,7 @@ class TeamsController extends Controller {
 									->groupBy('dk_players.team_id')
 									->groupBy('dk_players.game_time')
 									->get();
-# ddAll($activeTeams);
+
 		foreach ($teams as $team) {
 
 			$team->active = false;
@@ -219,22 +221,40 @@ class TeamsController extends Controller {
 		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games', 'dkPlayers', 'id'));
 	}
 
-	public function updateProjectedDkShare(Request $request) {
+	public function updateProjectedStats(Request $request) {
 
 		$id = $request->input('id');
+
+		$teamDkName = Team::where('id', $id)->pluck('dk_name')[0];
 
 		$dkPlayers = $this->getDkPlayers($id);
 
 		foreach ($dkPlayers as $dkPlayer) {
 
-			$projectedDkShare = $request->input('dk_player_id_'.$dkPlayer->id);
+			$pMp = (trim($request->input('dk_player_id_'.$dkPlayer->id.'_p_mp')) == '' ? null : trim($request->input('dk_player_id_'.$dkPlayer->id.'_p_mp')));
 
-			if ($projectedDkShare == '') {
+			if ($pMp == '') {
 
-				$projectedDkShare = null;
+				$pMp = null;
 			}
 
-			$dkPlayer->p_dk_share = $projectedDkShare;
+			if ($pMp !== $dkPlayer->p_mp) {
+
+				$pMpUi = 'm';
+
+			} else {
+
+				continue;
+			}
+
+			$dkPlayer->p_mp = $pMp;
+			$dkPlayer->p_mp_ui = 'm';
+
+			$dkPlayer->p_dk_share = $dkPlayer->p_mp * $dkPlayer->p_dks_slash_mp;
+
+			$teamProjectedDkPts = Cache::get($teamDkName.'_projected_dk_pts');
+
+			$dkPlayer->p_dk_pts = $teamProjectedDkPts * ($dkPlayer->p_dk_share / 100);
 
 			$dkPlayer->save();
 		}
@@ -243,20 +263,6 @@ class TeamsController extends Controller {
 	} 
 
 	private function getDkPlayers($id) {
-
-		$notNullLatestDkPlayers = DkPlayer::select('date')
-											->join('dk_player_pools', function($join) {
-
-												$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
-											})
-											->where('team_id', $id)
-											->whereNotNull('p_dk_share')
-											->groupBy('date')
-											->orderBy('date', 'desc')
-											->take(1)
-											->first();
-
-		# ddAll($notNullLatestDkPlayers);
 
 		$latestDkPlayersDate = DkPlayer::select('date')
 											->join('dk_player_pools', function($join) {
@@ -270,10 +276,15 @@ class TeamsController extends Controller {
 											->pluck('date')[0];
 
 		$dkPlayers = DkPlayer::select('dk_players.id', 
+										'dk_players.p_mp',
+										'dk_players.p_mp_ui',
+										'dk_players.p_dks_slash_mp',
 										'dk_players.p_dk_share',
+										'dk_players.p_dk_pts',
+										'dk_players.salary',
+										'dk_players.note',
 										'players.dk_name',
-										'dk_players.player_id',
-										'dk_players.salary')
+										'dk_players.player_id')
 								->join('players', function($join) {
 
 									$join->on('players.id', '=', 'dk_players.player_id');
@@ -284,45 +295,9 @@ class TeamsController extends Controller {
 								})
 								->where('date', $latestDkPlayersDate)
 								->where('dk_players.team_id', $id)
+								->orderBy('dk_players.p_mp', 'desc')
+								->orderBy('dk_players.salary', 'desc')
 								->get();
-
-		if (!isset($notNullLatestDkPlayers['date'])) {
-
-			return $dkPlayers;			
-		}
-
-		$notNullLatestDkPlayersDate = $notNullLatestDkPlayers['date'];
-
-		$notNullDkPlayers = DkPlayer::select('dk_players.id', 
-												'dk_players.p_dk_share',
-												'players.dk_name',
-												'dk_players.player_id')
-										->join('players', function($join) {
-
-											$join->on('players.id', '=', 'dk_players.player_id');
-										})
-										->join('dk_player_pools', function($join) {
-
-											$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
-										})
-										->where('date', $notNullLatestDkPlayersDate)
-										->where('dk_players.team_id', $id)
-										->get();
-
-		foreach ($dkPlayers as $dkPlayer) {
-			
-			foreach ($notNullDkPlayers as $notNullDkPlayer) {
-				
-				if ($notNullDkPlayer->player_id === $dkPlayer->player_id) {
-
-					$dkPlayer->p_dk_share = $notNullDkPlayer->p_dk_share;
-
-					$dkPlayer->save();
-
-					break;
-				}
-			}
-		}
 
 		return $dkPlayers;
 	}
