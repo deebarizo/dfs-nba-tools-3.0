@@ -7,6 +7,8 @@
 
 			@include('_form_heading')
 
+			<p><strong>Last Update: </strong>{{ $lastUpdate }}</p>
+
 			<form class="form-inline" style="margin-bottom: 20px">
 
 				<label>Teams</label>

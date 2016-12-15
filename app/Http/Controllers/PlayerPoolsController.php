@@ -1,7 +1,5 @@
 <?php namespace App\Http\Controllers;
 
-date_default_timezone_set('America/Chicago'); 
-
 use App\Models\DkPlayerPool;
 use App\Models\DkPlayer;
 use App\Models\Player;
@@ -10,12 +8,12 @@ use App\Models\BoxScoreLine;
 
 use DB;
 
-use DateTime;
-
 use Goutte\Client;
 use vendor\symfony\DomCrawler\Crawler;
 
 use Illuminate\Support\Facades\Cache;
+
+use App\UseCases\SaoUpdater;
 
 class PlayerPoolsController extends Controller {
 
@@ -31,23 +29,10 @@ class PlayerPoolsController extends Controller {
 
 	public function show($id) {
 
-		$currentDateTime = new DateTime();
-		$currentHour = intval($currentDateTime->format('H'));
-		$currentMinute = intval($currentDateTime->format('i'));
-
-		$updatedAtHour = Cache::get('updated_at_hour', 0);
-		$updatedAtMinute = Cache::get('updated_at_minute', 0);
-		$updatedAtDate = Cache::get('updated_at_date', '2016-11-21');
-
-		$timeDiffHour = $currentHour - $updatedAtHour;
-		$timeDiffMinute = $currentMinute - $updatedAtMinute;
-
 		$playerPool = DkPlayerPool::where('id', $id)->first();
 
 		$h2Tag = 'Player Pool - '.$playerPool->date.' - '.$playerPool->slate;
 	    $titleTag = $h2Tag.' | ';	
-
-	    $dateDiff = date_diff(new DateTime($playerPool->date), $currentDateTime);
 
 	    $dkPlayers = DkPlayer::select(DB::raw('dk_players.id as dk_player_id,
 	    										players.dk_name as name,
@@ -121,6 +106,9 @@ class PlayerPoolsController extends Controller {
 			$playerPoolIsActive = true; 
 
 			if ($playerPool->date !== getTodayDate()) {
+
+				$currentDateTime = new DateTime();
+				$currentHour = intval($currentDateTime->format('H'));
 
 		   		if ($currentHour >= 9) {
 
@@ -209,7 +197,7 @@ class PlayerPoolsController extends Controller {
 		UPDATE PROJECTED DK SHARE
 		****************************************************************************************/
 
-		if ($updatedAtDate !== $playerPool->date) {
+		/*if ($updatedAtDate !== $playerPool->date) {
 
 			foreach ($dkPlayers as &$dkPlayer) {
 
@@ -236,17 +224,18 @@ class PlayerPoolsController extends Controller {
 			}
 
 			unset($dkPlayer);
-		}
+		} */
 
 
 		/****************************************************************************************
 		SCRAPE SCORES AND ODDS
 		****************************************************************************************/
 
-		# prf($timeDiffHour);
-		# ddAll($timeDiffMinute);
+		$saoUpdater = new SaoUpdater;
 
-		if ($timeDiffHour > 0 || $timeDiffMinute > 14 || $updatedAtDate !== $playerPool->date) { // update every 15 minutes
+		list($currentHour, $currentMinute, $timeDiffHour, $timeDiffMinute, $updatedAtDate) = $saoUpdater->getUpdateVariables($playerPool->date);
+
+		if ($saoUpdater->needsToBeUpdated($timeDiffHour, $timeDiffMinute, $updatedAtDate, $playerPool->date)) { // update every 15 minutes
 
 			$client = new Client();
 
@@ -414,7 +403,9 @@ class PlayerPoolsController extends Controller {
 
 		$h2Tag .= ' ('.$numGames.' Games)';
 
-		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize'));
+		$lastUpdate = $saoUpdater->getLastUpdate();
+
+		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize', 'lastUpdate'));
 	}
 
 }
