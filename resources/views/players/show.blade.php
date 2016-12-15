@@ -15,7 +15,7 @@
 
 			<h4>Projected Stats</h4>
 
-			<table class="table table-striped table-bordered table-hover table-condensed" style="width: 50%">
+			<table class="table table-striped table-bordered table-condensed" style="width: 50%">
 				<thead>
 					<tr>
 						<th>P DK Share</th>
@@ -27,9 +27,9 @@
 				<tbody>
 					<tr>
 						<td>{{ $dkPlayer->p_dk_share }}%</td>
-						<td>{{ $dkPlayer->dk_share }}%</td>
+						<td>{{ $dkPlayer->p_dk_pts }}</td>
 						<td>{{ $dkPlayer->salary }}</td>
-						<td>{{ $dkPlayer->dk_share }}%</td>
+						<td>{{ numFormat($dkPlayer->p_dk_pts / ($dkPlayer->salary / 1000), 2) }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -39,7 +39,7 @@
 				<input name="player-id" type="hidden" value="{{ $player->id }}">
 				<input name="dk-player-id" type="hidden" value="{{ $dkPlayer->id }}">
 
-				<table class="table table-striped table-bordered table-hover table-condensed">
+				<table class="table table-striped table-bordered table-condensed">
 					<thead>
 						<tr>
 							<th>P Mp</th>

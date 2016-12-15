@@ -15,6 +15,8 @@ use App\Models\BoxScoreLine;
 
 use DB;
 
+use Illuminate\Support\Facades\Cache;
+
 class PlayersController extends Controller {
 
 	public $years = [2015, 2016, 2017];
@@ -288,7 +290,9 @@ class PlayersController extends Controller {
 
 	public function updateProjectedStats(Request $request) {
 
-		$dkPlayer = DkPlayer::find($request->input('dk-player-id'));
+		$dkPlayer = DkPlayer::with('team')
+								->where('dk_players.id', $request->input('dk-player-id'))
+								->first();
 
 		$playerId = $request->input('player-id');
 
@@ -383,6 +387,10 @@ class PlayersController extends Controller {
 		$dkPlayer->p_dks_slash_mp_ui = $pDksSlashMpUi;	
 
 		$dkPlayer->p_dk_share = $dkPlayer->p_mp * $dkPlayer->p_dks_slash_mp;
+
+		$teamProjectedDkPts = Cache::get($dkPlayer->team->dk_name.'_projected_dk_pts');
+
+		$dkPlayer->p_dk_pts = $teamProjectedDkPts * ($dkPlayer->p_dk_share / 100);
 
 		$dkPlayer->note = (trim($request->input('note')) ? trim($request->input('note')) : null);
 
