@@ -53,15 +53,6 @@ class PlayersController extends Controller {
 
 		$years = $this->years;
 
-		$overviews['Both']['avg_dk_share'] = BoxScoreLine::join('games', function($join) {
-
-																$join->on('games.id', '=', 'box_score_lines.game_id');
-															})
-															->where('date', '>', $years[0].'-09-01')
-															->where('date', '<', $years[2].'-09-01')
-															->where('player_id', $id)
-															->avg('dk_share');
-
 		$overviews['Both']['avg_mp'] = BoxScoreLine::join('games', function($join) {
 
 															$join->on('games.id', '=', 'box_score_lines.game_id');
@@ -73,6 +64,7 @@ class PlayersController extends Controller {
 
 		if ($overviews['Both']['avg_mp'] === null) {
 
+			$overviews['Both']['avg_mp'] = 0;
 			$overviews['Both']['avg_dk_share_slash_avg_mp'] = 0;
 
 		} else {
@@ -98,18 +90,11 @@ class PlayersController extends Controller {
 			$overviews['Both']['avg_dk_share_slash_avg_mp'] = $overviews['Both']['total_dk_share'] / $overviews['Both']['total_mp'];
 		}
 
+		$overviews['Both']['avg_dk_share'] = $overviews['Both']['avg_mp'] * $overviews['Both']['avg_dk_share_slash_avg_mp'];
+
 		for ($i = 0; $i < 2; $i++) { 
 			
 			$season = $years[$i].'-'.$years[$i+1];
-
-			$overviews[$season]['avg_dk_share'] = BoxScoreLine::join('games', function($join) {
-
-																	$join->on('games.id', '=', 'box_score_lines.game_id');
-																})
-																->where('date', '>', $years[$i].'-09-01')
-																->where('date', '<', $years[$i+1].'-09-01')
-																->where('player_id', $id)
-																->avg('dk_share');
 
 			$overviews[$season]['avg_mp'] = BoxScoreLine::join('games', function($join) {
 
@@ -122,6 +107,7 @@ class PlayersController extends Controller {
 
 			if ($overviews[$season]['avg_mp'] === null) {
 
+				$overviews[$season]['avg_mp'] = 0;
 				$overviews[$season]['avg_dk_share_slash_avg_mp'] = 0;
 
 			} else {
@@ -146,6 +132,8 @@ class PlayersController extends Controller {
 
 				$overviews[$season]['avg_dk_share_slash_avg_mp'] = $overviews[$season]['total_dk_share'] / $overviews[$season]['total_mp'];
 			}
+
+			$overviews[$season]['avg_dk_share'] = $overviews[$season]['avg_mp'] * $overviews[$season]['avg_dk_share_slash_avg_mp'];
 
 			$seasons[$season] = BoxScoreLine::select('*')
 													->join('games', function($join) {
@@ -306,15 +294,16 @@ class PlayersController extends Controller {
 
 		$pMpUi = trim($request->input('p-mp-ui'));
 
-		# ddAll($dkPlayer);
-
 		switch ($pMpUi) {
 
 			case 'm': // manual
+				
 				$pMp = trim($request->input('p-mp'));
+				
 				break;
 			
 			case 'ts': // this season
+				
 				$pMp = BoxScoreLine::join('games', function($join) {
 
 											$join->on('games.id', '=', 'box_score_lines.game_id');
@@ -330,6 +319,72 @@ class PlayersController extends Controller {
 
 		$dkPlayer->p_mp = $pMp;
 		$dkPlayer->p_mp_ui = $pMpUi;
+
+		$pDksSlashMpUi = trim($request->input('p-dks-slash-mp-ui'));
+
+		switch ($pDksSlashMpUi) {
+
+			case 'm': // manual
+				
+				$pDksSlashMp = trim($request->input('p-dks-slash-mp'));
+				
+				break;
+			
+			case 'ts': // this season
+				
+				$totalDkShare = BoxScoreLine::join('games', function($join) {
+
+													$join->on('games.id', '=', 'box_score_lines.game_id');
+												})
+												->where('date', '>', $this->years[1].'-09-01')
+												->where('date', '<', $this->years[2].'-09-01')
+												->where('player_id', $playerId)
+												->sum('dk_share');
+
+				$totalMp = BoxScoreLine::join('games', function($join) {
+
+												$join->on('games.id', '=', 'box_score_lines.game_id');
+											})
+											->where('date', '>', $this->years[1].'-09-01')
+											->where('date', '<', $this->years[2].'-09-01')
+											->where('player_id', $playerId)
+											->sum('mp');
+
+				$pDksSlashMp = $totalDkShare / $totalMp;
+				
+				break;
+
+			case 'both': // this season
+				
+				$totalDkShare = BoxScoreLine::join('games', function($join) {
+
+													$join->on('games.id', '=', 'box_score_lines.game_id');
+												})
+												->where('date', '>', $this->years[0].'-09-01')
+												->where('date', '<', $this->years[2].'-09-01')
+												->where('player_id', $playerId)
+												->sum('dk_share');
+
+				$totalMp = BoxScoreLine::join('games', function($join) {
+
+												$join->on('games.id', '=', 'box_score_lines.game_id');
+											})
+											->where('date', '>', $this->years[0].'-09-01')
+											->where('date', '<', $this->years[2].'-09-01')
+											->where('player_id', $playerId)
+											->sum('mp');
+
+				$pDksSlashMp = $totalDkShare / $totalMp;
+				
+				break;
+		}
+
+		$dkPlayer->p_dks_slash_mp = $pDksSlashMp;
+		$dkPlayer->p_dks_slash_mp_ui = $pDksSlashMpUi;	
+
+		$dkPlayer->p_dk_share = $dkPlayer->p_mp * $dkPlayer->p_dks_slash_mp;
+
+		$dkPlayer->note = (trim($request->input('note')) ? trim($request->input('note')) : null);
 
 		$dkPlayer->save();
 
