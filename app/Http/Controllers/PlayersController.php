@@ -50,40 +50,6 @@ class PlayersController extends Controller {
 
 	public function show($id) {
 
-		$saoUpdater = new SaoUpdater;
-
-		$latestPlayerPoolDate = $saoUpdater->getLatestDkPlayerPoolDate();
-
-		list($currentHour, $currentMinute, $timeDiffHour, $timeDiffMinute, $updatedAtDate) = $saoUpdater->getUpdateVariables($latestPlayerPoolDate);
-
-		if ($saoUpdater->needsToBeUpdated($timeDiffHour, $timeDiffMinute, $updatedAtDate, $latestPlayerPoolDate)) { // update every 15 minutes
-
-			$dkPlayers = DkPlayer::join('dk_player_pools', function($join) {
-
-										$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
-									})
-									->join('teams', function($join) {
-
-										$join->on('teams.id', '=', 'dk_players.team_id');
-									})
-									->where('dk_player_pools.date', $latestPlayerPoolDate)
-									->get();
-
-			ddAll($dkPlayers);
-
-			$activeTeamsGetter = new ActiveTeamsGetter;
-
-			$activeTeams = $activeTeamsGetter->getActiveTeams($dkPlayers);
-
-			ddAll($activeTeams);
-
-			$saoScraper = new SaoScraper;
-
-			$activeTeams = $saoScraper->scrapeSao($latestPlayerPoolDate, $activeTeams, $currentHour, $currentMinute);
-
-			ddAll($activeTeams);
-		}
-
 		$player = Player::where('id', $id)->first();
 
 		$h2Tag = $player->br_name;
@@ -275,7 +241,8 @@ class PlayersController extends Controller {
 										'p_dks_slash_mp_ui',
 										'p_dk_share',
 										'p_dk_pts',
-										'note')
+										'note',
+										'team_id')
 										->join('dk_player_pools', function($join) {
 
 											$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
@@ -287,6 +254,39 @@ class PlayersController extends Controller {
 										->where('dk_players.player_id', $id)
 										->orderBy('dk_player_pools.date', 'desc')
 										->first();
+
+		# ddAll($dkPlayer);
+
+		$saoUpdater = new SaoUpdater;
+
+		$playerPool = $saoUpdater->getLatestDkPlayerPool();
+
+		list($currentHour, $currentMinute, $timeDiffHour, $timeDiffMinute, $updatedAtDate) = $saoUpdater->getUpdateVariables($playerPool->date);
+
+		if ($saoUpdater->needsToBeUpdated($timeDiffHour, $timeDiffMinute, $updatedAtDate, $playerPool->date)) { // update every 15 minutes
+
+			$activeTeamsGetter = new ActiveTeamsGetter;
+
+			$activeTeams = $activeTeamsGetter->getActiveTeams($playerPool->id);
+
+			$saoScraper = new SaoScraper;
+
+			$activeTeams = $saoScraper->scrapeSao($playerPool->date, $activeTeams, $currentHour, $currentMinute);
+
+			foreach ($activeTeams as $activeTeam) {
+				
+				if ($activeTeam['id'] === $dkPlayer->team_id) {
+
+					$dkPlayer->p_dk_share = ($dkPlayer->p_dk_share === null ? 0 : $dkPlayer->p_dk_share);
+
+					$dkPlayer->p_dk_pts = numFormat(($dkPlayer->p_dk_share / 100) * $activeTeam['projected_dk_pts'], 2);
+
+					$dkPlayer->save();
+
+					break;
+				}
+			}
+		}
 
 		$lastUpdate = $saoUpdater->getLastUpdate();
 

@@ -69,11 +69,9 @@ class SaoUpdater {
 		Cache::forever('updated_at_date', $date);
 	}
 
-	public function getLatestDkPlayerPoolDate() {
+	public function getLatestDkPlayerPool() {
 
-		$date = DkPlayerPool::take(1)->orderBy('date', 'desc')->pluck('date')[0];
-
-		return $date;
+		return DkPlayerPool::take(1)->orderBy('date', 'desc')->first();
 	}
 
 }
