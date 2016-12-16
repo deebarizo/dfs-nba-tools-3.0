@@ -271,7 +271,7 @@ class PlayersController extends Controller {
 
 			$saoScraper = new SaoScraper;
 
-			$activeTeams = $saoScraper->scrapeSao($playerPool->date, $activeTeams, $currentHour, $currentMinute);
+			$activeTeams = $saoScraper->scrapeSao($playerPool->date, $activeTeams);
 
 			foreach ($activeTeams as $activeTeam) {
 				

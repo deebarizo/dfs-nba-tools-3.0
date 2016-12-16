@@ -1,9 +1,12 @@
 <?php namespace App\UseCases;
 
 use App\Models\DkPlayerPool;
+use App\Models\DkPlayer;
 use App\Models\Player;
 use App\Models\Team;
-use App\Models\DkPlayer;
+
+use App\UseCases\SaoScraper;
+use App\UseCases\ActiveTeamsGetter;
 
 class PlayerPoolParser {
 
@@ -233,7 +236,64 @@ class PlayerPoolParser {
 			# ddAll($this->dkPlayers);
 		} 
 
-		$this->saveDkPlayers($date, $slate);
+		$playerPool = $this->saveDkPlayers($date, $slate);
+
+		$activeTeamsGetter = new ActiveTeamsGetter;
+
+		$activeTeams = $activeTeamsGetter->getActiveTeams($playerPool->id);
+
+		$saoScraper = new SaoScraper;
+
+		$activeTeams = $saoScraper->scrapeSao($playerPool->date, $activeTeams);
+
+		$dkPlayers = DkPlayer::where('dk_player_pool_id', $playerPool->id)->orderBy('team_id', 'asc')->get();
+
+		foreach ($dkPlayers as $dkPlayer) {
+			
+			$latestDkPlayer = DkPlayer::join('dk_player_pools', function($join) {
+
+											$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+										})
+										->where('dk_players.player_id', $dkPlayer->player_id)
+										->where('dk_players.dk_player_pool_id', '!=', $playerPool->id)
+										->orderBy('dk_player_pools.date', 'desc')
+										->first();
+
+			if ($latestDkPlayer) {
+
+				$dkPlayer->p_mp = $latestDkPlayer->p_mp;
+				$dkPlayer->p_mp_ui = $latestDkPlayer->p_mp_ui;
+
+				$dkPlayer->p_dks_slash_mp = $latestDkPlayer->p_dks_slash_mp;
+				$dkPlayer->p_dks_slash_mp_ui = $latestDkPlayer->p_dks_slash_mp_ui;
+
+				$dkPlayer->p_dk_share = $latestDkPlayer->p_dk_share;
+
+				$dkPlayer->note = $latestDkPlayer->note;
+
+			} else {
+
+				$dkPlayer->p_mp = 0;
+				$dkPlayer->p_mp_ui = 'm';
+
+				$dkPlayer->p_dks_slash_mp = 0;
+				$dkPlayer->p_dks_slash_mp_ui = 'm';
+
+				$dkPlayer->p_dk_share = 0;
+			}
+
+			foreach ($activeTeams as $activeTeam) {
+				
+				if ($dkPlayer->team_id === $activeTeam['id']) {
+
+					$dkPlayer->p_dk_pts = ($dkPlayer->p_dk_share / 100) * $activeTeam['projected_dk_pts'];
+
+					break;
+				}
+			}	
+
+			$dkPlayer->save();
+		}
 
 		return $this;	
 	}
@@ -265,6 +325,8 @@ class PlayerPoolParser {
 		}
 
 		$this->message = 'Success!';
+
+		return $dkPlayerPool;
 	}
 
 }

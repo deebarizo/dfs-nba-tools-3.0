@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 
 use App\UseCases\SaoUpdater;
 use App\UseCases\SaoScraper;
-use App\UseCases\activeTeamsGetter;
+use App\UseCases\ActiveTeamsGetter;
 
 class PlayerPoolsController extends Controller {
 
@@ -149,7 +149,7 @@ class PlayerPoolsController extends Controller {
 
 			$saoScraper = new SaoScraper;
 
-			$activeTeams = $saoScraper->scrapeSao($playerPool->date, $activeTeams, $currentHour, $currentMinute);
+			$activeTeams = $saoScraper->scrapeSao($playerPool->date, $activeTeams);
 
 			foreach ($dkPlayers as $dkPlayer) {
 				

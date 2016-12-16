@@ -32,7 +32,7 @@ class SaoUpdater {
 
 	public function needsToBeUpdated($timeDiffHour, $timeDiffMinute, $updatedAtDate, $playerPoolDate) {
 
-		return true;
+		# return true;
 
 		if ($updatedAtDate === $playerPoolDate && ($timeDiffHour > 0 || $timeDiffMinute > 14)) { // update every 15 minutes
 
