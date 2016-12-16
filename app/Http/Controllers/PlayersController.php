@@ -362,7 +362,6 @@ class PlayersController extends Controller {
 		$dkPlayer->p_mp = $pMp;
 		$dkPlayer->p_mp_ui = $pMpUi;
 
-
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
 		$pDksSlashMp = (trim($request->input('p-dks-slash-mp')) == '' ? null : trim($request->input('p-dks-slash-mp')));

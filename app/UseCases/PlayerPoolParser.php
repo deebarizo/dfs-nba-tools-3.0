@@ -7,6 +7,7 @@ use App\Models\Team;
 
 use App\UseCases\SaoScraper;
 use App\UseCases\ActiveTeamsGetter;
+use App\UseCases\PStatsGetter;
 
 class PlayerPoolParser {
 
@@ -246,6 +247,10 @@ class PlayerPoolParser {
 
 		$activeTeams = $saoScraper->scrapeSao($playerPool->date, $activeTeams);
 
+		$pStatsGetter = new PStatsGetter;
+
+		$years = $pStatsGetter->getYears();		
+
 		$dkPlayers = DkPlayer::where('dk_player_pool_id', $playerPool->id)->orderBy('team_id', 'asc')->get();
 
 		foreach ($dkPlayers as $dkPlayer) {
@@ -264,10 +269,14 @@ class PlayerPoolParser {
 				$dkPlayer->p_mp = $latestDkPlayer->p_mp;
 				$dkPlayer->p_mp_ui = $latestDkPlayer->p_mp_ui;
 
+				$dkPlayer->p_mp = $pStatsGetter->getPMp($dkPlayer->p_mp, $dkPlayer->p_mp_ui, $years, $dkPlayer->player_id);
+
 				$dkPlayer->p_dks_slash_mp = $latestDkPlayer->p_dks_slash_mp;
 				$dkPlayer->p_dks_slash_mp_ui = $latestDkPlayer->p_dks_slash_mp_ui;
 
-				$dkPlayer->p_dk_share = $latestDkPlayer->p_dk_share;
+				$dkPlayer->p_dks_slash_mp = $pStatsGetter->getPDksSlashMp($dkPlayer->p_dks_slash_mp, $dkPlayer->p_dks_slash_mp_ui, $years, $dkPlayer->player_id);
+
+				$dkPlayer->p_dk_share = $dkPlayer->p_mp * $dkPlayer->p_dks_slash_mp;
 
 				$dkPlayer->note = $latestDkPlayer->note;
 
