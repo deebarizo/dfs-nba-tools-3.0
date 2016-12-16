@@ -50,6 +50,7 @@
 						<th>Op</th>
 						<th>P</th>
 						<th>P2</th>
+						<th>P Mp</th>
 						<th>PDK</th>
 						<th>Sal</th>
 						<th>PV</th>
@@ -85,6 +86,7 @@
 						    	<td><a href="/teams/{{ $dkPlayer->opp_team_id }}" target="_blank">{{ $dkPlayer->opp_team }}</a></td>
 						    	<td>{{ $dkPlayer->first_position }}</td>
 						    	<td>{{ $dkPlayer->second_position }}</td>
+						    	<td>{{ $dkPlayer->p_mp }}</td>
 						    	<td>{{ $dkPlayer->p_dk_pts }}</td>
 						    	<td>{{ $dkPlayer->salary }}</td>
 						    	<td>{{ numFormat($dkPlayer->p_dk_pts / ($dkPlayer->salary / 1000), 2) }}</td>
@@ -123,13 +125,13 @@
 		var columnIndexes = {
 
 			team: 4,
-			salary: 9,
-			dk_pts: 11,
-			salary2: 12,
-			value: 13,
-			your_ownership_percentage: 14, 
-			ownership_percentage: 15,
-			position: 16
+			salary: 10,
+			dk_pts: 12,
+			salary2: 13,
+			value: 14,
+			your_ownership_percentage: 15, 
+			ownership_percentage: 16,
+			position: 17
 		};
 
 		var playerPoolTable = $('#player-pool').DataTable({
@@ -154,7 +156,8 @@
 	            { "orderSequence": [ "desc", "asc" ] }, // 13
 	            { "orderSequence": [ "desc", "asc" ] }, // 14
 	            { "orderSequence": [ "desc", "asc" ] }, // 15
-	            { "orderSequence": [ "desc", "asc" ] } // 16
+	            { "orderSequence": [ "desc", "asc" ] }, // 16
+	            { "orderSequence": [ "desc", "asc" ] } // 17
 	        ],
 	        "columnDefs": [ 
 	        	{
