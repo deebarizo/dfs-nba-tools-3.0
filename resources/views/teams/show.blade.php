@@ -7,6 +7,8 @@
 
 			<hr>
 
+			<p><strong>Last Update: </strong>{{ $lastUpdate }}</p>
+
 			<p><strong>Links: </strong><a href="http://www.rotoworld.com/teams/clubhouse/nba/{{ $team->rt_name }}" target="_blank">RT</a></p>
 
 			<h3>DK Players</h3>

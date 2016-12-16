@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Input;
 
 use Illuminate\Support\Facades\Cache;
 
+use App\UseCases\SaoUpdater;
+use App\UseCases\SaoScraper;
+use App\UseCases\ActiveTeamsGetter;
+
 class TeamsController extends Controller {
 
 	public function index() {
@@ -212,13 +216,49 @@ class TeamsController extends Controller {
 
 		unset($game);
 
-		# ddAll($games);
-
 		$dkPlayers = $this->getDkPlayers($id);
 
 		# ddAll($dkPlayers);
 
-		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games', 'dkPlayers', 'id'));
+		$saoUpdater = new SaoUpdater;
+
+		$playerPool = $saoUpdater->getLatestDkPlayerPool();
+
+		list($currentHour, $currentMinute, $timeDiffHour, $timeDiffMinute, $updatedAtDate) = $saoUpdater->getUpdateVariables($playerPool->date);
+
+		if ($saoUpdater->needsToBeUpdated($timeDiffHour, $timeDiffMinute, $updatedAtDate, $playerPool->date)) { // update every 15 minutes
+
+			$activeTeamsGetter = new ActiveTeamsGetter;
+
+			$activeTeams = $activeTeamsGetter->getActiveTeams($playerPool->id);
+
+			$saoScraper = new SaoScraper;
+
+			$activeTeams = $saoScraper->scrapeSao($playerPool->date, $activeTeams);
+
+			foreach ($dkPlayers as $dkPlayer) {
+				
+				foreach ($activeTeams as $activeTeam) {
+					
+					if ($activeTeam['id'] === $dkPlayer->team_id) {
+
+						$dkPlayer->p_dk_share = ($dkPlayer->p_dk_share === null ? 0 : $dkPlayer->p_dk_share);
+
+						$dkPlayer->p_dk_pts = numFormat(($dkPlayer->p_dk_share / 100) * $activeTeam['projected_dk_pts'], 2);
+
+						$dkPlayer->save();
+
+						break;
+					}
+				} 				
+			}
+
+			$saoUpdater->setNewUpdatedDateAndTime($currentHour, $currentMinute);
+		}
+
+		$lastUpdate = $saoUpdater->getLastUpdate();
+
+		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games', 'dkPlayers', 'id', 'lastUpdate'));
 	}
 
 	public function updateProjectedStats(Request $request) {
