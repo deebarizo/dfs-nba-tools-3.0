@@ -286,6 +286,8 @@ class PlayersController extends Controller {
 					break;
 				}
 			}
+
+			$saoUpdater->setNewUpdatedDateAndTime($currentHour, $currentMinute);
 		}
 
 		$lastUpdate = $saoUpdater->getLastUpdate();
