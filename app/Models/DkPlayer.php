@@ -26,5 +26,5 @@ class DkPlayer extends Model {
     	return $this->belongsTo(Team::class);
     }
 
-    protected $fillable = ['p_mp', 'p_dk_share', 'p_dk_pts'];
+    # protected $fillable = ['p_mp', 'p_dk_share', 'p_dk_pts'];
 }

@@ -20,10 +20,11 @@ use Illuminate\Support\Facades\Cache;
 use App\UseCases\SaoUpdater;
 use App\UseCases\SaoScraper;
 use App\UseCases\ActiveTeamsGetter;
+use App\UseCases\PStatsGetter;
 
 class PlayersController extends Controller {
 
-	public $years = [2015, 2016, 2017];
+	public $years; 
 
 	public function index() {
 
@@ -55,9 +56,13 @@ class PlayersController extends Controller {
 		$h2Tag = $player->br_name;
 		$titleTag = $h2Tag.' | ';
 
-		$overviews = [];
+		$pStatsGetter = new PStatsGetter;
+
+		$this->years = $pStatsGetter->getYears();
 
 		$years = $this->years;
+
+		$overviews = [];
 
 		$overviews['Both']['avg_mp'] = BoxScoreLine::join('games', function($join) {
 
@@ -332,6 +337,10 @@ class PlayersController extends Controller {
 
 	public function updateProjectedStats(Request $request) {
 
+		$pStatsGetter = new PStatsGetter;
+
+		$this->years = $pStatsGetter->getYears();
+
 		$dkPlayer = DkPlayer::with('team')
 								->where('dk_players.id', $request->input('dk-player-id'))
 								->first();
@@ -339,34 +348,14 @@ class PlayersController extends Controller {
 		$playerId = $request->input('player-id');
 
 		$pMp = (trim($request->input('p-mp')) == '' ? null : trim($request->input('p-mp')));
+		$pMpUi = trim($request->input('p-mp-ui'));
 
 		if ($pMp !== $dkPlayer->p_mp) {
 
 			$pMpUi = 'm';
-
-		} else {
-
-			$pMpUi = trim($request->input('p-mp-ui'));
 		}
 
-		switch ($pMpUi) {
-
-			case 'm': // manual
-				
-				break;
-			
-			case 'ts': // this season
-				
-				$pMp = BoxScoreLine::join('games', function($join) {
-
-											$join->on('games.id', '=', 'box_score_lines.game_id');
-										})
-										->where('date', '>', $this->years[1].'-09-01')
-										->where('date', '<', $this->years[2].'-09-01')
-										->where('player_id', $playerId)
-										->avg('mp');
-				break;
-		}
+		$pMp = $pStatsGetter->getPMp($pMp, $pMpUi, $this->years, $playerId);
 
 		# ddAll($pMp);
 
@@ -377,70 +366,14 @@ class PlayersController extends Controller {
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
 		$pDksSlashMp = (trim($request->input('p-dks-slash-mp')) == '' ? null : trim($request->input('p-dks-slash-mp')));
+		$pDksSlashMpUi = trim($request->input('p-dks-slash-mp-ui'));
 
 		if ($pDksSlashMp !== $dkPlayer->p_dks_slash_mp) {
 
 			$pDksSlashMpUi = 'm';
-
-		} else {
-
-			$pDksSlashMpUi = trim($request->input('p-dks-slash-mp-ui'));
 		}
 
-		switch ($pDksSlashMpUi) {
-
-			case 'm': // manual
-				
-				break;
-			
-			case 'ts': // this season
-				
-				$totalDkShare = BoxScoreLine::join('games', function($join) {
-
-													$join->on('games.id', '=', 'box_score_lines.game_id');
-												})
-												->where('date', '>', $this->years[1].'-09-01')
-												->where('date', '<', $this->years[2].'-09-01')
-												->where('player_id', $playerId)
-												->sum('dk_share');
-
-				$totalMp = BoxScoreLine::join('games', function($join) {
-
-												$join->on('games.id', '=', 'box_score_lines.game_id');
-											})
-											->where('date', '>', $this->years[1].'-09-01')
-											->where('date', '<', $this->years[2].'-09-01')
-											->where('player_id', $playerId)
-											->sum('mp');
-
-				$pDksSlashMp = $totalDkShare / $totalMp;
-				
-				break;
-
-			case 'both': // this season
-				
-				$totalDkShare = BoxScoreLine::join('games', function($join) {
-
-													$join->on('games.id', '=', 'box_score_lines.game_id');
-												})
-												->where('date', '>', $this->years[0].'-09-01')
-												->where('date', '<', $this->years[2].'-09-01')
-												->where('player_id', $playerId)
-												->sum('dk_share');
-
-				$totalMp = BoxScoreLine::join('games', function($join) {
-
-												$join->on('games.id', '=', 'box_score_lines.game_id');
-											})
-											->where('date', '>', $this->years[0].'-09-01')
-											->where('date', '<', $this->years[2].'-09-01')
-											->where('player_id', $playerId)
-											->sum('mp');
-
-				$pDksSlashMp = $totalDkShare / $totalMp;
-				
-				break;
-		}
+		$pDksSlashMp = $pStatsGetter->getPDksSlashMp($pDksSlashMp, $pDksSlashMpUi, $this->years, $playerId);
 
 		$dkPlayer->p_dks_slash_mp = $pDksSlashMp;
 		$dkPlayer->p_dks_slash_mp_ui = $pDksSlashMpUi;	
