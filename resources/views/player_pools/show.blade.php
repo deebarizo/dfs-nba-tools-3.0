@@ -66,51 +66,50 @@
 
 						<?php 
 
-							$gameTime = preg_replace('/\s/', '', $dkPlayer['game_time']);
+							$gameTime = preg_replace('/\s/', '', $dkPlayer->game_time);
 							$gameTime = preg_replace('/M/', '', $gameTime);
-
 						?>
 
-					    <tr data-name="{{ $dkPlayer['name'] }}"
-					    	data-team="{{ $dkPlayer['team'] }}"
-					    	data-opp-team="{{ $dkPlayer['opp_team'] }}"
-					    	data-first-position="{{ $dkPlayer['first_position'] }}"
-					    	data-second-position="{{ $dkPlayer['second_position'] }}"
-					    	data-salary="{{ $dkPlayer['salary'] }}"
+					    <tr data-name="{{ $dkPlayer->name }}"
+					    	data-team="{{ $dkPlayer->team }}"
+					    	data-opp-team="{{ $dkPlayer->opp_team }}"
+					    	data-first-position="{{ $dkPlayer->first_position }}"
+					    	data-second-position="{{ $dkPlayer->second_position }}"
+					    	data-salary="{{ $dkPlayer->salary }}"
 					    	class="player-row">
-						    	<td><a href="/players/{{ $dkPlayer['player_id'] }}" target="_blank">{{ $dkPlayer['name'] }}</a></td>
+						    	<td><a href="/players/{{ $dkPlayer->player_id }}" target="_blank">{{ $dkPlayer->name }}</a></td>
 						    	<td>{{ $gameTime }}</td>
-						    	<td>{{ $dkPlayer['total'] }}</td>
-						    	<td>{{ $dkPlayer['spread'] }}</td>
-						    	<td><a href="/teams/{{ $dkPlayer['team_id'] }}" target="_blank">{{ $dkPlayer['team'] }}</a></td>
-						    	<td><a href="/teams/{{ $dkPlayer['opp_team_id'] }}" target="_blank">{{ $dkPlayer['opp_team'] }}</a></td>
-						    	<td>{{ $dkPlayer['first_position'] }}</td>
-						    	<td>{{ $dkPlayer['second_position'] }}</td>
-						    	<td>{{ numFormat($dkPlayer['p_dk_pts'], 2) }}</td>
-						    	<td>{{ $dkPlayer['salary'] }}</td>
-						    	<td>{{ numFormat($dkPlayer['p_value'], 2) }}</td>
-						    	@if (isset($dkPlayer['dk_pts']))
-						    		<td>{{ $dkPlayer['dk_pts'] }}</td>
+						    	<td>{{ $dkPlayer->total }}</td>
+						    	<td>{{ $dkPlayer->spread }}</td>
+						    	<td><a href="/teams/{{ $dkPlayer->team_id }}" target="_blank">{{ $dkPlayer->team }}</a></td>
+						    	<td><a href="/teams/{{ $dkPlayer->opp_team_id }}" target="_blank">{{ $dkPlayer->opp_team }}</a></td>
+						    	<td>{{ $dkPlayer->first_position }}</td>
+						    	<td>{{ $dkPlayer->second_position }}</td>
+						    	<td>{{ $dkPlayer->p_dk_pts }}</td>
+						    	<td>{{ $dkPlayer->salary }}</td>
+						    	<td>{{ numFormat($dkPlayer->p_dk_pts / ($dkPlayer->salary / 1000), 2) }}</td>
+						    	@if (property_exists($dkPlayer, 'dk_pts'))
+						    		<td>{{ $dkPlayer->dk_pts }}</td>
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>
 						    	@endif
 						    	<td>{{ $dkPlayer['salary'] }}</td>
-						    	@if (isset($dkPlayer['value']))
-						    		<td>{{ numFormat($dkPlayer['value'], 2) }}</td>
+						    	@if (property_exists($dkPlayer, 'value'))
+						    		<td>{{ numFormat($dkPlayer->value, 2) }}</td>
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>
 						    	@endif
-						    	@if ($dkPlayer['your_ownership_percentage'])
-						    		<td>{{ $dkPlayer['your_ownership_percentage'] }}</td>
+						    	@if (property_exists($dkPlayer, 'your_ownership_percentage'))
+						    		<td>{{ $dkPlayer->your_ownership_percentage }}</td>
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>
 						    	@endif
-						    	@if ($dkPlayer['ownership_percentage'])
-						    		<td>{{ $dkPlayer['ownership_percentage'] }}</td>
+						    	@if (property_exists($dkPlayer, 'ownership_percentage'))
+						    		<td>{{ $dkPlayer->ownership_percentage }}</td>
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>
 						    	@endif
-						    	<td>{{ $dkPlayer['both_positions'] }}</td>
+						    	<td>{{ $dkPlayer->both_positions }}</td>
 					    </tr>
 					@endforeach
 				</tbody>

@@ -130,24 +130,12 @@ class PlayerPoolsController extends Controller {
 
 		# ddAll($dkPlayers);
 
-		foreach ($dkPlayers as $dkPlayer) {
-
-			if ($dkPlayer->second_position !== null) {
-
-				$dkPlayer->both_positions = $dkPlayer->first_position.'/'.$dkPlayer->second_position;
-			
-			} else {
-
-				$dkPlayer->both_positions = $dkPlayer->first_position;
-			}
-		}
-
 		$activeTeamsGetter = new ActiveTeamsGetter;
 
 		$activeTeams = $activeTeamsGetter->getActiveTeams($dkPlayers);
 
-		ddAll($activeTeams);
-		
+		# ddAll($dkPlayers);
+
 
 		/****************************************************************************************
 		SCRAPE SCORES AND ODDS
@@ -161,56 +149,74 @@ class PlayerPoolsController extends Controller {
 
 			$saoScraper = new SaoScraper;
 
-			list($activeTeams, $dkPlayers) = $saoScraper->scrapeSao($playerPool->date, $activeTeams, $dkPlayers, $currentHour, $currentMinute);
+			$activeTeams = $saoScraper->scrapeSao($playerPool->date, $activeTeams, $currentHour, $currentMinute);
 
-			foreach ($dkPlayers as &$dkPlayer) {
+			foreach ($dkPlayers as $dkPlayer) {
 				
 				foreach ($activeTeams as $activeTeam) {
 					
-					if ($dkPlayer['team'] === $activeTeam['dk_name']) {
+					if ($dkPlayer->team === $activeTeam['dk_name']) {
 
-						$dkPlayer['total'] = $activeTeam['real_total'];
-						$dkPlayer['spread'] = $activeTeam['real_spread'];
-						$dkPlayer['projected_team_dk_pts'] = $activeTeam['projected_dk_pts'];
+						$dkPlayer->total = $activeTeam['real_total'];
+						$dkPlayer->spread = $activeTeam['real_spread'];
+						$dkPlayer->projected_team_dk_pts = $activeTeam['projected_dk_pts'];
 
 						break;
 					}
 				}
 			}
 
-			Cache::forever('updated_at_hour', $currentHour);
-			Cache::forever('updated_at_minute', $currentMinute);
-			Cache::forever('updated_at_date', $playerPoolDate);
+			foreach ($dkPlayers as $dkPlayer) {
+
+				$eDkPlayer = DkPlayer::find($dkPlayer->dk_player_id);
+
+				if ($dkPlayer->p_mp === null) {
+
+					$dkPlayer->p_mp = 0;
+		
+					$eDkPlayer->p_mp = 0;
+				}
+
+				if ($dkPlayer->p_dk_share === null) {
+
+					$dkPlayer->p_dk_share = 0;
+
+					$eDkPlayer->p_dk_share = 0;
+				}
+
+				$dkPlayer->p_dk_pts = numFormat(($dkPlayer->p_dk_share / 100) * $dkPlayer->projected_team_dk_pts, 2);
+		
+				$eDkPlayer->p_dk_pts = $dkPlayer->p_dk_pts;
+
+				$eDkPlayer->save();
+			}
+
+			$saoUpdater->setNewUpdatedDateAndTime($currentHour, $currentMinute, $playerPool->date);
 
 			# dd($dkPlayers);
 
 		} else {
 
-			foreach ($dkPlayers as &$dkPlayer) {
+			foreach ($dkPlayers as $dkPlayer) {
 				
-				$dkPlayer['total'] = Cache::get($dkPlayer['team'].'_total');
-				$dkPlayer['spread'] = Cache::get($dkPlayer['team'].'_spread');
-				$dkPlayer['projected_team_dk_pts'] = Cache::get($dkPlayer['team'].'_projected_dk_pts');
+				$dkPlayer->total = Cache::get($dkPlayer->team.'_total');
+				$dkPlayer->spread = Cache::get($dkPlayer->team.'_spread');
 			}
-
-			unset($dkPlayer);
 		}
-
-		foreach ($dkPlayers as &$dkPlayer) {
-
-			if ($dkPlayer['p_dk_share'] === null) {
-
-				$dkPlayer['p_dk_share'] = 0;
-			}
-			
-			$dkPlayer['p_dk_pts'] = $dkPlayer['p_dk_share'] / 100 * $dkPlayer['projected_team_dk_pts'];
-
-			$dkPlayer['p_value'] = $dkPlayer['p_dk_pts'] / ($dkPlayer['salary'] / 1000);
-		}
-
-		unset($dkPlayer);
 
 		# ddAll($dkPlayers);
+
+		foreach ($dkPlayers as $dkPlayer) {
+
+			if ($dkPlayer->second_position !== null) {
+
+				$dkPlayer->both_positions = $dkPlayer->first_position.'/'.$dkPlayer->second_position;
+			
+			} else {
+
+				$dkPlayer->both_positions = $dkPlayer->first_position;
+			}
+		}
 
 		if ($playerPoolIsActive) {
 

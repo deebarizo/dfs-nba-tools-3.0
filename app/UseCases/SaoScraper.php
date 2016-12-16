@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 
 class SaoScraper {
 
-	public function scrapeSao($playerPoolDate, $activeTeams, $dkPlayers, $currentHour, $currentMinute) {
+	public function scrapeSao($playerPoolDate, $activeTeams, $currentHour, $currentMinute) {
 
 		$client = new Client();
 
@@ -107,8 +107,6 @@ class SaoScraper {
 
 		unset($activeTeam);
 
-		ddAll($dkPlayers);
-
-		return array($activeTeams, $dkPlayers);
+		return $activeTeams;
 	}
 }

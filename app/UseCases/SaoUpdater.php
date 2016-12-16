@@ -30,7 +30,7 @@ class SaoUpdater {
 
 	public function needsToBeUpdated($timeDiffHour, $timeDiffMinute, $updatedAtDate, $playerPoolDate) {
 
-		if ($timeDiffHour > 0 || $timeDiffMinute > 14 || $updatedAtDate !== $playerPoolDate) { // update every 15 minutes
+		if ($updatedAtDate !== $playerPoolDate || $timeDiffHour > 0 || $timeDiffMinute > 14) { // update every 15 minutes
 
 			return true;
 		}
@@ -45,6 +45,13 @@ class SaoUpdater {
 		$updatedAtDate = Cache::get('updated_at_date', '2016-11-21');
 
 		return $updatedAtDate.' '.$updatedAtHour.':'.$updatedAtMinute;
+	}
+
+	public function setNewUpdatedDateAndTime($currentHour, $currentMinute, $playerPoolDate) {
+
+		Cache::forever('updated_at_hour', $currentHour);
+		Cache::forever('updated_at_minute', $currentMinute);
+		Cache::forever('updated_at_date', $playerPoolDate);
 	}
 
 }
