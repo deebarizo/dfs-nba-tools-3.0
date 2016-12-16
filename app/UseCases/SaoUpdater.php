@@ -54,11 +54,15 @@ class SaoUpdater {
 		return $updatedAtDate.' ('.$time.')';
 	}
 
-	public function setNewUpdatedDateAndTime($currentHour, $currentMinute, $playerPoolDate) {
+	public function setNewUpdatedDateAndTime($currentHour, $currentMinute) {
 
 		Cache::forever('updated_at_hour', $currentHour);
 		Cache::forever('updated_at_minute', $currentMinute);
-		Cache::forever('updated_at_date', $playerPoolDate);
+
+		$currentDateTime = new DateTime();
+		$date = $currentDateTime->format('Y-m-d');
+
+		Cache::forever('updated_at_date', $date);
 	}
 
 }

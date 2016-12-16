@@ -90,23 +90,23 @@
 						    	<td>{{ $dkPlayer->p_dk_pts }}</td>
 						    	<td>{{ $dkPlayer->salary }}</td>
 						    	<td>{{ numFormat($dkPlayer->p_dk_pts / ($dkPlayer->salary / 1000), 2) }}</td>
-						    	@if (property_exists($dkPlayer, 'dk_pts'))
-						    		<td>{{ $dkPlayer->dk_pts }}</td>
+						    	@if (isset($dkPlayer->dk_pts))
+						    		<td>{{ numFormat($dkPlayer->dk_pts, 2) }}</td>
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>
 						    	@endif
-						    	<td>{{ $dkPlayer['salary'] }}</td>
-						    	@if (property_exists($dkPlayer, 'value'))
+						    	<td>{{ $dkPlayer->salary }}</td>
+						    	@if (isset($dkPlayer->value))
 						    		<td>{{ numFormat($dkPlayer->value, 2) }}</td>
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>
 						    	@endif
-						    	@if (property_exists($dkPlayer, 'your_ownership_percentage'))
+						    	@if (isset($dkPlayer->your_ownership_percentage))
 						    		<td>{{ $dkPlayer->your_ownership_percentage }}</td>
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>
 						    	@endif
-						    	@if (property_exists($dkPlayer, 'ownership_percentage'))
+						    	@if (isset($dkPlayer->ownership_percentage))
 						    		<td>{{ $dkPlayer->ownership_percentage }}</td>
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>

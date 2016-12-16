@@ -191,7 +191,7 @@ class PlayerPoolsController extends Controller {
 				$eDkPlayer->save();
 			}
 
-			$saoUpdater->setNewUpdatedDateAndTime($currentHour, $currentMinute, $playerPool->date);
+			$saoUpdater->setNewUpdatedDateAndTime($currentHour, $currentMinute);
 
 			# dd($dkPlayers);
 
