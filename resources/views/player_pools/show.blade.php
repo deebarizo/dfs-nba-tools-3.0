@@ -43,6 +43,7 @@
 				<thead>
 					<tr>
 						<th>Name</th>
+						<th>TP</th>
 						<th>Tim</th>
 						<th>Tot</th>
 						<th>Spr</th>
@@ -79,6 +80,7 @@
 					    	data-salary="{{ $dkPlayer->salary }}"
 					    	class="player-row">
 						    	<td><a href="/players/{{ $dkPlayer->player_id }}" target="_blank">{{ $dkPlayer->name }}</a></td>
+						    	<td class="stars"><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="0" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="1" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="2" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="3" aria-hidden="true"></span></td>
 						    	<td>{{ $gameTime }}</td>
 						    	<td>{{ $dkPlayer->total }}</td>
 						    	<td>{{ $dkPlayer->spread }}</td>
@@ -122,16 +124,18 @@
 
 	<script type="text/javascript">
 
+
+
 		var columnIndexes = {
 
-			team: 4,
-			salary: 10,
-			dk_pts: 12,
-			salary2: 13,
-			value: 14,
-			your_ownership_percentage: 15, 
-			ownership_percentage: 16,
-			position: 17
+			team: 5,
+			salary: 11,
+			dk_pts: 13,
+			salary2: 14,
+			value: 15,
+			your_ownership_percentage: 16, 
+			ownership_percentage: 17,
+			position: 18
 		};
 
 		var playerPoolTable = $('#player-pool').DataTable({
@@ -157,7 +161,8 @@
 	            { "orderSequence": [ "desc", "asc" ] }, // 14
 	            { "orderSequence": [ "desc", "asc" ] }, // 15
 	            { "orderSequence": [ "desc", "asc" ] }, // 16
-	            { "orderSequence": [ "desc", "asc" ] } // 17
+	            { "orderSequence": [ "desc", "asc" ] }, // 17
+	            { "orderSequence": [ "desc", "asc" ] } // 18
 	        ],
 	        "columnDefs": [ 
 	        	{
@@ -192,6 +197,45 @@
 		$('#player-pool_filter').hide();
 
 
+		/****************************************************************************************
+		TOP PLAYS
+		****************************************************************************************/
+
+		var maxNumOfStars = 4;
+
+		$('span.star').on('click', function(e) {
+
+			e.preventDefault();
+
+			var clickNumber = $(this).data('star');
+
+			console.log('clickNumber: '+clickNumber);
+
+			var stars = $(this).closest('td.stars');
+
+			var numOfActiveStars = stars.find('span.star.glyphicon-star').length;
+
+			console.log('numOfActiveStars: '+numOfActiveStars);
+
+			if ($(this).hasClass('glyphicon-star')) {
+
+				for (var n = clickNumber; n < numOfActiveStars; n++) {
+
+					var star = stars.find('span.star').eq(n);
+
+					star.removeClass('glyphicon-star').addClass('glyphicon-star-empty');
+				}
+			
+			} else if ($(this).hasClass('glyphicon-star-empty')) {
+
+				for (var n = 0; n < clickNumber + 1; n++) {
+
+					var star = stars.find('span.star').eq(n);
+
+					star.removeClass('glyphicon-star-empty').addClass('glyphicon-star');
+				}
+			}
+		});
 
 	</script>
 
