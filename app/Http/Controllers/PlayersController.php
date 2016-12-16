@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Cache;
 
 use App\UseCases\SaoUpdater;
 use App\UseCases\SaoScraper;
+use App\UseCases\ActiveTeamsGetter;
 
 class PlayersController extends Controller {
 
@@ -50,6 +51,38 @@ class PlayersController extends Controller {
 	public function show($id) {
 
 		$saoUpdater = new SaoUpdater;
+
+		$latestPlayerPoolDate = $saoUpdater->getLatestDkPlayerPoolDate();
+
+		list($currentHour, $currentMinute, $timeDiffHour, $timeDiffMinute, $updatedAtDate) = $saoUpdater->getUpdateVariables($latestPlayerPoolDate);
+
+		if ($saoUpdater->needsToBeUpdated($timeDiffHour, $timeDiffMinute, $updatedAtDate, $latestPlayerPoolDate)) { // update every 15 minutes
+
+			$dkPlayers = DkPlayer::join('dk_player_pools', function($join) {
+
+										$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
+									})
+									->join('teams', function($join) {
+
+										$join->on('teams.id', '=', 'dk_players.team_id');
+									})
+									->where('dk_player_pools.date', $latestPlayerPoolDate)
+									->get();
+
+			ddAll($dkPlayers);
+
+			$activeTeamsGetter = new ActiveTeamsGetter;
+
+			$activeTeams = $activeTeamsGetter->getActiveTeams($dkPlayers);
+
+			ddAll($activeTeams);
+
+			$saoScraper = new SaoScraper;
+
+			$activeTeams = $saoScraper->scrapeSao($latestPlayerPoolDate, $activeTeams, $currentHour, $currentMinute);
+
+			ddAll($activeTeams);
+		}
 
 		$player = Player::where('id', $id)->first();
 

@@ -132,9 +132,9 @@ class PlayerPoolsController extends Controller {
 
 		$activeTeamsGetter = new ActiveTeamsGetter;
 
-		$activeTeams = $activeTeamsGetter->getActiveTeams($dkPlayers);
+		$activeTeams = $activeTeamsGetter->getActiveTeams($playerPool->id);
 
-		# ddAll($dkPlayers);
+		# ddAll($activeTeams);
 
 
 		/****************************************************************************************
@@ -204,7 +204,9 @@ class PlayerPoolsController extends Controller {
 			}
 		}
 
-		# ddAll($dkPlayers);
+		# ddAll($activeTeams);
+
+		$teams = Team::all();
 
 		foreach ($dkPlayers as $dkPlayer) {
 
@@ -215,6 +217,16 @@ class PlayerPoolsController extends Controller {
 			} else {
 
 				$dkPlayer->both_positions = $dkPlayer->first_position;
+			}
+
+			foreach ($teams as $team) {
+				
+				if ($team->id === $dkPlayer->opp_team_id) {
+
+					$dkPlayer->opp_team = $team->dk_name;
+
+					break;
+				}
 			}
 		}
 

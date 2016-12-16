@@ -61,6 +61,8 @@ class SaoScraper {
 
 		unset($activeTeam);
 
+		# ddAll($activeTeams);
+
 		$mirrorActiveTeams = $activeTeams;
 
 		foreach ($activeTeams as &$activeTeam) {
@@ -106,6 +108,8 @@ class SaoScraper {
 		}
 
 		unset($activeTeam);
+
+		# ddAll($activeTeams);
 
 		return $activeTeams;
 	}

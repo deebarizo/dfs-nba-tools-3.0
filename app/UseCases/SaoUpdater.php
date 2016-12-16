@@ -4,6 +4,8 @@ date_default_timezone_set('America/Chicago');
 
 use DateTime;
 
+use App\Models\DkPlayerPool;
+
 use Illuminate\Support\Facades\Cache;
 
 class SaoUpdater {
@@ -30,7 +32,9 @@ class SaoUpdater {
 
 	public function needsToBeUpdated($timeDiffHour, $timeDiffMinute, $updatedAtDate, $playerPoolDate) {
 
-		if ($updatedAtDate !== $playerPoolDate || $timeDiffHour > 0 || $timeDiffMinute > 14) { // update every 15 minutes
+		return true;
+
+		if ($updatedAtDate === $playerPoolDate && ($timeDiffHour > 0 || $timeDiffMinute > 14)) { // update every 15 minutes
 
 			return true;
 		}
@@ -63,6 +67,13 @@ class SaoUpdater {
 		$date = $currentDateTime->format('Y-m-d');
 
 		Cache::forever('updated_at_date', $date);
+	}
+
+	public function getLatestDkPlayerPoolDate() {
+
+		$date = DkPlayerPool::take(1)->orderBy('date', 'desc')->pluck('date')[0];
+
+		return $date;
 	}
 
 }
