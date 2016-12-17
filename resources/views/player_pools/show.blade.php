@@ -78,6 +78,7 @@
 					    	data-first-position="{{ $dkPlayer->first_position }}"
 					    	data-second-position="{{ $dkPlayer->second_position }}"
 					    	data-salary="{{ $dkPlayer->salary }}"
+					    	data-dk-player-id="{{ $dkPlayer->dk_player_id }}"
 					    	class="player-row">
 						    	<td><a href="/players/{{ $dkPlayer->player_id }}" target="_blank">{{ $dkPlayer->name }}</a></td>
 						    	<td class="stars"><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="0" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="1" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="2" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="3" aria-hidden="true"></span></td>
@@ -124,7 +125,11 @@
 
 	<script type="text/javascript">
 
+		/****************************************************************************************
+		GLOBAL VARIABLES
+		****************************************************************************************/
 
+		var baseUrl = '<?php echo url('/'); ?>';
 
 		var columnIndexes = {
 
@@ -198,7 +203,20 @@
 
 
 		/****************************************************************************************
-		TOP PLAYS
+		AJAX SETUP
+		****************************************************************************************/
+
+		$.ajaxSetup({ // http://stackoverflow.com/a/37663496/1946525
+		    
+		    headers: {
+		        
+		        'X-CSRF-Token': $('input[name="_token"]').val()
+		    }
+		});
+
+
+		/****************************************************************************************
+		STARS
 		****************************************************************************************/
 
 		var maxNumOfStars = 4;
@@ -209,33 +227,65 @@
 
 			var clickNumber = $(this).data('star');
 
-			console.log('clickNumber: '+clickNumber);
-
 			var stars = $(this).closest('td.stars');
 
-			var numOfActiveStars = stars.find('span.star.glyphicon-star').length;
+			var dkPlayerId = stars.closest('tr').data('dk-player-id');
 
-			console.log('numOfActiveStars: '+numOfActiveStars);
+			var numOfActiveStarsOnClick = stars.find('span.star.glyphicon-star').length;
 
 			if ($(this).hasClass('glyphicon-star')) {
 
-				for (var n = clickNumber; n < numOfActiveStars; n++) {
+				var userClickedActiveStar = true;
 
-					var star = stars.find('span.star').eq(n);
-
-					star.removeClass('glyphicon-star').addClass('glyphicon-star-empty');
-				}
-			
 			} else if ($(this).hasClass('glyphicon-star-empty')) {
 
-				for (var n = 0; n < clickNumber + 1; n++) {
-
-					var star = stars.find('span.star').eq(n);
-
-					star.removeClass('glyphicon-star-empty').addClass('glyphicon-star');
-				}
+				var userClickedActiveStar = false;
 			}
+
+			if (userClickedActiveStar) {
+
+				var numOfActiveStarsAfterClick = numOfActiveStarsOnClick - (numOfActiveStarsOnClick - clickNumber);
+			}
+
+			if (!userClickedActiveStar) {
+
+				var numOfActiveStarsAfterClick = numOfActiveStarsOnClick + (clickNumber - numOfActiveStarsOnClick + 1);
+			}
+
+			$.ajax({
+
+	            url: baseUrl+'/dk_players/update_stars',
+	           	type: 'POST',
+	           	data: { 
+	           	
+	           		numOfActiveStarsAfterClick: numOfActiveStarsAfterClick,
+	           		dkPlayerId: dkPlayerId
+	           	},
+	            success: function() {
+	            
+					if (userClickedActiveStar) {
+
+						for (var n = clickNumber; n < numOfActiveStarsOnClick; n++) {
+
+							var star = stars.find('span.star').eq(n);
+
+							star.removeClass('glyphicon-star').addClass('glyphicon-star-empty');
+						}
+					
+					} else if (!userClickedActiveStar) {
+
+						for (var n = 0; n < clickNumber + 1; n++) {
+
+							var star = stars.find('span.star').eq(n);
+
+							star.removeClass('glyphicon-star-empty').addClass('glyphicon-star');
+						}
+					}
+	            }
+	        });
 		});
+
+
 
 	</script>
 

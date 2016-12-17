@@ -18,6 +18,8 @@ Route::get('/player_pools/{id}', [
 	'uses' => 'PlayerPoolsController@show'
 ]);
 
+Route::post('/dk_players/update_stars', 'PlayerPoolsController@updateStars');
+
 
 /****************************************************************************************
 TEAMS
@@ -30,7 +32,7 @@ Route::get('/teams/{id}', [
 	'uses' => 'TeamsController@show'
 ]);
 
-Route::post('/update_projected_stats', 'TeamsController@updateProjectedStats');
+Route::post('/teams/update_projected_stats', 'TeamsController@updateProjectedStats');
 
 
 /****************************************************************************************

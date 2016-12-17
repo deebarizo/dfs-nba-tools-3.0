@@ -17,6 +17,10 @@ use App\UseCases\SaoUpdater;
 use App\UseCases\SaoScraper;
 use App\UseCases\ActiveTeamsGetter;
 
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Input;
+
 class PlayerPoolsController extends Controller {
 
 	public function index() {
@@ -245,7 +249,21 @@ class PlayerPoolsController extends Controller {
 
 		$lastUpdate = $saoUpdater->getLastUpdate();
 
+		# ddAll($dkPlayers);
+
 		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize', 'lastUpdate'));
+	}
+
+	public function updateStars(Request $request) {
+
+		$numOfActiveStarsAfterClick = $request->input('numOfActiveStarsAfterClick');
+		$dkPlayerId = $request->input('dkPlayerId');
+
+		$dkPlayer = DkPlayer::find($dkPlayerId);
+
+		$dkPlayer->stars = $numOfActiveStarsAfterClick;
+
+		$dkPlayer->save();
 	}
 
 }

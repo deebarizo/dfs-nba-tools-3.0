@@ -16,7 +16,7 @@
 
 		<div class="col-lg-11">
 
-			{!! Form::open(array('url' => '/update_projected_stats' )) !!}
+			{!! Form::open(array('url' => '/teams/update_projected_stats' )) !!}
 
 				<input name="id" type="hidden" value="{{ $id }}">
 
