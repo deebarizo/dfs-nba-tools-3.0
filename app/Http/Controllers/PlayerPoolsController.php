@@ -55,7 +55,8 @@ class PlayerPoolsController extends Controller {
 												p_mp,
 												p_dks_slash_mp,
 												p_dk_share,
-												p_dk_pts'))
+												p_dk_pts,
+												stars'))
 								->join('dk_player_pools', function($join) {
 
 									$join->on('dk_player_pools.id', '=', 'dk_players.dk_player_pool_id');
@@ -232,6 +233,8 @@ class PlayerPoolsController extends Controller {
 					break;
 				}
 			}
+
+			$dkPlayer->stars_html = $this->createHtmlForStars($dkPlayer->stars);
 		}
 
 		if ($playerPoolIsActive) {
@@ -264,6 +267,32 @@ class PlayerPoolsController extends Controller {
 		$dkPlayer->stars = $numOfActiveStarsAfterClick;
 
 		$dkPlayer->save();
+	}
+
+	private function createHtmlForStars($numOfStars) {
+
+		$html = '';
+
+		$maxNumOfStars = 4;
+
+		if ($numOfStars === 0) {
+
+			// return '<span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="0" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="1" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="2" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="3" aria-hidden="true"></span>';
+		}
+
+		for ($i = 0; $i < $numOfStars ; $i++) { 
+			
+			$html .= '<span style="cursor: pointer" class="glyphicon glyphicon-star star" data-star="'.$i.'" aria-hidden="true"></span>';
+		}
+
+		for ($i = $numOfStars; $i < $maxNumOfStars; $i++) { 
+			
+			$html .= '<span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="'.$i.'" aria-hidden="true"></span>';
+		}
+
+		# dd($html);
+
+		return $html;
 	}
 
 }

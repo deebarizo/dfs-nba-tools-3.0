@@ -81,7 +81,7 @@
 					    	data-dk-player-id="{{ $dkPlayer->dk_player_id }}"
 					    	class="player-row">
 						    	<td><a href="/players/{{ $dkPlayer->player_id }}" target="_blank">{{ $dkPlayer->name }}</a></td>
-						    	<td class="stars"><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="0" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="1" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="2" aria-hidden="true"></span><span style="cursor: pointer" class="glyphicon glyphicon-star-empty star" data-star="3" aria-hidden="true"></span></td>
+						    	<td class="stars">{!! $dkPlayer->stars_html !!}</td>
 						    	<td>{{ $gameTime }}</td>
 						    	<td>{{ $dkPlayer->total }}</td>
 						    	<td>{{ $dkPlayer->spread }}</td>
