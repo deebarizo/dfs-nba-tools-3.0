@@ -329,6 +329,7 @@ class PlayerPoolParser {
 			$eDkPlayer->salary = $dkPlayer['salary'];
 			$eDkPlayer->location = $dkPlayer['location'];
 			$eDkPlayer->game_time = $dkPlayer['game_time'];
+			$eDkPlayer->stars = 0;
 
 			$eDkPlayer->save();
 		}
