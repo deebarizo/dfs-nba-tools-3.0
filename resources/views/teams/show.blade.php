@@ -60,6 +60,50 @@
 
 		<div class="col-lg-12">
 
+			<h3>Games</h3>
+
+			<table class="table table-striped table-bordered table-hover table-condensed">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Links</th>
+						<th>Location</th>
+						<th>Opponent</th>
+						<th>Tm</th>
+						<th>Opp</th>
+						<th>Ot</th>
+					</tr>
+				</thead>
+					<tbody>
+						@foreach ($games as $game)
+
+							<?php 
+
+								$year = date('Y', strtotime($game->date));
+
+								$monthNumber = date('m', strtotime($game->date));
+
+								$dayNumber = date('d', strtotime($game->date));
+
+								$pmLink = 'http://popcornmachine.net/gf?date='.$year.''.$monthNumber.''.$dayNumber.'&game='.$game->away_pm_team.''.$game->home_pm_team;
+							?>
+
+							<tr>
+						    	<td>{{ $game->date }}</td>
+						    	<td><a target="_blank" href="{{ $game->br_link }}">BR</a> | <a target="_blank" href="{{ $pmLink }}">PM</a></td>
+						    	<td><?php echo ($game->location === 'home' ? '' : '@'); ?></td>
+						    	<td>{{ $game->opp_team_dk_name }}</td>
+						    	<td>{{ $game->pts }}</td>
+						    	<td>{{ $game->opp_team_pts }}</td>
+						    	<td>{{ $game->ot_periods }}</td>
+						    </tr>
+						@endforeach
+					</tbody>
+			</table>
+		</div>
+
+		<div class="col-lg-12">
+
 			<h3>Rotation</h3>
 
 			<div class="team-rotation-line-chart" style="height: 800px"></div>
@@ -71,7 +115,7 @@
 		var team = <?php echo "'".$team->dk_name."'"; ?>;
 		var dates = <?php echo json_encode($dates); ?>;
 		var series = <?php echo json_encode($series); ?>;
-		var games = <?php echo json_encode($games); ?>;
+		var games = <?php echo json_encode($gamesForRotation); ?>;
 
 	</script>
 

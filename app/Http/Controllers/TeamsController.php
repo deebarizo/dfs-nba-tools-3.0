@@ -69,6 +69,11 @@ class TeamsController extends Controller {
 		$h2Tag = 'Teams - '.$team->dk_name;
 		$titleTag = $h2Tag.' | ';
 
+
+		/****************************************************************************************
+		ROTATION
+		****************************************************************************************/
+
 		$dates = Game::join('game_lines', function($join) {
 
 							$join->on('game_lines.game_id', '=', 'games.id');
@@ -216,6 +221,73 @@ class TeamsController extends Controller {
 
 		unset($game);
 
+		$gamesForRotation = $games;
+
+
+		/****************************************************************************************
+		DK PLAYERS
+		****************************************************************************************/
+
+		$games = Game::select(DB::raw('games.id,
+										teams.dk_name as team_dk_name,
+										teams.pm_name as team_pm_name, 
+										games.date,
+										games.br_link,
+										game_lines.pts,
+										game_lines.location,
+										games.ot_periods'))
+						->with('game_lines')
+						->join('game_lines', function($join) {
+
+							$join->on('game_lines.game_id', '=', 'games.id');
+						})
+						->join('teams', function($join) {
+
+							$join->on('teams.id', '=', 'game_lines.team_id');
+						})
+						->where('game_lines.team_id', $id)
+						->where('games.date', '>=', '2016-09-01')
+						->orderBy('games.date', 'desc')
+						->get();
+
+		# ddAll($games);
+
+		foreach ($games as $game) {
+			
+			$oppTeamGameLine = GameLine::select(DB::raw('teams.dk_name as team_dk_name,
+															teams.pm_name as team_pm_name, 
+															game_lines.pts'))
+										->join('teams', function($join) {
+
+											$join->on('teams.id', '=', 'game_lines.team_id');
+										})
+										->where('game_id', $game->id)
+										->where('team_id', '!=', $id)
+										->first();
+
+			$game->opp_team_dk_name = $oppTeamGameLine->team_dk_name;
+			$game->opp_team_pts = $oppTeamGameLine->pts;
+
+			if ($game->location === 'home') {
+
+				$game->home_pm_team = $game->team_pm_name;
+				$game->away_pm_team = $oppTeamGameLine->team_pm_name;
+			}
+
+			if ($game->location === 'away') {
+
+				$game->home_pm_team = $oppTeamGameLine->team_pm_name;
+				$game->away_pm_team = $game->team_pm_name;
+			}
+		}
+
+		# ddAll($games);
+
+
+		/****************************************************************************************
+		DK PLAYERS
+		****************************************************************************************/
+
 		$dkPlayers = $this->getDkPlayers($id);
 
 		# ddAll($dkPlayers);
@@ -258,7 +330,7 @@ class TeamsController extends Controller {
 
 		$lastUpdate = $saoUpdater->getLastUpdate();
 
-		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'games', 'dkPlayers', 'id', 'lastUpdate'));
+		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'gamesForRotation', 'games', 'dkPlayers', 'id', 'lastUpdate'));
 	}
 
 	public function updateProjectedStats(Request $request) {
