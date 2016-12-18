@@ -38,6 +38,17 @@ class PStatsGetter {
 										->where('date', '<', $years[2].'-09-01')
 										->where('player_id', $playerId)
 										->avg('mp');
+
+			case 'both': // this season
+				
+				return BoxScoreLine::join('games', function($join) {
+
+											$join->on('games.id', '=', 'box_score_lines.game_id');
+										})
+										->where('date', '>', $years[0].'-09-01')
+										->where('date', '<', $years[2].'-09-01')
+										->where('player_id', $playerId)
+										->avg('mp');
 		}
 	}
 
