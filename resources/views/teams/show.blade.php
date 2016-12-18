@@ -12,6 +12,8 @@
 			<p><strong>Links: </strong><a href="http://www.rotoworld.com/teams/clubhouse/nba/{{ $team->rt_name }}" target="_blank">RT</a></p>
 
 			<h3>DK Players</h3>
+
+			<p><strong>Rotation Players: </strong>{{ $metadata['num_of_players_in_rotation'] }} | <strong>Total P MP: </strong>{{ $metadata['total_p_mp'] }} ({{ $metadata['total_p_mp_percentage'] }}%)</p>
 		</div>
 
 		<div class="col-lg-11">

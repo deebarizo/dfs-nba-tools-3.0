@@ -328,9 +328,27 @@ class TeamsController extends Controller {
 			$saoUpdater->setNewUpdatedDateAndTime($currentHour, $currentMinute);
 		}
 
+		$metadata = [
+
+			'num_of_players_in_rotation' => 0,
+			'total_p_mp' => 0
+		];
+
+		foreach ($dkPlayers as $dkPlayer) {
+
+			$metadata['total_p_mp'] += $dkPlayer->p_mp;
+			
+			if ($dkPlayer->p_mp > 0) {
+
+				$metadata['num_of_players_in_rotation']++;
+			}
+		}
+
+		$metadata['total_p_mp_percentage'] = numFormat($metadata['total_p_mp'] / 240 * 100, 2);
+
 		$lastUpdate = $saoUpdater->getLastUpdate();
 
-		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'gamesForRotation', 'games', 'dkPlayers', 'id', 'lastUpdate'));
+		return view('teams/show', compact('titleTag', 'h2Tag', 'team', 'dates', 'series', 'gamesForRotation', 'games', 'dkPlayers', 'id', 'metadata', 'lastUpdate'));
 	}
 
 	public function updateProjectedStats(Request $request) {
@@ -340,6 +358,8 @@ class TeamsController extends Controller {
 		$teamDkName = Team::where('id', $id)->pluck('dk_name')[0];
 
 		$dkPlayers = $this->getDkPlayers($id);
+
+		$numOfPlayersInRotation = 0;
 
 		foreach ($dkPlayers as $dkPlayer) {
 
