@@ -271,7 +271,7 @@ class PlayerPoolsController extends Controller {
 
 	private function createHtmlForStars($numOfStars) {
 
-		$html = '<span style="display:none">'.$numOfStars.'</span>';
+		$html = '<span class="num-of-stars" style="display:none">'.$numOfStars.'</span>';
 
 		$maxNumOfStars = 4;
 

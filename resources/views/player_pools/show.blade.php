@@ -79,6 +79,7 @@
 					    	data-second-position="{{ $dkPlayer->second_position }}"
 					    	data-salary="{{ $dkPlayer->salary }}"
 					    	data-dk-player-id="{{ $dkPlayer->dk_player_id }}"
+					    	data-num-of-stars="{{ $dkPlayer->stars }}"
 					    	class="player-row">
 						    	<td><a href="/players/{{ $dkPlayer->player_id }}" target="_blank">{{ $dkPlayer->name }}</a></td>
 						    	<td class="stars">{!! $dkPlayer->stars_html !!}</td>
@@ -228,8 +229,9 @@
 			var clickNumber = $(this).data('star');
 
 			var stars = $(this).closest('td.stars');
+			var tableRow = stars.closest('tr');
 
-			var dkPlayerId = stars.closest('tr').data('dk-player-id');
+			var dkPlayerId = tableRow.data('dk-player-id');
 
 			var numOfActiveStarsOnClick = stars.find('span.star.glyphicon-star').length;
 
@@ -281,6 +283,9 @@
 							star.removeClass('glyphicon-star-empty').addClass('glyphicon-star');
 						}
 					}
+
+					stars.find('span.num-of-stars').text(numOfActiveStarsAfterClick);
+					tableRow.attr('data-num-of-stars', numOfActiveStarsAfterClick);
 	            }
 	        });
 		});
