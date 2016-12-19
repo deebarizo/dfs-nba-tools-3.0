@@ -70,6 +70,28 @@ class PStatsGetter {
 			case 'm': // manual
 				
 				return $pDksSlashMp;
+
+			case 'ls': // this season
+
+				$totalDkShare = BoxScoreLine::join('games', function($join) {
+
+													$join->on('games.id', '=', 'box_score_lines.game_id');
+												})
+												->where('date', '>', $years[0].'-09-01')
+												->where('date', '<', $years[1].'-09-01')
+												->where('player_id', $playerId)
+												->sum('dk_share');
+
+				$totalMp = BoxScoreLine::join('games', function($join) {
+
+												$join->on('games.id', '=', 'box_score_lines.game_id');
+											})
+											->where('date', '>', $years[0].'-09-01')
+											->where('date', '<', $years[1].'-09-01')
+											->where('player_id', $playerId)
+											->sum('mp');
+
+				return $totalDkShare / $totalMp;
 			
 			case 'ts': // this season
 
