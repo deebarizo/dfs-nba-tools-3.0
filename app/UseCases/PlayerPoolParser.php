@@ -304,6 +304,8 @@ class PlayerPoolParser {
 			$dkPlayer->save();
 		}
 
+		$saoUpdater = new SaoUpdater;
+
 		list($currentHour, $currentMinute, $timeDiffHour, $timeDiffMinute, $updatedAtDate) = $saoUpdater->getUpdateVariables($playerPool->date);
 
 		$saoUpdater->setNewUpdatedDateAndTime($currentHour, $currentMinute);
