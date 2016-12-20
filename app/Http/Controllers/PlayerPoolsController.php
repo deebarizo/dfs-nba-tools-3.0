@@ -243,7 +243,7 @@ class PlayerPoolsController extends Controller {
 		
 		} else {
 
-			$fontSize = '85%';
+			$fontSize = '80%';
 		}
 
 		$numGames = count($activeTeams) / 2;
