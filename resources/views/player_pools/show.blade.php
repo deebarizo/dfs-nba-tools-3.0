@@ -56,7 +56,6 @@
 						<th>Sal</th>
 						<th>PV</th>
 						<th>DK</th>
-						<th>Sal</th>
 						<th>V</th>
 						<th>YO</th>
 						<th>O</th>
@@ -99,7 +98,6 @@
 						    	@else
 						    		<td>{{ numFormat(0, 2) }}</td>
 						    	@endif
-						    	<td>{{ $dkPlayer->salary }}</td>
 						    	@if (isset($dkPlayer->value))
 						    		<td>{{ numFormat($dkPlayer->value, 2) }}</td>
 						    	@else
@@ -137,11 +135,10 @@
 			team: 5,
 			salary: 11,
 			dk_pts: 13,
-			salary2: 14,
-			value: 15,
-			your_ownership_percentage: 16, 
-			ownership_percentage: 17,
-			position: 18
+			value: 14,
+			your_ownership_percentage: 15, 
+			ownership_percentage: 16,
+			position: 17
 		};
 
 		var playerPoolTable = $('#player-pool').DataTable({
@@ -167,8 +164,7 @@
 	            { "orderSequence": [ "desc", "asc" ] }, // 14
 	            { "orderSequence": [ "desc", "asc" ] }, // 15
 	            { "orderSequence": [ "desc", "asc" ] }, // 16
-	            { "orderSequence": [ "desc", "asc" ] }, // 17
-	            { "orderSequence": [ "desc", "asc" ] } // 18
+	            { "orderSequence": [ "desc", "asc" ] } // 17
 	        ],
 	        "columnDefs": [ 
 	        	{
