@@ -39,11 +39,11 @@
 
 			</form>
 
-			<table id="player-pool" style="font-size: {{ $fontSize }}" class="table table-striped table-bordered table-hover table-condensed">
+			<table id="player-pool" style="font-size: {{ $css['font_size'] }}" class="table table-striped table-bordered table-hover table-condensed">
 				<thead>
 					<tr>
 						<th>Name</th>
-						<th style="width: 7%">St</th>
+						<th style="width: {{ $css['stars_width'] }}">St</th>
 						<th>Tim</th>
 						<th>Tot</th>
 						<th>Spr</th>

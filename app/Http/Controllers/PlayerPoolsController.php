@@ -241,11 +241,19 @@ class PlayerPoolsController extends Controller {
 
 		if ($playerPoolIsActive) {
 
-			$fontSize = '100%';
+			$css = [
+
+				'font_size' => '100%',
+				'stars_width' => '10%'
+			];
 		
 		} else {
 
-			$fontSize = '80%';
+			$css = [
+
+				'font_size' => '80%',
+				'stars_width' => '7%'
+			];
 		}
 
 		$numGames = count($activeTeams) / 2;
@@ -256,7 +264,7 @@ class PlayerPoolsController extends Controller {
 
 		# ddAll($dkPlayers);
 
-		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize', 'lastUpdate'));
+		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'css', 'lastUpdate'));
 	}
 
 	public function updateStars(Request $request) {
