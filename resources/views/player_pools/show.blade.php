@@ -43,7 +43,7 @@
 				<thead>
 					<tr>
 						<th>Name</th>
-						<th>TP</th>
+						<th style="width: 7%">St</th>
 						<th>Tim</th>
 						<th>Tot</th>
 						<th>Spr</th>
