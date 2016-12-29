@@ -20,6 +20,8 @@ Route::get('/player_pools/{id}', [
 
 Route::post('/dk_players/update_stars', 'PlayerPoolsController@updateStars');
 
+Route::post('/download-csv-projections-for-rg', 'PlayerPoolsController@downloadCsvProjectsForRotogrinders');
+
 
 /****************************************************************************************
 TEAMS

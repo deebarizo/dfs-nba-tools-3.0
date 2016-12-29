@@ -23,6 +23,8 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Input;
 
+use Illuminate\Support\Facades\Response;
+
 class PlayerPoolsController extends Controller {
 
 	public function index() {
@@ -130,7 +132,7 @@ class PlayerPoolsController extends Controller {
 
 			    	$fontSize = '100%';
 
-			    	return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize'));
+			    	return view('player_pools/show', compact('titleTag', 'h2Tag', 'playerPool', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'fontSize'));
 			    } 
 			}
 		}
@@ -264,7 +266,7 @@ class PlayerPoolsController extends Controller {
 
 		# ddAll($dkPlayers);
 
-		return view('player_pools/show', compact('titleTag', 'h2Tag', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'css', 'lastUpdate'));
+		return view('player_pools/show', compact('titleTag', 'h2Tag', 'playerPool', 'activeTeams', 'dkPlayers', 'playerPoolIsActive', 'css', 'lastUpdate'));
 	}
 
 	public function updateStars(Request $request) {
@@ -298,6 +300,41 @@ class PlayerPoolsController extends Controller {
 		# dd($html);
 
 		return $html;
+	}
+
+	public function downloadCsvProjectsForRotogrinders(Request $request) {
+
+	    $dkPlayers = DkPlayerPool::select('players.dk_name', 'dk_players.p_dk_pts')
+	    							->join('dk_players', function($join) {
+
+	    								$join->on('dk_players.dk_player_pool_id', '=', 'dk_player_pools.id');
+	    							})
+	    							->join('players', function($join) {
+
+	    								$join->on('players.id', '=', 'dk_players.player_id');
+	    							})
+	    							->where('dk_player_pools.id', $request->input('dk-player-pool-id'))
+	    							->get();
+
+	    $filename = 'files/csv-projections/rg.csv';
+
+	    $handle = fopen($filename, 'w+');
+	    
+	    fputcsv($handle, array('name', 'fpts'));
+
+	    foreach($dkPlayers as $dkPlayer) {
+	        
+	        fputcsv($handle, array($dkPlayer['dk_name'], $dkPlayer['p_dk_pts']));
+	    }
+
+	    fclose($handle);
+
+	    $headers = array(
+
+	        'Content-Type' => 'text/csv',
+	    );
+
+	    return Response::download($filename, 'rg.csv', $headers);
 	}
 
 }
