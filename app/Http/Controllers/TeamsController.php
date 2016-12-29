@@ -345,6 +345,7 @@ class TeamsController extends Controller {
 		}
 
 		$metadata['total_p_mp_percentage'] = numFormat($metadata['total_p_mp'] / 240 * 100, 2);
+		$metadata['total_p_mp_left'] = numFormat(240 - $metadata['total_p_mp'], 2);
 
 		$lastUpdate = $saoUpdater->getLastUpdate();
 

@@ -13,7 +13,7 @@
 
 			<h3>DK Players</h3>
 
-			<p><strong>Rotation Players: </strong>{{ $metadata['num_of_players_in_rotation'] }} | <strong>Total P MP: </strong>{{ $metadata['total_p_mp'] }} ({{ $metadata['total_p_mp_percentage'] }}%)</p>
+			<p><strong>Rotation Players: </strong>{{ $metadata['num_of_players_in_rotation'] }} | <strong>Total P MP: </strong>{{ $metadata['total_p_mp'] }} ({{ $metadata['total_p_mp_left'] }} Left)</p>
 		</div>
 
 		<div class="col-lg-11">

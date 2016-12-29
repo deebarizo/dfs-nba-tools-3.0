@@ -89,7 +89,7 @@ class PlayerPoolParser {
 			}
 		}
 
-		if ($sum <= 797 || $sum >= 801) {
+		if ($sum <= 795 || $sum >= 801) {
 
             $this->message = 'The total ownership percentages for this player pool is '.$sum.'. It should be closer to 800.'; // 800 because 8 positions X 100%.
 
