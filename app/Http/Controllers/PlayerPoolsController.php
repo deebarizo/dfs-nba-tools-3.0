@@ -323,8 +323,8 @@ class PlayerPoolsController extends Controller {
 	    fputcsv($handle, array('name', 'fpts'));
 
 	    foreach($dkPlayers as $dkPlayer) {
-	        
-	        fputcsv($handle, array($dkPlayer['dk_name'], $dkPlayer['p_dk_pts']));
+
+    		fputcsv($handle, array($dkPlayer['dk_name'], $dkPlayer['p_dk_pts']));
 	    }
 
 	    fclose($handle);
